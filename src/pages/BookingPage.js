@@ -3216,8 +3216,8 @@ class BookingPage extends Component {
 
         return (
             <div className="qbootstrap-nav header">
-                <div id="headr" className="col-md-12">
-                    <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
+                <div id="headr" className="col-md-12 overflow-auto">
+                    <div className="col-sm-12 col-md-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
@@ -3229,7 +3229,7 @@ class BookingPage extends Component {
                             <li className="none"><a href="/bookinglinedetails">Booking Line Data</a></li>
                         </ul>
                     </div>
-                    <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
+                    <div id="icn" className="col-sm-12 col-md-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
                         <a className="none"><i className="icon-plus" aria-hidden="true"></i></a>
                         <div className="none">
                             <i className="icon-search3" aria-hidden="true"></i>
@@ -3263,7 +3263,7 @@ class BookingPage extends Component {
                 <div className="user-header">
                     <div className="container">
                         <div className="row">
-                            <div className="col-sm-6">
+                            <div className="col-sm-12 col-md-6">
                                 <Button
                                     className={curViewMode === 0 ? 'active view-mode-btn' : 'view-mode-btn'}
                                     onClick={() => this.onChangeViewMode(0)}
@@ -3277,7 +3277,7 @@ class BookingPage extends Component {
                                     onClick={() => this.onChangeViewMode(1)}
                                 >New Booking</Button>
                             </div>
-                            <div className="col-sm-6 pad-top-8">
+                            <div className="col-sm-12 col-md-6 pad-top-8">
                                 <div className="float-r disp-inline-block form-group">
                                     <input 
                                         className="form-control"
@@ -3312,53 +3312,54 @@ class BookingPage extends Component {
                     <section className="booking">
                         <div className="container">
                             <div className="grid">
-                                <div className="userclock disp-inline-block">
-                                    Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
-                                </div>
-                                <div className="booking-date disp-inline-block">
-                                    <div>
-                                        {(booking && booking.z_CreatedTimestamp) &&
-                                            <div className="created-timestamp disp-inline-block">
-                                                <span>Created At:&nbsp;&nbsp;</span>
-                                                <span className="show-mode">{booking && booking.z_CreatedTimestamp && moment(booking.z_CreatedTimestamp).format('DD/MM/YYYY HH:mm')}</span>
-                                            </div>
-                                        }
-                                        {(booking && booking.z_ModifiedTimestamp) &&
-                                            <div className="modified-timestamp disp-inline-block">
-                                                <span>Modified At:&nbsp;&nbsp;</span>
-                                                <span className="show-mode">{booking && booking.z_ModifiedTimestamp && moment(booking.z_ModifiedTimestamp).format('DD/MM/YYYY HH:mm')}</span>
-                                            </div>
-                                        }
+                                <div className="row">
+                                    <div className="userclock col-md-12 col-lg-4">
+                                        Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                     </div>
-                                    <div>
-                                        {(booking && booking.manifest_timestamp) &&
-                                            <div className="manifest-date">
-                                                <span>Manifest At:&nbsp;&nbsp;</span>
-                                                <span className="show-mode">{booking && booking.manifest_timestamp && moment(booking.manifest_timestamp).format('DD/MM/YYYY HH:mm')}</span>
-                                            </div>
-                                        }
-                                        <div className="booked-date">
-                                            <span>Booked At:&nbsp;&nbsp;</span>
-                                            {(parseInt(curViewMode) === 0) ?
-                                                <span className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm')}</span>
-                                                :
-                                                <DateTimePicker
-                                                    onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
-                                                    value={(!isNull(booking) &&
-                                                        !isNull(booking.b_dateBookedDate) &&
-                                                        !isUndefined(booking.b_dateBookedDate)) ?
-                                                        new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
-                                                    }
-                                                    format={'dd/MM/yyyy HH:mm'}
-                                                />
+                                    <div className="booking-date col-md-12 col-lg-8 disp-inline-block">
+                                        <div>
+                                            {(booking && booking.z_CreatedTimestamp) &&
+                                                <div className="created-timestamp disp-inline-block">
+                                                    <span>Created At:&nbsp;&nbsp;</span>
+                                                    <span className="show-mode">{booking && booking.z_CreatedTimestamp && moment(booking.z_CreatedTimestamp).format('DD/MM/YYYY HH:mm')}</span>
+                                                </div>
                                             }
+                                            {(booking && booking.z_ModifiedTimestamp) &&
+                                                <div className="modified-timestamp disp-inline-block">
+                                                    <span>Modified At:&nbsp;&nbsp;</span>
+                                                    <span className="show-mode">{booking && booking.z_ModifiedTimestamp && moment(booking.z_ModifiedTimestamp).format('DD/MM/YYYY HH:mm')}</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div>
+                                            {(booking && booking.manifest_timestamp) &&
+                                                <div className="manifest-date">
+                                                    <span>Manifest At:&nbsp;&nbsp;</span>
+                                                    <span className="show-mode">{booking && booking.manifest_timestamp && moment(booking.manifest_timestamp).format('DD/MM/YYYY HH:mm')}</span>
+                                                </div>
+                                            }
+                                            <div className="booked-date">
+                                                <span>Booked At:&nbsp;&nbsp;</span>
+                                                {(parseInt(curViewMode) === 0) ?
+                                                    <span className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm')}</span>
+                                                    :
+                                                    <DateTimePicker
+                                                        onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
+                                                        value={(!isNull(booking) &&
+                                                            !isNull(booking.b_dateBookedDate) &&
+                                                            !isUndefined(booking.b_dateBookedDate)) ?
+                                                            new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
+                                                        }
+                                                        format={'dd/MM/yyyy HH:mm'}
+                                                    />
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div className="head">
                                     <div className="row">
-                                        <div className="col-sm-6">
+                                        <div className="col-sm-12 col-md-12 col-lg-6">
                                             <button
                                                 onClick={(e) => this.onClickPrev(e)}
                                                 disabled={this.state.prevBookingId === 0 || curViewMode === 1 ? 'disabled' : null}
@@ -3403,7 +3404,7 @@ class BookingPage extends Component {
                                                 </label>
                                             }
                                         </div>
-                                        <div className="col-sm-6">
+                                        <div className="col-sm-12 col-md-12 col-lg-6">
                                             <a id={'booking-' + 'cs_note' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" title={tooltipText.cs_note}>
                                                 <i className={booking.cs_notes_cnt > 0 ? 'fa fa-user-plus c-yellow' : 'fa fa-user-plus'} style={{fontSize: '18px', paddingTop: '0px'}} aria-hidden="true"></i>
                                                 {/* <TooltipItem object={tooltipText} placement='bottom' fields={['cs_note']} /> */}
@@ -3480,7 +3481,7 @@ class BookingPage extends Component {
 
                                 <div className="main-fields-section">
                                     <div className="row col-sm-12 booking-form-01">
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-lg-3 col-sm-6 form-group">
                                             <span>Client Name<span className='c-red'>*</span></span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
@@ -3495,7 +3496,7 @@ class BookingPage extends Component {
                                                     />
                                             }
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-lg-3 col-sm-6 form-group">
                                             <span>Sub Client</span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
@@ -3511,7 +3512,7 @@ class BookingPage extends Component {
                                                     />
                                             }
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-lg-3 col-sm-6 form-group">
                                             <span>Status Detail</span><br />
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p 
@@ -3545,7 +3546,7 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         {(isShowStatusDetailInput && parseInt(curViewMode) !== 0) &&
-                                            <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
+                                            <div className={clientname === 'dme' ? 'col-lg-3 col-sm-6 form-group' : 'none'}>
                                                 <span>New Status Detail</span><br />
                                                 <input 
                                                     className="form-control"
@@ -3557,7 +3558,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         }
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-lg-3 col-sm-6 form-group">
                                             <span>Status Action</span><br />
                                             {
                                                 (parseInt(curViewMode) === 0) ?
@@ -3592,7 +3593,7 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         {(isShowStatusActionInput && parseInt(curViewMode) !== 0) &&
-                                            <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
+                                            <div className={clientname === 'dme' ? 'col-lg-3 col-sm-6 form-group' : 'none'}>
                                                 <span>New Status Action</span><br />
                                                 <input 
                                                     className="form-control"
@@ -3606,7 +3607,7 @@ class BookingPage extends Component {
                                         }
                                     </div>
                                     <div className="row col-sm-12 booking-form-01">
-                                        <div className={(parseInt(curViewMode) === 0) ? 'col-sm-3 form-group' : 'col-sm-2 form-group'}>
+                                        <div className={(parseInt(curViewMode) === 0) ? 'col-sm-6 col-lg-3 form-group' : 'col-sm-4 col-lg-2 form-group'}>
                                             <span>Created For</span>
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p className="show-mode">{formInputs['booking_Created_For'] && formInputs['booking_Created_For'].value}</p>
@@ -3620,7 +3621,7 @@ class BookingPage extends Component {
                                                 />
                                             }
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-sm-6 col-lg-3 form-group">
                                             <span>Created For Email</span>
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
@@ -3644,7 +3645,7 @@ class BookingPage extends Component {
                                                 <i className="fa fa-save" aria-hidden="true"></i>
                                             </Button>
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-sm-6 col-lg-3 form-group">
                                             <span>Category</span>
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p className="show-mode">{formInputs['b_booking_Category'] && formInputs['b_booking_Category'].value}</p>
@@ -3658,7 +3659,7 @@ class BookingPage extends Component {
                                                 />
                                             }
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-sm-6 col-lg-3 form-group">
                                             <span>Priority</span>
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p className="show-mode">{formInputs['b_booking_Priority'] && formInputs['b_booking_Priority'].value}</p>
@@ -3675,7 +3676,7 @@ class BookingPage extends Component {
                                     </div>
 
                                     <div className="row col-sm-12 booking-form-01">
-                                        <div className="col-sm-2 form-group">
+                                        <div className="col-sm-4 col-lg-2 form-group">
                                             <span>Warehouse Code</span>
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p className="show-mode">{currentWarehouseCodeOption.value}</p>
@@ -3689,7 +3690,7 @@ class BookingPage extends Component {
                                                 />
                                             }
                                         </div>
-                                        <div className='col-sm-2 form-group'>
+                                        <div className='col-sm-4 col-lg-2 form-group'>
                                             <span>Warehouse Name</span><br />
                                             <input
                                                 className="form-control"
@@ -3698,7 +3699,7 @@ class BookingPage extends Component {
                                                 value={formInputs['b_clientPU_Warehouse'] ? formInputs['b_clientPU_Warehouse'] : ''}
                                             />
                                         </div>
-                                        <div className="col-sm-2 form-group">
+                                        <div className="col-sm-4 col-lg-2 form-group">
                                             <span>Linked Reference</span>
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p 
@@ -3721,7 +3722,7 @@ class BookingPage extends Component {
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_linked_reference_from_fp']} />
                                             }
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-sm-6 col-lg-3 form-group">
                                             <span>Your Invoice No</span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
@@ -3736,7 +3737,7 @@ class BookingPage extends Component {
                                                     />
                                             }
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-sm-6 col-lg-3 form-group">
                                             <span>Your PO No</span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
@@ -3753,7 +3754,7 @@ class BookingPage extends Component {
                                         </div>
                                     </div>
                                     <div className="row col-sm-12 booking-form-01">
-                                        <div className="col-sm-2 form-group">
+                                        <div className="col-sm-4 col-lg-2 form-group">
                                             <div>
                                                 <span>Consignment Number</span>
                                                 {
@@ -3771,7 +3772,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-2 form-group">
+                                        <div className="col-sm-4 col-lg-2 form-group">
                                             <div>
                                                 <span>Freight Provider<span className='c-red'>*</span></span>
                                                 {
@@ -3788,7 +3789,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-2 form-group">
+                                        <div className="col-sm-4 col-lg-2 form-group">
                                             <div>
                                                 <span>Account Code</span>
                                                 {
@@ -3805,7 +3806,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-2 form-group">
+                                        <div className="col-sm-4 col-lg-2 form-group">
                                             <div>
                                                 <span>PU / Booking ID</span>
                                                 {
@@ -3822,7 +3823,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className='col-sm-2 form-group'>
+                                        <div className='col-sm-4 col-lg-2 form-group'>
                                             <div>
                                                 <span>Service Name</span>
                                                 {
@@ -3839,7 +3840,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-1 form-group">
+                                        <div className="col-sm-2 col-lg-1 form-group">
                                             <div>
                                                 <span>Service Type</span>
                                                 {
@@ -3856,7 +3857,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-1 form-group">
+                                        <div className="col-sm-2 col-lg-1 form-group">
                                             <div>
                                                 <span>Vehicle Type</span>
                                                 {
@@ -3875,7 +3876,7 @@ class BookingPage extends Component {
                                         </div>
                                     </div>
                                     <div className="row col-sm-12 booking-form-01">
-                                        <div className={clientname === 'dme' ? 'col-sm-3 form-group': 'none'}>
+                                        <div className={clientname === 'dme' ? 'col-sm-6 col-lg-3 form-group': 'none'}>
                                             <div>
                                                 <span>Invoice Billing Status</span>
                                                 {
@@ -3892,7 +3893,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className={clientname === 'dme' ? 'col-sm-3 form-group': 'none'}>
+                                        <div className={clientname === 'dme' ? 'col-sm-6 col-lg-3 form-group': 'none'}>
                                             <div>
                                                 <span>FP Invoice No</span>
                                                 {
@@ -3910,7 +3911,7 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         {clientname === 'dme' &&
-                                            <div className='col-sm-1 form-group'>
+                                            <div className='col-sm-2 col-lg-1 form-group'>
                                                 <div>
                                                     <span>Quoted Cost</span>
                                                     {parseInt(curViewMode) === 0 ?
@@ -3929,7 +3930,7 @@ class BookingPage extends Component {
                                             </div>
                                         }
                                         {clientname === 'dme' &&
-                                            <div className='col-sm-1 form-group'>
+                                            <div className='col-sm-2 col-lg-1 form-group'>
                                                 <div>
                                                     <span>Actual Cost</span>
                                                     {parseInt(curViewMode) === 0 ?
@@ -3950,7 +3951,7 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="col-sm-1 form-group">
+                                        <div className="col-sm-2 col-lg-1 form-group">
                                             <div>
                                                 <span className="c-red">Quoted $</span>
                                                 {(parseInt(curViewMode) === 0) ?
@@ -3967,7 +3968,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-1 form-group">
+                                        <div className="col-sm-2 col-lg-1 form-group">
                                             <div>
                                                 <span className="c-red">Booked $</span>
                                                 {(parseInt(curViewMode) === 0) ?
@@ -3984,7 +3985,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-1 form-group">
+                                        <div className="col-sm-2 col-lg-1 form-group">
                                             <div>
                                                 <span className="c-red">Quoted $*</span>
                                                 {(parseInt(curViewMode) === 0) ?
@@ -4001,7 +4002,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-1 form-group">
+                                        <div className="col-sm-2 col-lg-1 form-group">
                                             <div>
                                                 <span>Actual $</span>
                                                 {(parseInt(curViewMode) === 0) ?
@@ -4022,7 +4023,7 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         {formInputs && formInputs['customer_cost'] &&
-                                            <div className="col-sm-1 form-group">
+                                            <div className="col-sm-2 col-lg-1 form-group">
                                                 <div>
                                                     <span>Customer $</span>
                                                     {(parseInt(curViewMode) === 0) ?
@@ -4038,7 +4039,7 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="col-sm-2 form-group">
+                                        <div className="col-sm-4 col-lg-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
                                                 {(parseInt(curViewMode) === 0) ?
@@ -4055,7 +4056,7 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
-                                            <div className="col-sm-2 form-group">
+                                            <div className="col-sm-4 col-lg-2 form-group">
                                                 <div>
                                                     <span>Shipping Type</span>
                                                     {(parseInt(curViewMode) === 0) ?
@@ -4076,7 +4077,7 @@ class BookingPage extends Component {
                                             </div>
                                         }
                                     </div>
-                                    <div className="row col-sm-10 booking-form-01">
+                                    <div className="row col-sm-8 col-lg-10 booking-form-01">
                                         <div>
                                             <span>Linked Services</span><br />
                                             <Button
@@ -4089,7 +4090,7 @@ class BookingPage extends Component {
                                         </div>
                                     </div>
                                     {(eta.days || eta.hours) ?
-                                        <div className="row col-sm-2 booking-form-01">
+                                        <div className="row col-sm-4 col-lg-2 booking-form-01">
                                             <span>Transit Time</span><br />
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p className="show-mode">{eta.days}d {eta.hours}h</p>
@@ -4127,40 +4128,40 @@ class BookingPage extends Component {
                                         />
                                     </div>
                                     <div className='row col-sm-12 booking-form-02'>
-                                        <div className={clientname === 'dme' ? 'col-sm-6 form-group' : 'none'}>
-                                            <span>Invoice Billing Status Note</span>
+                                        <div className={clientname === 'dme' ? 'col-sm-12 col-lg-6 form-group' : 'none'}>
+                                            <p>Invoice Billing Status Note</p>
                                             <textarea
-                                                className="show-mode"
+                                                className="show-mode form-control"
                                                 id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
                                                 name="inv_billing_status_note"
                                                 value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
                                                 onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
                                                 rows="6"
-                                                cols="83"
+                                                // cols="83"
                                                 readOnly
                                             />
                                             {!isEmpty(formInputs['inv_billing_status_note']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['inv_billing_status_note']} />
                                             }
                                         </div>
-                                        <div className="col-sm-6 form-group">
-                                            <span>Status History Note</span>
+                                        <div className="col-sm-12 col-lg-6 form-group">
+                                            <p>Status History Note</p>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
                                                     <textarea 
-                                                        className="show-mode"
+                                                        className="show-mode form-control"
                                                         onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
                                                         id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
                                                         value={formInputs['b_booking_Notes']}
                                                         disabled='disabled'
                                                         rows="6"
-                                                        cols="83"
+                                                        // cols="83"
                                                         readOnly
                                                     />
                                                     :
                                                     clientname === 'dme' ?
                                                         <textarea 
-                                                            className="show-mode"
+                                                            className="show-mode form-control"
                                                             id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
                                                             name="dme_status_linked_reference_from_fp"
                                                             value={formInputs['b_booking_Notes'] ? formInputs['b_booking_Notes'] : ''} 
@@ -4171,7 +4172,7 @@ class BookingPage extends Component {
                                                         />
                                                         :
                                                         <textarea 
-                                                            className="show-mode"
+                                                            className="show-mode form-control"
                                                             onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
                                                             id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
                                                             value={formInputs['b_booking_Notes']}
@@ -4193,8 +4194,8 @@ class BookingPage extends Component {
                                     onHandleInput={(e) => this.onHandleInput(e)}
                                 />
                                 <div className="detail-tab">
-                                    <div className="row">
-                                        <div className="col-sm-4">
+                                    <div className="">
+                                        <div className="col-sm-12 col-md-12 col-lg-4">
                                             <div className="pickup-detail">
                                                 <div className="head text-white">
                                                     <ul>
@@ -4666,7 +4667,7 @@ class BookingPage extends Component {
                                             </div>
                                             <div className="clearfix"></div>
                                         </div>
-                                        <div className="col-sm-4">
+                                        <div className="col-sm-12 col-md-12 col-lg-4">
                                             <div className="pickup-detail">
                                                 <div className="head text-white">
                                                     <ul>
@@ -5200,7 +5201,7 @@ class BookingPage extends Component {
                                             </Popover>
                                         }
 
-                                        <div className="col-sm-4">
+                                        <div className="col-sm-12 col-lg-4">
                                             <div className="pickup-detail">
                                                 <div className="head text-white">
                                                     <ul>
@@ -5674,7 +5675,7 @@ class BookingPage extends Component {
                         </div>
                     </section>
 
-                    <section>
+                    <section className="detail-info">
                         <div className="container">
                             <div className="row">
                                 <div className="col-sm-12">

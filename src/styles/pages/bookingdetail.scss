@@ -36,7 +36,7 @@ p.dme-id {
 ._loading_overlay_wrapper {
     .detail-tab {
         .col-sm-4 {
-            padding: 0 !important;
+            padding: 2 !important;
         }
 
         .col-sm-8 {
@@ -50,7 +50,7 @@ p.dme-id {
     margin-bottom: 10px;
 
     .col-sm-6, .col-sm-12 {
-        padding: 0 !important;
+        padding: 2px !important;
     }
 
     .col-sm-4, .col-sm-2, .col-sm-3, .col-sm-1 {
@@ -619,8 +619,6 @@ p.status-icon {
     }
 
     .userclock, .booking-date {
-        width: 40%;
-        height: 40px;
 
         input, p {
             width: 145px;
@@ -634,16 +632,21 @@ p.status-icon {
     }
 
     .booking-date {
-        width: 60%;
         float: right;
-        padding-right: 15px;
+        padding-right: 18px;
         text-align: right;
     }
     
-    .booked-date, .manifest-date, .created-timestamp, .modified-timestamp {
-        width: 40%;
+    .booked-date, .manifest-date {
+        width: 100%;
         display: inline !important;
-        margin-left: 36px;
+        margin-left: 8px;
+    }
+
+    .created-timestamp, .modified-timestamp {
+        width: 100%;
+        display: inline !important;
+        margin-left: 8px;
     }
 
     .detail-tab {
@@ -732,4 +735,8 @@ div.manual-book {
             }
         }
     }
+}
+
+.detail-info {
+    overflow-x: auto;
 }
