@@ -41,6 +41,8 @@ class StatusNoteModal extends Component {
             title = 'DME Status History Note';
         } else if (fieldName === 'inv_billing_status_note') {
             title = 'Invoice Billing Status Note';
+        } else if (fieldName === 'dme_client_notes') {
+            title = 'DME Client Notes';
         }
 
         title = isEditable ? title : title + ' (View Only)';

@@ -4185,6 +4185,38 @@ class BookingPage extends Component {
                                                 <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
                                             }
                                         </div>
+
+                                        <div className={clientname !== 'dme' ? 'col-sm-6 form-group' : 'none'}>
+                                            <span>Client Notes</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <textarea 
+                                                        className="show-mode"
+                                                        onClick={() => this.toggleStatusNoteModal('dme_client_notes')}
+                                                        id={'booking-' + 'dme_client_notes' + '-tooltip-' + booking.id}
+                                                        value={formInputs['dme_client_notes']}
+                                                        disabled='disabled'
+                                                        rows="6"
+                                                        cols="83"
+                                                        readOnly
+                                                    />
+                                                    :
+                                                    <textarea 
+                                                        className="show-mode"
+                                                        id={'booking-' + 'dme_client_notes' + '-tooltip-' + booking.id}
+                                                        name="dme_status_linked_reference_from_fp"
+                                                        value={formInputs['dme_client_notes'] ? formInputs['dme_client_notes'] : ''} 
+                                                        onClick={() => this.toggleStatusNoteModal('dme_client_notes')}
+                                                        rows="6"
+                                                        cols="83"
+                                                        readOnly
+                                                    />
+
+                                            }
+                                            {!isEmpty(formInputs['b_booking_Notes']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
+                                            }
+                                        </div>
                                     </div>
                                     <div className="clearfix"></div>
                                 </div>
