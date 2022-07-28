@@ -1569,7 +1569,7 @@ class BookingPage extends Component {
 
             this.setState({suburbPrefix: join(suburbPrefixes, ' '), postalCodePrefix});
         }
-        console.log(clientname);
+
         if (isBookedBooking == true && clientname === 'dme' && (postalCodePrefix || suburbPrefixes.length > 0)) {
             if (src === 'puSuburb') {
                 this.props.getAddressesWithPrefix(
@@ -4305,6 +4305,7 @@ class BookingPage extends Component {
                                                                             // Do no filtering, just return all options
                                                                             return options;
                                                                         }}
+                                                                        isDisabled={(isBookedBooking &&  clientname !== 'dme')}
                                                                     />
                                                             }
                                                         </div>
@@ -4778,6 +4779,7 @@ class BookingPage extends Component {
                                                                             // Do no filtering, just return all options
                                                                             return options;
                                                                         }}
+                                                                        isDisabled={(isBookedBooking &&  clientname !== 'dme')}
                                                                     />
                                                             }
                                                         </div>
