@@ -111,13 +111,7 @@ class BookingPage extends Component {
             bookingLineDetailsProduct: [],
             deletedBookingLine: -1,
             bBooking: null,
-            isGoing: false,
-            checkBoxStatus: [],
             selectedOption: null,
-            loadedPostal: false,
-            loadedSuburb: false,
-            deLoadedPostal: false,
-            deLoadedSuburb: false,
             puSuburb: {value: ''},
             deToSuburb: {value: ''},
             isBookedBooking: false,
@@ -1539,8 +1533,6 @@ class BookingPage extends Component {
     };
 
     handleInputChangeSuburb = (query, src) => {
-        const {isBookedBooking} = this.state;
-
         let postalCodePrefix = null;
         let suburbPrefixes = [];
         const iters = query.split(' ');
@@ -1551,7 +1543,7 @@ class BookingPage extends Component {
                 suburbPrefixes.push(iter);
         });
 
-        if (isBookedBooking == false && (postalCodePrefix || suburbPrefixes.length > 0)) {
+        if (postalCodePrefix || suburbPrefixes.length > 0) {
             if (src === 'puSuburb') {
                 this.props.getAddressesWithPrefix(
                     'puAddress',
@@ -1571,22 +1563,20 @@ class BookingPage extends Component {
     };
 
     handleFocusSuburb = (src) => {
-        const {isBookedBooking, formInputs} = this.state;
+        const {formInputs} = this.state;
 
-        if (isBookedBooking == false) {
-            if (src === 'puSuburb') {
-                this.props.getAddressesWithPrefix(
-                    'puAddress',
-                    formInputs['pu_Address_Suburb'] || 'syd',
-                    null
-                );
-            } else if (src === 'deToSuburb') {
-                this.props.getAddressesWithPrefix(
-                    'deToAddress',
-                    formInputs['de_To_Address_Suburb'] || 'syd',
-                    null
-                );
-            }
+        if (src === 'puSuburb') {
+            this.props.getAddressesWithPrefix(
+                'puAddress',
+                formInputs['pu_Address_Suburb'] || 'syd',
+                null
+            );
+        } else if (src === 'deToSuburb') {
+            this.props.getAddressesWithPrefix(
+                'deToAddress',
+                formInputs['de_To_Address_Suburb'] || 'syd',
+                null
+            );
         }
     };
 
@@ -4318,6 +4308,7 @@ class BookingPage extends Component {
                                                                             // Do no filtering, just return all options
                                                                             return options;
                                                                         }}
+                                                                        isDisabled={(isBookedBooking &&  clientname !== 'dme')}
                                                                     />
                                                             }
                                                         </div>
@@ -4791,6 +4782,7 @@ class BookingPage extends Component {
                                                                             // Do no filtering, just return all options
                                                                             return options;
                                                                         }}
+                                                                        isDisabled={(isBookedBooking &&  clientname !== 'dme')}
                                                                     />
                                                             }
                                                         </div>
