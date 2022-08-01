@@ -40,6 +40,11 @@
   }
 }
 
+button:disabled {
+  color: black !important;
+  border-color: #999;
+}
+
 .quick-quote {
   hr {
     margin-top: 10px !important;

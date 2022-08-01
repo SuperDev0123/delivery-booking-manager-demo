@@ -9,7 +9,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { join } from 'lodash';
 import moment from 'moment-timezone';
 
-import { getUser, logout } from '../../state/services/authService';
+import { getUser, logout, getDMEClients } from '../../state/services/authService';
 import { getStatusPageUrl } from '../../state/services/bookingService';
 // import { openTab } from '../../commons/browser';
 
@@ -29,8 +29,9 @@ class Header extends Component {
             isOpenQuickQuote: false,
             isGettingQuickQuote: false,
             activeTabInd: 1,
-            puSuburb: {value: ''},
-            deToSuburb: {value: ''},
+            customer: { value: '' },
+            puSuburb: { value: '' },
+            deToSuburb: { value: '' },
             formInputs: {
                 pu_Address_State: '',
                 pu_Address_PostalCode: '',
@@ -38,6 +39,7 @@ class Header extends Component {
                 de_To_Address_State: '',
                 de_To_Address_PostalCode: '',
                 de_To_Address_Suburb: '',
+                customer_id: '',
             },
             lines: [
                 {
@@ -61,6 +63,7 @@ class Header extends Component {
         puAddresses: PropTypes.array,
         deToAddresses: PropTypes.array,
         quickPricings: PropTypes.array,
+        dmeClients: PropTypes.array,
 
         // Functions
         getUser: PropTypes.func.isRequired,
@@ -68,6 +71,7 @@ class Header extends Component {
         getStatusPageUrl: PropTypes.func.isRequired,
         getAddressesWithPrefix: PropTypes.func.isRequired,
         getQuickPricing: PropTypes.func.isRequired,
+        getDMEClients: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -76,19 +80,20 @@ class Header extends Component {
 
         if (isLoggedIn && token && token.length > 0)
             this.props.getUser(token);
+        this.props.getDMEClients();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { username, clientname, isLoggedIn, quickPricings } = newProps;
+        const { username, clientname, isLoggedIn, quickPricings, dmeClients } = newProps;
 
         if (username)
-            this.setState({username});
+            this.setState({ username });
 
         if (clientname)
-            this.setState({clientname});
+            this.setState({ clientname });
 
         if (quickPricings.length > 0)
-            this.setState({isGettingQuickQuote: false});
+            this.setState({ isGettingQuickQuote: false });
 
         // if (statusPageUrl) {
         //     console.log('@1 - ', statusPageUrl);
@@ -99,8 +104,9 @@ class Header extends Component {
 
         //     this.setState({isFindingBooking: false});
         // }
-
-        this.setState({isLoggedIn});
+        if (dmeClients && dmeClients.length === 1) // When logged in with the Client
+            this.setState({clientPK: dmeClients[0].pk_id_dme_client});
+        this.setState({ isLoggedIn });
     }
 
     notify = (text) => toast(text);
@@ -111,7 +117,7 @@ class Header extends Component {
     }
 
     onChangeText(e) {
-        this.setState({findKeyword: e.target.value});
+        this.setState({ findKeyword: e.target.value });
     }
 
     onKeyPress(e) {
@@ -126,10 +132,10 @@ class Header extends Component {
             }
 
             this.props.getStatusPageUrl(findKeyword);
-            this.setState({isFindingBooking: true});
+            this.setState({ isFindingBooking: true });
         }
 
-        this.setState({findKeyword});
+        this.setState({ findKeyword });
     }
 
     onInputChange(e, index, field) {
@@ -139,7 +145,7 @@ class Header extends Component {
 
         if (e.target.type === 'number') newlines[index][field] = parseFloat(newlines[index][field]);
 
-        this.setState({lines: newlines});
+        this.setState({ lines: newlines });
     }
 
     /*
@@ -154,23 +160,39 @@ class Header extends Component {
         });
     };
 
+    _findCustomer = (customers, value) => {
+        return customers.find(customer => {
+            return customer.pk_id_dme_client === value;
+        });
+    };
+
+    handleChangeCustomer = (selectedOption) => {
+        const { formInputs } = this.state;
+        const { dmeClients } = this.props;
+
+        const customerInfo = this._findCustomer(dmeClients, selectedOption.value);
+        formInputs['customer_id'] = customerInfo.pk_id_dme_client;
+        const customer = { label: customerInfo.company_name, value: customerInfo.pk_id_dme_client };
+        this.setState({ customer, formInputs });
+    };
+
     handleChangeSuburb = (selectedOption, src) => {
-        const {formInputs} = this.state;
-        const {puAddresses, deToAddresses} = this.props;
+        const { formInputs } = this.state;
+        const { puAddresses, deToAddresses } = this.props;
 
         if (src === 'puSuburb') {
             const address = this._findAddress(puAddresses, selectedOption.value);
             formInputs['pu_Address_State'] = address._source.state;
             formInputs['pu_Address_PostalCode'] = address._source.postal_code;
             formInputs['pu_Address_Suburb'] = address._source.suburb;
-            const puSuburb = {label: address._source.suburb, value:address._source.suburb};
+            const puSuburb = { label: address._source.suburb, value: address._source.suburb };
             this.setState({ puSuburb, formInputs });
         } else if (src === 'deToSuburb') {
             const address = this._findAddress(deToAddresses, selectedOption.value);
             formInputs['de_To_Address_State'] = address._source.state;
             formInputs['de_To_Address_PostalCode'] = address._source.postal_code;
             formInputs['de_To_Address_Suburb'] = address._source.suburb;
-            const deToSuburb = {label: address._source.suburb, value:address._source.suburb};
+            const deToSuburb = { label: address._source.suburb, value: address._source.suburb };
             this.setState({ deToSuburb, formInputs });
         }
     };
@@ -201,12 +223,12 @@ class Header extends Component {
                 );
             }
 
-            this.setState({suburbPrefix: join(suburbPrefixes, ' '), postalCodePrefix});
+            this.setState({ suburbPrefix: join(suburbPrefixes, ' '), postalCodePrefix });
         }
     };
 
     handleFocusSuburb = (src) => {
-        const {formInputs} = this.state;
+        const { formInputs } = this.state;
 
         if (src === 'puSuburb') {
             this.props.getAddressesWithPrefix(
@@ -224,11 +246,13 @@ class Header extends Component {
     };
 
     onOpenQuickQuote() {
-        this.setState({isOpenQuickQuote: !this.state.isOpenQuickQuote});
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (isLoggedIn === 'true')
+            this.setState({ isOpenQuickQuote: !this.state.isOpenQuickQuote });
     }
 
     onCloseQuickQuote() {
-        this.setState({isOpenQuickQuote: false});
+        this.setState({ isOpenQuickQuote: false });
     }
 
     onClickAddPackage() {
@@ -244,20 +268,23 @@ class Header extends Component {
             e_weightPerEach: '',
             e_type_of_packaging: 'Carton',
         });
-        this.setState({lines: newlines});
+        this.setState({ lines: newlines });
     }
 
     onCancel(index) {
         const { lines } = this.state;
         const newlines = [...lines];
         newlines.splice(index, 1);
-        this.setState({lines: newlines});
+        this.setState({ lines: newlines });
     }
 
     onClickGetQuote(e) {
         e.preventDefault();
-        
-        if (!this.state.formInputs.pu_Address_Suburb) {
+
+        if (!this.state.formInputs.customer_id) {
+            this.notify('Please select Customer.');
+            return;
+        } else if (!this.state.formInputs.pu_Address_Suburb) {
             this.notify('Please select Pickup address.');
             return;
         } else if (!this.state.formInputs.de_To_Address_Suburb) {
@@ -267,12 +294,12 @@ class Header extends Component {
             this.notify('Pickup address and Delivery address are same!');
             return;
         }
-        
+
         this.props.getQuickPricing({
             'booking': this.state.formInputs,
             'booking_lines': this.state.lines
         });
-        this.setState({isGettingQuickQuote: true });
+        this.setState({ isGettingQuickQuote: true });
     }
 
     copyToClipBoard = async text => {
@@ -286,37 +313,44 @@ class Header extends Component {
 
     onSwitchTab(e, activeTabInd) {
         e.preventDefault();
-        this.setState({activeTabInd});
+        this.setState({ activeTabInd });
     }
 
     render() {
-        const { username, puSuburb, deToSuburb, formInputs, activeTabInd, lines } = this.state;
-        const { quickPricings, clientname } = this.props;
+        const { username, puSuburb, deToSuburb, formInputs, activeTabInd, lines, customer } = this.state;
+        const { quickPricings, clientname, dmeClients } = this.props;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
+        if(dmeClients.length > 0 && clientname !== 'dme') {
+            if(customer.value !== dmeClients[0].pk_id_dme_client){
+                this.handleChangeCustomer({value: dmeClients[0].pk_id_dme_client});
+            }
+        }
+        const clientOptionsList = dmeClients
+            .map((client) => { return {label: client.company_name, value: client.pk_id_dme_client}; });
 
-        if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1 || currentRoute.indexOf('status') > -1) 
+        if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1 || currentRoute.indexOf('status') > -1)
             return null;
-        
+
         // Populate puAddresses and deToAddresses
         let puAddressOptions = [];
         let deToAddressOptions = [];
         if (formInputs['pu_Address_Suburb'] && this.props.puAddresses.length === 0) {
             const value = `${formInputs['pu_Address_Suburb']}`;
-            puAddressOptions = [{value: value, label: value}];
+            puAddressOptions = [{ value: value, label: value }];
         } else if (this.props.puAddresses.length > 0) {
             puAddressOptions = this.props.puAddresses.map(address => {
                 const value = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
-                return {value: value, label: value};
+                return { value: value, label: value };
             });
         }
         if (formInputs['de_To_Address_Suburb'] && this.props.deToAddresses.length === 0) {
             const value = `${formInputs['de_To_Address_Suburb']}`;
-            deToAddressOptions = [{value: value, label: value}];
+            deToAddressOptions = [{ value: value, label: value }];
         } else if (this.props.deToAddresses.length > 0) {
             deToAddressOptions = this.props.deToAddresses.map(address => {
                 const value = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
-                return {value: value, label: value};
+                return { value: value, label: value };
             });
         }
 
@@ -349,7 +383,7 @@ class Header extends Component {
                     </tr>
                 );
             });
-    
+
 
         const autoPricings = quickPricings
             .filter(pricing => pricing.packed_status === 'auto')
@@ -382,13 +416,13 @@ class Header extends Component {
         return (
             <header>
                 {currentRoute === '/booking' ||
-                currentRoute === '/allbookings' ||
-                currentRoute === '/bookingsets' ||
-                currentRoute === '/bookinglines' ||
-                currentRoute === '/bookinglinedetails' ||
-                currentRoute === '/pods' ||
-                currentRoute === '/zoho' ||
-                currentRoute === '/reports' ?
+                    currentRoute === '/allbookings' ||
+                    currentRoute === '/bookingsets' ||
+                    currentRoute === '/bookinglines' ||
+                    currentRoute === '/bookinglinedetails' ||
+                    currentRoute === '/pods' ||
+                    currentRoute === '/zoho' ||
+                    currentRoute === '/reports' ?
                     <nav className="qbootstrap-nav" role="navigation">
                         <div className="col-md-12" id="headr">
                             <div className="top">
@@ -420,7 +454,7 @@ class Header extends Component {
                             <h5>Tel: (02) 8311 1500</h5>
                         </div>
                         <div className="col-sm-6 d-flex justify-content-between" >
-                            <a id="Popover" className="btn btn-outline-light my-2 my-lg-0 login" onClick={() => this.onOpenQuickQuote()}>Quick Quote</a>
+                            <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={() => this.onOpenQuickQuote()}>Quick Quote</a>
                             <Popover
                                 className="quick-quote"
                                 isOpen={this.state.isOpenQuickQuote}
@@ -440,6 +474,26 @@ class Header extends Component {
 
                                             <div className="row">
                                                 <div className="col-md-4">
+                                                    <label><b>Customer </b></label>
+                                                    <Select
+                                                        value={customer}
+                                                        onChange={(e) => this.handleChangeCustomer(e, 'customer')}
+                                                        options={clientOptionsList}
+                                                        placeholder='select your customer'
+                                                        openMenuOnClick={true}
+                                                        filterOption={(options) => {
+                                                            // Do no filtering, just return all options
+                                                            return options;
+                                                        }}
+                                                        required="required"
+                                                        tabIndex='1'
+                                                        isDisabled={clientname !== 'dme'}
+                                                    />
+                                                </div>                                                
+                                            </div>
+                                            <hr />
+                                            <div className="row">
+                                                <div className="col-md-4">
                                                     <label><b>Pickup address </b></label>
                                                     <Select
                                                         value={puSuburb}
@@ -448,7 +502,7 @@ class Header extends Component {
                                                         onFocus={() => this.handleFocusSuburb('puSuburb')}
                                                         options={puAddressOptions}
                                                         placeholder='select your suburb'
-                                                        openMenuOnClick = {true}
+                                                        openMenuOnClick={true}
                                                         filterOption={(options) => {
                                                             // Do no filtering, just return all options
                                                             return options;
@@ -474,7 +528,7 @@ class Header extends Component {
                                                         focus={() => this.handleFocusSuburb('deToSuburb')}
                                                         options={deToAddressOptions}
                                                         placeholder='select your suburb'
-                                                        openMenuOnClick = {true}
+                                                        openMenuOnClick={true}
                                                         filterOption={(options) => {
                                                             // Do no filtering, just return all options
                                                             return options;
@@ -525,7 +579,7 @@ class Header extends Component {
                                                                 <div className="row p-1" key={'e_qty' + index}>
                                                                     <input
                                                                         name={'e_qty' + index}
-                                                                        id={'e_qty' + index }
+                                                                        id={'e_qty' + index}
                                                                         value={line.e_qty}
                                                                         key={'e_qty' + index}
                                                                         onChange={(e) => this.onInputChange(e, index, 'e_qty')}
@@ -556,7 +610,7 @@ class Header extends Component {
                                                                         <option>cm</option>
                                                                         <option>mm</option>
                                                                     </select>
-                                                                </div>                                                            
+                                                                </div>
                                                             ))
                                                         }
                                                     </label>
@@ -645,7 +699,7 @@ class Header extends Component {
                                                                     >
                                                                         <option>kg</option>
                                                                         <option>gram</option>
-                                                                    </select>                                                                    
+                                                                    </select>
                                                                 </div>
                                                             ))
                                                         }
@@ -761,7 +815,7 @@ class Header extends Component {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                 </section>
                                                 : null
                                             }
@@ -832,6 +886,7 @@ const mapStateToProps = (state) => {
         puAddresses: state.elasticsearch.puAddresses,
         deToAddresses: state.elasticsearch.deToAddresses,
         quickPricings: state.extra.quickPricings,
+        dmeClients: state.auth.dmeClients,
     };
 };
 
@@ -842,6 +897,7 @@ const mapDispatchToProps = (dispatch) => {
         getStatusPageUrl: (findKeyword) => dispatch(getStatusPageUrl(findKeyword)),
         getAddressesWithPrefix: (src, suburbPrefix, postalCodePrefix) => dispatch(getAddressesWithPrefix(src, suburbPrefix, postalCodePrefix)),
         getQuickPricing: (data) => dispatch(getQuickPricing(data)),
+        getDMEClients: () => dispatch(getDMEClients()),
     };
 };
 
