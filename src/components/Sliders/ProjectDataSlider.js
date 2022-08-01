@@ -48,7 +48,8 @@ class ProjectDataSlider extends React.Component {
         this.setState({b_booking_project, b_project_opened, b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date, b_project_due_date});
     }
 
-    onClickSave() {
+    onClickSave(e) {
+        e.preventDefault();
         const { booking } = this.props;
         const { b_booking_project, b_project_opened , b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date, b_project_due_date } = this.state;
 
@@ -103,72 +104,75 @@ class ProjectDataSlider extends React.Component {
                 <div className="slider-content">
                     {
                         <div className="form-view">
-                            <label>
-                                <p>Vehicle Loaded</p>
-                                <textarea
-                                    name="b_booking_project"
-                                    value={b_booking_project ? b_booking_project : ''}
-                                    onChange={(e) => this.onInputChange(e)}
-                                />
-                            </label>
-                            <label>
-                                <p>Project Opened</p>
-                                <DateTimePicker
-                                    onChange={(date) => this.onChangeDate(date, 'b_project_opened')}
-                                    value={b_project_opened ? new Date(moment(b_project_opened).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                    format={'dd/MM/yyyy HH:mm'}
-                                />
-                            </label>
-                            <label>
-                                <p>Project Inventory Due</p>
-                                <DateTimePicker
-                                    onChange={(date) => this.onChangeDate(date, 'b_project_inventory_due')}
-                                    value={b_project_inventory_due ? new Date(moment(b_project_inventory_due).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                    format={'dd/MM/yyyy HH:mm'}
-                                />
-                            </label>
-                            <label>
-                                <p>Project Wh Pack</p>
-                                <DateTimePicker
-                                    onChange={(date) => this.onChangeDate(date, 'b_project_wh_unpack')}
-                                    value={b_project_wh_unpack ? new Date(moment(b_project_wh_unpack).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                    format={'dd/MM/yyyy HH:mm'}
-                                />
-                            </label>
-                            <label>
-                                <p>Project DD Receive Date</p>
-                                <DateTimePicker
-                                    onChange={(date) => this.onChangeDate(date, 'b_project_dd_receive_date')}
-                                    value={b_project_dd_receive_date ? new Date(moment(b_project_dd_receive_date).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                    format={'dd/MM/yyyy HH:mm'}
-                                />
-                            </label>
-                            <label>
-                                <p>Vehicle Departure Date</p>
-                                <DatePicker
-                                    selected={b_project_due_date ? new Date(b_project_due_date) : null}
-                                    onChange={(date) => this.onChangeDate(date, 'b_project_due_date')}
-                                    dateFormat="dd/MM/yyyy"
-                                />
-                            </label>
+                            <form onSubmit={(e) => this.onClickSave(e)}>
 
-                            {
-                                isEmpty(errorMessage) ?
-                                    null
-                                    :
-                                    <label>
-                                        <p className='red'>{errorMessage}</p>
-                                    </label>
-                            }
-                            <Button
-                                color="primary"
-                                onClick={() => this.onClickSave()}
-                            >
-                               Save
-                            </Button>
-                            <Button color="danger" onClick={() => this.props.toggleDateSlider()}>
-                                Cancel
-                            </Button>
+                                <label>
+                                    <p>Vehicle Loaded</p>
+                                    <textarea
+                                        name="b_booking_project"
+                                        value={b_booking_project ? b_booking_project : ''}
+                                        onChange={(e) => this.onInputChange(e)}
+                                    />
+                                </label>
+                                <label>
+                                    <p>Project Opened</p>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDate(date, 'b_project_opened')}
+                                        value={b_project_opened ? new Date(moment(b_project_opened).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label>
+                                <label>
+                                    <p>Project Inventory Due</p>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDate(date, 'b_project_inventory_due')}
+                                        value={b_project_inventory_due ? new Date(moment(b_project_inventory_due).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label>
+                                <label>
+                                    <p>Project Wh Pack</p>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDate(date, 'b_project_wh_unpack')}
+                                        value={b_project_wh_unpack ? new Date(moment(b_project_wh_unpack).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label>
+                                <label>
+                                    <p>Project DD Receive Date</p>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDate(date, 'b_project_dd_receive_date')}
+                                        value={b_project_dd_receive_date ? new Date(moment(b_project_dd_receive_date).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label>
+                                <label>
+                                    <p>Vehicle Departure Date</p>
+                                    <DatePicker
+                                        selected={b_project_due_date ? new Date(b_project_due_date) : null}
+                                        onChange={(date) => this.onChangeDate(date, 'b_project_due_date')}
+                                        dateFormat="dd/MM/yyyy"
+                                    />
+                                </label>
+
+                                {
+                                    isEmpty(errorMessage) ?
+                                        null
+                                        :
+                                        <label>
+                                            <p className='red'>{errorMessage}</p>
+                                        </label>
+                                }
+                                <Button
+                                    color="primary"
+                                    type="submit"
+                                >
+                                Save
+                                </Button>
+                                <Button color="danger" onClick={() => this.props.toggleDateSlider()}>
+                                    Cancel
+                                </Button>
+                            </form>
                         </div>
                     }
                 </div>

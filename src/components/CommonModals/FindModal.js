@@ -90,7 +90,8 @@ class FindModal extends Component {
         }
     }
 
-    onSubmit() {
+    onSubmit(e) {
+        e.preventDefault();
         const {selectedFieldName, postalCodeMin, postalCodeMax, postalCode, findMode} = this.state;
         let valueSet = this.state.valueSet;
 
@@ -145,80 +146,82 @@ class FindModal extends Component {
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
-                <ModalHeader toggle={this.props.toggleFindModal}>Find (Multiple) Modal</ModalHeader>
-                <ModalBody>
-                    <label>
-                        <p>Find Mode: </p>
-                        <select value={findMode} onChange={(e) => this.onInputChange(e, 'findMode')}>
-                            <option value="entire" selected="selected">Entire scope</option>
-                            <option value="currentTab">Current tab</option>
-                        </select>
-                    </label>
-                    <label>
-                        <p>Select field to be searched: </p>
-                        <select value={selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
-                            <option value="b_client_order_num" selected="selected">Your Order Number</option>
-                            <option value="b_client_sales_inv_num" selected="selected">Your Invoice Number</option>
-                            <option value="clientRefNumber">Client Ref Number</option>
-                            <option value="v_FPBookingNumber">Consignment Number</option>
-                            <option value="b_bookingID_Visual">DME Booking Number</option>
-                            <option value="fk_fp_pickup_id">FP Pickup ID</option>
-                            <option value="gap_ra">GAP/RA</option>
-                            <option value="postal_code_pair">Postal codes (From & To pair)</option>
-                            <option value="postal_code_type">Postal codes (Metro & CBD)</option>
-                        </select>
-                    </label>
-                    {selectedFieldName !== 'postal_code_pair' && selectedFieldName !== 'postal_code_type' &&
+                <form onSubmit={(e) => this.onSubmit(e)}>
+                    <ModalHeader toggle={this.props.toggleFindModal}>Find (Multiple) Modal</ModalHeader>
+                    <ModalBody>
                         <label>
-                            <p>Values list: </p>
-                            <textarea 
-                                rows="10" 
-                                cols="30"
-                                value={this.state.valueSet} 
-                                onChange={(e) => this.onInputChange(e, 'valueSet')}
-                            />
-                        </label>
-                    }
-                    {selectedFieldName === 'postal_code_pair' &&
-                        <label>
-                            <p>Postal code range: </p>
-                            <input type='number' value={postalCodeMin} onChange={(e) => this.onInputChange(e, 'postalCodeMin')} /> ~
-                            <input type='number' value={postalCodeMax} onChange={(e) => this.onInputChange(e, 'postalCodeMax')} />
-                        </label>
-                    }
-                    {selectedFieldName === 'postal_code_type' &&
-                        <label>
-                            <p>Available options: </p>
-                            <select value={postalCode} onChange={(e) => this.onInputChange(e, 'postalCode')}>
-                                <option value="" selected disabled hidden>--- Please select option ---</option>
-                                <option value="" disabled>--- Metro options ---</option>
-                                <option value="Canberra Metro">Canberra Metro (2600-2620, 2900-2914)</option>
-                                <option value="Sydney Metro">Sydney Metro (1000-2249, 2760-2770)</option>
-                                <option value="Darwin Metro">Darwin Metro (0800-0820, 0900-0910)</option>
-                                <option value="Brisbane Metro">Brisbane Metro (4000-4207, 9000-9499)</option>
-                                <option value="Adelaide Metro">Adelaide Metro (5000-5199, 5900-5999)</option>
-                                <option value="Hobart Metro">Hobart Metro (7000-7010, 7249-7250)</option>
-                                <option value="Melbourne Metro">Melbourne Metro (3000-3207, 8000-8499)</option>
-                                <option value="Perth Metro">Perth Metro (6000-6199, 6800-6999)</option>
-                                <option value="" disabled>--- CBD options ---</option>
-                                <option value="Canberra CBD">Canberra CBD (2600, 2601, 2610)</option>
-                                <option value="Sydney CBD">Sydney CBD (1100-1299, 2000, 2001, 2007, 2009)</option>
-                                <option value="North Sydney CBD">North Sydney CBD (1545-1559, 2059-2060)</option>
-                                <option value="Darwin CBD">Darwin CBD (0800, 0801, 0820, 0822)</option>
-                                <option value="Brisbane CBD">Brisbane CBD (4000, 4001, 4003, 9000-9015)</option>
-                                <option value="Adelaide CBD">Adelaide CBD (5000, 5001, 5004, 5005, 5810, 5839, 5880-5889)</option>
-                                <option value="Hobart CBD">Hobart CBD (7000, 7001)</option>
-                                <option value="Melbourne CBD">Melbourne CBD (3000-3006, 3205, 8000-8399)</option>
-                                <option value="Perth CBD">Perth CBD (6000, 6001, 6004, 6827, 6830-6832, 6837-6849)</option>
+                            <p>Find Mode: </p>
+                            <select value={findMode} onChange={(e) => this.onInputChange(e, 'findMode')}>
+                                <option value="entire" selected="selected">Entire scope</option>
+                                <option value="currentTab">Current tab</option>
                             </select>
                         </label>
-                    }
-                    <p className="red">{errorMessage}</p>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" onClick={() => this.onSubmit()}>Find</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleFindModal()}>Cancel</Button>
-                </ModalFooter>
+                        <label>
+                            <p>Select field to be searched: </p>
+                            <select value={selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
+                                <option value="b_client_order_num" selected="selected">Your Order Number</option>
+                                <option value="b_client_sales_inv_num" selected="selected">Your Invoice Number</option>
+                                <option value="clientRefNumber">Client Ref Number</option>
+                                <option value="v_FPBookingNumber">Consignment Number</option>
+                                <option value="b_bookingID_Visual">DME Booking Number</option>
+                                <option value="fk_fp_pickup_id">FP Pickup ID</option>
+                                <option value="gap_ra">GAP/RA</option>
+                                <option value="postal_code_pair">Postal codes (From & To pair)</option>
+                                <option value="postal_code_type">Postal codes (Metro & CBD)</option>
+                            </select>
+                        </label>
+                        {selectedFieldName !== 'postal_code_pair' && selectedFieldName !== 'postal_code_type' &&
+                            <label>
+                                <p>Values list: </p>
+                                <textarea 
+                                    rows="10" 
+                                    cols="30"
+                                    value={this.state.valueSet} 
+                                    onChange={(e) => this.onInputChange(e, 'valueSet')}
+                                />
+                            </label>
+                        }
+                        {selectedFieldName === 'postal_code_pair' &&
+                            <label>
+                                <p>Postal code range: </p>
+                                <input type='number' value={postalCodeMin} onChange={(e) => this.onInputChange(e, 'postalCodeMin')} /> ~
+                                <input type='number' value={postalCodeMax} onChange={(e) => this.onInputChange(e, 'postalCodeMax')} />
+                            </label>
+                        }
+                        {selectedFieldName === 'postal_code_type' &&
+                            <label>
+                                <p>Available options: </p>
+                                <select value={postalCode} onChange={(e) => this.onInputChange(e, 'postalCode')}>
+                                    <option value="" selected disabled hidden>--- Please select option ---</option>
+                                    <option value="" disabled>--- Metro options ---</option>
+                                    <option value="Canberra Metro">Canberra Metro (2600-2620, 2900-2914)</option>
+                                    <option value="Sydney Metro">Sydney Metro (1000-2249, 2760-2770)</option>
+                                    <option value="Darwin Metro">Darwin Metro (0800-0820, 0900-0910)</option>
+                                    <option value="Brisbane Metro">Brisbane Metro (4000-4207, 9000-9499)</option>
+                                    <option value="Adelaide Metro">Adelaide Metro (5000-5199, 5900-5999)</option>
+                                    <option value="Hobart Metro">Hobart Metro (7000-7010, 7249-7250)</option>
+                                    <option value="Melbourne Metro">Melbourne Metro (3000-3207, 8000-8499)</option>
+                                    <option value="Perth Metro">Perth Metro (6000-6199, 6800-6999)</option>
+                                    <option value="" disabled>--- CBD options ---</option>
+                                    <option value="Canberra CBD">Canberra CBD (2600, 2601, 2610)</option>
+                                    <option value="Sydney CBD">Sydney CBD (1100-1299, 2000, 2001, 2007, 2009)</option>
+                                    <option value="North Sydney CBD">North Sydney CBD (1545-1559, 2059-2060)</option>
+                                    <option value="Darwin CBD">Darwin CBD (0800, 0801, 0820, 0822)</option>
+                                    <option value="Brisbane CBD">Brisbane CBD (4000, 4001, 4003, 9000-9015)</option>
+                                    <option value="Adelaide CBD">Adelaide CBD (5000, 5001, 5004, 5005, 5810, 5839, 5880-5889)</option>
+                                    <option value="Hobart CBD">Hobart CBD (7000, 7001)</option>
+                                    <option value="Melbourne CBD">Melbourne CBD (3000-3006, 3205, 8000-8399)</option>
+                                    <option value="Perth CBD">Perth CBD (6000, 6001, 6004, 6827, 6830-6832, 6837-6849)</option>
+                                </select>
+                            </label>
+                        }
+                        <p className="red">{errorMessage}</p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" type="submit">Find</Button>
+                        <Button color="secondary" onClick={() => this.props.toggleFindModal()}>Cancel</Button>
+                    </ModalFooter>
+                </form>
             </ReactstrapModal>
         );
     }

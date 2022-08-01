@@ -43,7 +43,9 @@ class BulkUpdateSlider extends React.Component {
         this.props.toggleSlider();
     }
 
-    onClickUpdateBtn() {
+    onClickUpdateBtn(e) {
+        e.preventDefault();
+
         const {selectedValue, selectedField, optionalValue, formInputs} = this.state;
         const {selectedBookingIds, fps} = this.props;
 
@@ -206,387 +208,390 @@ class BulkUpdateSlider extends React.Component {
                 title='Bulk Booking Update Slider'
                 onRequestClose={this.props.toggleSlider}
             >
+                    
                 <div className="slider-content">
-                    <label className='right-10px'>Field:
-                        <select
-                            required
-                            onChange={(e) => this.onSelected(e, 'field')} 
-                        >
-                            <option value="" selected disabled hidden>--- Select a field ---</option>
-                            {clientname === 'dme' && <option value="flag">Flag</option>}
-                            {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
-                                <option value="puPickUpAvailFrom_Date">Pickup From Date</option>
-                            }
-                            {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
-                                <option value="vx_freight_provider">Freight Provider</option>
-                            }
-                            {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}
-                            {clientname === 'dme' && <option value="b_client_name_sub">Sub Client</option>}
-                            {clientname === 'dme' && <option value="status">Status</option>}
-                            {clientname === 'dme' && <option value="dme_status_detail">Status Detail</option>}
-                            {clientname === 'dme' && <option value="dme_status_action">Status Action</option>}
-                            {clientname === 'dme' && <option value="b_booking_Notes">Status History Note</option>}
-                            {clientname === 'dme' && <option value="inv_billing_status_note">Invoice Billing Status Note</option>}
-
-                            {clientname === 'dme' && <option value="puCompany">Pickup Entity</option>}
-                            {clientname === 'dme' && <option value="pu_Address_Street_1">Pickup Street 1</option>}
-                            {clientname === 'dme' && <option value="pu_Address_street_2">Pickup Street 2</option>}
-                            {clientname === 'dme' && <option value="pu_Address_Suburb" disabled>Pickup Suburb</option>}
-                            {clientname === 'dme' && <option value="pu_Address_State" disabled>Pickup State</option>}
-                            {clientname === 'dme' && <option value="pu_Address_PostalCode" disabled>Pickup PostalCode</option>}
-                            {clientname === 'dme' && <option value="pu_Address_Country">Pickup Country</option>}
-                            {clientname === 'dme' && <option value="pu_Contact_F_L_Name">Pickup Contact</option>}
-                            {clientname === 'dme' && <option value="pu_Phone_Main">Pickup Tel</option>}
-                            {clientname === 'dme' && <option value="pu_Phone_Mobile">Pickup Mobile</option>}
-                            {clientname === 'dme' && <option value="pu_Email">Pickup Email</option>}
-                            {clientname === 'dme' && <option value="pu_PickUp_By_Date_DME">Pickup By</option>}
-                            {clientname === 'dme' && <option value="pu_pickup_instructions_address">Pickup Instructions</option>}
-
-                            {clientname === 'dme' && <option value="deToCompanyName">Deliver to Entity</option>}
-                            {clientname === 'dme' && <option value="de_To_Address_Street_1">Deliver to Street 1</option>}
-                            {clientname === 'dme' && <option value="de_To_Address_Street_2">Deliver to Street 2</option>}
-                            {clientname === 'dme' && <option value="de_To_Address_Suburb" disabled>Deliver to Suburb</option>}
-                            {clientname === 'dme' && <option value="de_To_Address_State" disabled>Deliver to State</option>}
-                            {clientname === 'dme' && <option value="de_To_Address_PostalCode" disabled>Deliver to PostalCode</option>}
-                            {clientname === 'dme' && <option value="de_To_Address_Country">Deliver to Country</option>}
-                            {clientname === 'dme' && <option value="de_to_Contact_F_LName">Deliver to Contact</option>}
-                            {clientname === 'dme' && <option value="de_to_Phone_Main">Deliver to Tel</option>}
-                            {clientname === 'dme' && <option value="de_to_Phone_Mobile">Deliver to Mobile</option>}
-                            {clientname === 'dme' && <option value="de_Email">Deliver to Email</option>}
-                            {clientname === 'dme' && <option value="de_Deliver_From_Date">Deliver to From</option>}
-                            {clientname === 'dme' && <option value="de_Deliver_By_Date">Deliver to By</option>}
-                            {clientname === 'dme' && <option value="de_to_Pick_Up_Instructions_Contact">Deliver to Instructions</option>}
-
-                            {clientname === 'dme' && <option value="b_booking_Priority">Priority</option>}
-                            {clientname === 'dme' && <option value="b_booking_Category">Category</option>}
-                            {clientname === 'dme' && <option value="v_vehicle_Type">Vehicle Type</option>}
-                            {clientname === 'dme' && <option value="inv_dme_invoice_no">DME Invoice No</option>}
-                            {clientname === 'dme' && <option value="b_client_sales_inv_num">Your Invoice No</option>}
-
-                            {clientname === 'dme' && <option value="b_booking_project">Vehicle Loaded</option>}
-                            {clientname === 'dme' && <option value="b_project_due_date">Vehicle Departure Date</option>}
-                            {clientname === 'dme' && <option value="fp_received_date_time">Transport Received</option>}
-                            {clientname === 'dme' && <option value="b_given_to_transport_date_time">Given to Transport</option>}
-
-
-                            {clientname === 'dme' && <option value="fp_scan">FP Scan</option>}
-                            {clientname === 'dme' && <option value="additional_surcharge">Linked Service</option>}
-                        </select>
-                    </label>
-                    <br />
-                    <div className="value">
-                        {(selectedField && selectedField !== 'fp_scan' ||
-                            selectedField && selectedField !== 'additional_surcharge'
-                        )
-                            ? <label className="value">Value: </label>
-                            : null
-                        }
-                        {
-                            selectedField === 'flag' ?
-                                <select onChange={(e) => this.onSelected(e, 'value')}>
-                                    <option value="" disabled selected hidden>-------------     Flags    -------------</option>
-                                    <option value="flag_add_on_services">Flag - add on services</option>
-                                    <option value="unflag_add_on_services">Unflag - add on services</option>
-                                </select>
-                                : null
-                        }
-                        {
-                            selectedField === 'status' ?
-                                <select onChange={(e) => this.onSelected(e, 'value')}>
-                                    <option value="" disabled selected hidden>-------------     Booking Status    -------------</option>
-                                    { bookingStatusList }
-                                </select>
-                                : null
-                        }
-                        {
-                            selectedField &&
-                            (selectedField === 'dme_status_detail' ||
-                            selectedField === 'dme_status_action' ||
-                            selectedField === 'b_booking_Notes' ||
-                            selectedField === 'inv_billing_status_note' ||
-                            selectedField === 'pu_pickup_instructions_address' ||
-                            selectedField === 'de_to_Pick_Up_Instructions_Contact' ||
-                            selectedField === 'b_booking_Category') ?
-                                <textarea 
-                                    width="100%"
-                                    className=""
-                                    rows="5"
-                                    cols="70"
-                                    value={selectedValue ? selectedValue : ''} 
-                                    onChange={(e) => this.onHandleInput(e)}
-                                />
-                                : null
-                        }
-                        {
-                            selectedField &&
-                            (selectedField === 'b_client_name_sub' ||
-                            selectedField === 'puCompany' ||
-                            selectedField === 'pu_Address_Street_1' ||
-                            selectedField === 'pu_Address_street_2' ||
-                            selectedField === 'pu_Address_Country' ||
-                            selectedField === 'pu_Contact_F_L_Name' ||
-                            selectedField === 'pu_Phone_Main' ||
-                            selectedField === 'pu_Phone_Mobile' ||
-                            selectedField === 'pu_Email' ||
-                            selectedField === 'deToCompanyName' ||
-                            selectedField === 'de_To_Address_Street_1' ||
-                            selectedField === 'de_To_Address_Street_2' ||
-                            selectedField === 'de_To_Address_Country' ||
-                            selectedField === 'de_to_Contact_F_LName' ||
-                            selectedField === 'de_to_Phone_Main' ||
-                            selectedField === 'de_to_Phone_Mobile' ||
-                            selectedField === 'de_Email' ||
-                            selectedField === 'b_booking_Priority' ||
-                            selectedField === 'v_vehicle_Type' ||
-                            selectedField === 'inv_dme_invoice_no' ||
-                            selectedField === 'b_client_sales_inv_num' ||
-                            selectedField === 'b_booking_project') ?
-                                <input 
-                                    type="text"
-                                    className=""
-                                    value={selectedValue ? selectedValue : ''} 
-                                    onChange={(e) => this.onHandleInput(e)}
-                                />
-                                : null
-                        }
-                        {
-                            selectedField &&
-                            (selectedField === 'puPickUpAvailFrom_Date' ||
-                            selectedField === 'pu_PickUp_By_Date_DME' ||
-                            selectedField === 'de_Deliver_From_Date' ||
-                            selectedField === 'de_Deliver_By_Date' ||
-                            selectedField === 'b_project_due_date') ?
-                                <DatePicker
-                                    selected={selectedValue ? new Date(selectedValue) : null}
-                                    onChange={(date) => this.onChangeDate(date, 'selectedValue')}
-                                    dateFormat="dd/MM/yyyy"
-                                />
-                                : null
-                        }
-                        {
-                            selectedField &&
-                            (selectedField === 'b_given_to_transport_date_time' ||
-                            selectedField === 'fp_received_date_time') ?
-                                <DateTimePicker
-                                    onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
-                                    value={selectedValue ? new Date(moment(selectedValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                    format={'dd/MM/yyyy HH:mm'}
-                                />
-                                : null
-                        }
-                        {selectedField && (selectedField === 'vx_freight_provider') &&
+                    <form onSubmit={(e) => this.onClickUpdateBtn(e)}>
+                        <label className='right-10px'>Field:
                             <select
                                 required
-                                onChange={(e) => this.onSelected(e, 'value')} 
+                                onChange={(e) => this.onSelected(e, 'field')} 
                             >
-                                <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
-                                {fpOptions}
+                                <option value="" selected disabled hidden>--- Select a field ---</option>
+                                {clientname === 'dme' && <option value="flag">Flag</option>}
+                                {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
+                                    <option value="puPickUpAvailFrom_Date">Pickup From Date</option>
+                                }
+                                {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
+                                    <option value="vx_freight_provider">Freight Provider</option>
+                                }
+                                {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}
+                                {clientname === 'dme' && <option value="b_client_name_sub">Sub Client</option>}
+                                {clientname === 'dme' && <option value="status">Status</option>}
+                                {clientname === 'dme' && <option value="dme_status_detail">Status Detail</option>}
+                                {clientname === 'dme' && <option value="dme_status_action">Status Action</option>}
+                                {clientname === 'dme' && <option value="b_booking_Notes">Status History Note</option>}
+                                {clientname === 'dme' && <option value="inv_billing_status_note">Invoice Billing Status Note</option>}
+
+                                {clientname === 'dme' && <option value="puCompany">Pickup Entity</option>}
+                                {clientname === 'dme' && <option value="pu_Address_Street_1">Pickup Street 1</option>}
+                                {clientname === 'dme' && <option value="pu_Address_street_2">Pickup Street 2</option>}
+                                {clientname === 'dme' && <option value="pu_Address_Suburb" disabled>Pickup Suburb</option>}
+                                {clientname === 'dme' && <option value="pu_Address_State" disabled>Pickup State</option>}
+                                {clientname === 'dme' && <option value="pu_Address_PostalCode" disabled>Pickup PostalCode</option>}
+                                {clientname === 'dme' && <option value="pu_Address_Country">Pickup Country</option>}
+                                {clientname === 'dme' && <option value="pu_Contact_F_L_Name">Pickup Contact</option>}
+                                {clientname === 'dme' && <option value="pu_Phone_Main">Pickup Tel</option>}
+                                {clientname === 'dme' && <option value="pu_Phone_Mobile">Pickup Mobile</option>}
+                                {clientname === 'dme' && <option value="pu_Email">Pickup Email</option>}
+                                {clientname === 'dme' && <option value="pu_PickUp_By_Date_DME">Pickup By</option>}
+                                {clientname === 'dme' && <option value="pu_pickup_instructions_address">Pickup Instructions</option>}
+
+                                {clientname === 'dme' && <option value="deToCompanyName">Deliver to Entity</option>}
+                                {clientname === 'dme' && <option value="de_To_Address_Street_1">Deliver to Street 1</option>}
+                                {clientname === 'dme' && <option value="de_To_Address_Street_2">Deliver to Street 2</option>}
+                                {clientname === 'dme' && <option value="de_To_Address_Suburb" disabled>Deliver to Suburb</option>}
+                                {clientname === 'dme' && <option value="de_To_Address_State" disabled>Deliver to State</option>}
+                                {clientname === 'dme' && <option value="de_To_Address_PostalCode" disabled>Deliver to PostalCode</option>}
+                                {clientname === 'dme' && <option value="de_To_Address_Country">Deliver to Country</option>}
+                                {clientname === 'dme' && <option value="de_to_Contact_F_LName">Deliver to Contact</option>}
+                                {clientname === 'dme' && <option value="de_to_Phone_Main">Deliver to Tel</option>}
+                                {clientname === 'dme' && <option value="de_to_Phone_Mobile">Deliver to Mobile</option>}
+                                {clientname === 'dme' && <option value="de_Email">Deliver to Email</option>}
+                                {clientname === 'dme' && <option value="de_Deliver_From_Date">Deliver to From</option>}
+                                {clientname === 'dme' && <option value="de_Deliver_By_Date">Deliver to By</option>}
+                                {clientname === 'dme' && <option value="de_to_Pick_Up_Instructions_Contact">Deliver to Instructions</option>}
+
+                                {clientname === 'dme' && <option value="b_booking_Priority">Priority</option>}
+                                {clientname === 'dme' && <option value="b_booking_Category">Category</option>}
+                                {clientname === 'dme' && <option value="v_vehicle_Type">Vehicle Type</option>}
+                                {clientname === 'dme' && <option value="inv_dme_invoice_no">DME Invoice No</option>}
+                                {clientname === 'dme' && <option value="b_client_sales_inv_num">Your Invoice No</option>}
+
+                                {clientname === 'dme' && <option value="b_booking_project">Vehicle Loaded</option>}
+                                {clientname === 'dme' && <option value="b_project_due_date">Vehicle Departure Date</option>}
+                                {clientname === 'dme' && <option value="fp_received_date_time">Transport Received</option>}
+                                {clientname === 'dme' && <option value="b_given_to_transport_date_time">Given to Transport</option>}
+
+
+                                {clientname === 'dme' && <option value="fp_scan">FP Scan</option>}
+                                {clientname === 'dme' && <option value="additional_surcharge">Linked Service</option>}
                             </select>
-                        }
-                        {selectedField && (selectedField === 'fp_scan') &&
-                            <div className="form-view">
-                                <h2>{'Create a new FP Scan for selected Bookings'}</h2>
-                                <form>
-                                    <label>
-                                        <span className="text-left">Status*</span>
-                                        <input
-                                            className="form-control"
-                                            required
-                                            name="status"
-                                            value={formInputs['status']}
-                                            onChange={(e) => this.onHandleInput(e)}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Description*</span>
-                                        <input
-                                            className="form-control"
-                                            required
-                                            name="desc"
-                                            value={formInputs['desc']}
-                                            onChange={(e) => this.onHandleInput(e)}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Select a Freight Provider*</span>
-                                        <select 
-                                            required
-                                            name='fp'
-                                            onChange={(e) => this.onHandleInput(e)}
-                                            value={formInputs['fp']}
-                                        >
-                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
-                                            {fpOptions}
-                                        </select>
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Scan timestamp*</span>
-                                        <DateTimePicker
-                                            onChange={(date) => this.onChangeDateTime(date, 'event_timestamp')}
-                                            value={formInputs['event_timestamp'] ?
-                                                new Date(moment(formInputs['event_timestamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                : null}
-                                            format={'dd/MM/yyyy HH:mm'}
-                                        />
-                                    </label>
-                                </form>
-                            </div>
-                        }
-                        {selectedField && (selectedField === 'additional_surcharge') &&
-                            <div className="form-view">
-                                <h2>{'Create a new Linked Service'}</h2>
-                                <form>
-                                    <label>
-                                        <span className="text-left">Visible to customer</span>
-                                        <div>
+                        </label>
+                        <br />
+                        <div className="value">
+                            {(selectedField && selectedField !== 'fp_scan' ||
+                                selectedField && selectedField !== 'additional_surcharge'
+                            )
+                                ? <label className="value">Value: </label>
+                                : null
+                            }
+                            {
+                                selectedField === 'flag' ?
+                                    <select onChange={(e) => this.onSelected(e, 'value')}>
+                                        <option value="" disabled selected hidden>-------------     Flags    -------------</option>
+                                        <option value="flag_add_on_services">Flag - add on services</option>
+                                        <option value="unflag_add_on_services">Unflag - add on services</option>
+                                    </select>
+                                    : null
+                            }
+                            {
+                                selectedField === 'status' ?
+                                    <select onChange={(e) => this.onSelected(e, 'value')}>
+                                        <option value="" disabled selected hidden>-------------     Booking Status    -------------</option>
+                                        { bookingStatusList }
+                                    </select>
+                                    : null
+                            }
+                            {
+                                selectedField &&
+                                (selectedField === 'dme_status_detail' ||
+                                selectedField === 'dme_status_action' ||
+                                selectedField === 'b_booking_Notes' ||
+                                selectedField === 'inv_billing_status_note' ||
+                                selectedField === 'pu_pickup_instructions_address' ||
+                                selectedField === 'de_to_Pick_Up_Instructions_Contact' ||
+                                selectedField === 'b_booking_Category') ?
+                                    <textarea 
+                                        width="100%"
+                                        className=""
+                                        rows="5"
+                                        cols="70"
+                                        value={selectedValue ? selectedValue : ''} 
+                                        onChange={(e) => this.onHandleInput(e)}
+                                    />
+                                    : null
+                            }
+                            {
+                                selectedField &&
+                                (selectedField === 'b_client_name_sub' ||
+                                selectedField === 'puCompany' ||
+                                selectedField === 'pu_Address_Street_1' ||
+                                selectedField === 'pu_Address_street_2' ||
+                                selectedField === 'pu_Address_Country' ||
+                                selectedField === 'pu_Contact_F_L_Name' ||
+                                selectedField === 'pu_Phone_Main' ||
+                                selectedField === 'pu_Phone_Mobile' ||
+                                selectedField === 'pu_Email' ||
+                                selectedField === 'deToCompanyName' ||
+                                selectedField === 'de_To_Address_Street_1' ||
+                                selectedField === 'de_To_Address_Street_2' ||
+                                selectedField === 'de_To_Address_Country' ||
+                                selectedField === 'de_to_Contact_F_LName' ||
+                                selectedField === 'de_to_Phone_Main' ||
+                                selectedField === 'de_to_Phone_Mobile' ||
+                                selectedField === 'de_Email' ||
+                                selectedField === 'b_booking_Priority' ||
+                                selectedField === 'v_vehicle_Type' ||
+                                selectedField === 'inv_dme_invoice_no' ||
+                                selectedField === 'b_client_sales_inv_num' ||
+                                selectedField === 'b_booking_project') ?
+                                    <input 
+                                        type="text"
+                                        className=""
+                                        value={selectedValue ? selectedValue : ''} 
+                                        onChange={(e) => this.onHandleInput(e)}
+                                    />
+                                    : null
+                            }
+                            {
+                                selectedField &&
+                                (selectedField === 'puPickUpAvailFrom_Date' ||
+                                selectedField === 'pu_PickUp_By_Date_DME' ||
+                                selectedField === 'de_Deliver_From_Date' ||
+                                selectedField === 'de_Deliver_By_Date' ||
+                                selectedField === 'b_project_due_date') ?
+                                    <DatePicker
+                                        selected={selectedValue ? new Date(selectedValue) : null}
+                                        onChange={(date) => this.onChangeDate(date, 'selectedValue')}
+                                        dateFormat="dd/MM/yyyy"
+                                    />
+                                    : null
+                            }
+                            {
+                                selectedField &&
+                                (selectedField === 'b_given_to_transport_date_time' ||
+                                selectedField === 'fp_received_date_time') ?
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
+                                        value={selectedValue ? new Date(moment(selectedValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                    : null
+                            }
+                            {selectedField && (selectedField === 'vx_freight_provider') &&
+                                <select
+                                    required
+                                    onChange={(e) => this.onSelected(e, 'value')} 
+                                >
+                                    <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
+                                    {fpOptions}
+                                </select>
+                            }
+                            {selectedField && (selectedField === 'fp_scan') &&
+                                <div className="form-view">
+                                    <h2>{'Create a new FP Scan for selected Bookings'}</h2>
+                                    <form>
+                                        <label>
+                                            <span className="text-left">Status*</span>
                                             <input
-                                                className="checkbox"
-                                                name="visible"
-                                                type="checkbox"
-                                                checked={formInputs['visible']}
+                                                className="form-control"
+                                                required
+                                                name="status"
+                                                value={formInputs['status']}
                                                 onChange={(e) => this.onHandleInput(e)}
                                             />
-                                        </div>
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Select a Freight Provider*</span>
-                                        <select 
-                                            required
-                                            name='fp'
-                                            onChange={(e) => this.onHandleInput(e)}
-                                            value={formInputs['fp']}
-                                        >
-                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
-                                            {fpOptions}
-                                        </select>
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Service Name*</span>
-                                        <input
-                                            className="form-control"
-                                            required
-                                            name="name"
-                                            value={formInputs['name']}
-                                            onChange={(e) => this.onHandleInput(e)}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">
-                                            Connote / Reference
-                                            <Button
-                                                className="auto-gen-connote btn btn-success"
-                                                onClick={() => this.onClickAutoGen()}
-                                                title="Auto generate connote number based on Freight Provider and Booking info"
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Description*</span>
+                                            <input
+                                                className="form-control"
+                                                required
+                                                name="desc"
+                                                value={formInputs['desc']}
+                                                onChange={(e) => this.onHandleInput(e)}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Select a Freight Provider*</span>
+                                            <select 
+                                                required
+                                                name='fp'
+                                                onChange={(e) => this.onHandleInput(e)}
+                                                value={formInputs['fp']}
                                             >
-                                                Auto Gen
-                                            </Button>
-                                        </span>
-                                        <input
-                                            className="form-control"
-                                            name="connote_or_reference"
-                                            value={formInputs['connote_or_reference']}
-                                            onChange={(e) => this.onHandleInput(e)}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Booked Date</span>
-                                        <DateTimePicker
-                                            onChange={(date) => this.onChangeDateTime(date, 'booked_date')}
-                                            value={formInputs['booked_date'] ?
-                                                new Date(moment(formInputs['booked_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                : null}
-                                            format={'dd/MM/yyyy HH:mm'}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Estimated Pickup Date</span>
-                                        <DateTimePicker
-                                            onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
-                                            value={formInputs['eta_pu_date'] ?
-                                                new Date(moment(formInputs['eta_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                : null}
-                                            format={'dd/MM/yyyy HH:mm'}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Estimated Delivery Date</span>
-                                        <DateTimePicker
-                                            onChange={(date) => this.onChangeDateTime(date, 'eta_de_date')}
-                                            value={formInputs['eta_de_date'] ?
-                                                new Date(moment(formInputs['eta_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                : null}
-                                            format={'dd/MM/yyyy HH:mm'}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Actual Pickup Date</span>
-                                        <DateTimePicker
-                                            onChange={(date) => this.onChangeDateTime(date, 'actual_pu_date')}
-                                            value={formInputs['actual_pu_date'] ?
-                                                new Date(moment(formInputs['actual_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                : null}
-                                            format={'dd/MM/yyyy HH:mm'}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Actual Delivery Date</span>
-                                        <DateTimePicker
-                                            onChange={(date) => this.onChangeDateTime(date, 'actual_de_date')}
-                                            value={formInputs['actual_de_date'] ?
-                                                new Date(moment(formInputs['actual_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                : null}
-                                            format={'dd/MM/yyyy HH:mm'}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Amount ($)*</span>
-                                        <input
-                                            className="form-control"
-                                            required
-                                            type="number"
-                                            step="0.01"
-                                            name="amount"
-                                            value={formInputs['amount']}
-                                            onChange={(e) => this.onHandleInput(e)}
-                                        />
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Quantity*</span>
-                                        <input
-                                            className="form-control"
-                                            required
-                                            type="number"
-                                            step="1"
-                                            name="qty"
-                                            value={formInputs['qty']}
-                                            onChange={(e) => this.onHandleInput(e)}
-                                        />
-                                    </label><br />
-                                </form>
-                            </div>
-                        }
-                    </div>
-                    <br />
-                    <div className="optional">
-                        {selectedField === 'status' && <label className="value">Event Date: </label>}
-                        {selectedField === 'status' &&
-                            <DateTimePicker
-                                onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
-                                value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                format={'dd/MM/yyyy HH:mm'}
-                            />
-                        }
-                    </div>
-                    <br />
-                    {errorMsg ? <p className="red">{errorMsg}<br /></p> : null}
-                    <Button
-                        color="primary"
-                        disabled={!selectedField || !selectedValue ? true : false }
-                        onClick={() => this.onClickUpdateBtn()}
-                    >
-                        Update
-                    </Button>
-                    <Button color="secondary" onClick={() => this.onClickCancel()}>Cancel</Button>
+                                                <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                                {fpOptions}
+                                            </select>
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Scan timestamp*</span>
+                                            <DateTimePicker
+                                                onChange={(date) => this.onChangeDateTime(date, 'event_timestamp')}
+                                                value={formInputs['event_timestamp'] ?
+                                                    new Date(moment(formInputs['event_timestamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    : null}
+                                                format={'dd/MM/yyyy HH:mm'}
+                                            />
+                                        </label>
+                                    </form>
+                                </div>
+                            }
+                            {selectedField && (selectedField === 'additional_surcharge') &&
+                                <div className="form-view">
+                                    <h2>{'Create a new Linked Service'}</h2>
+                                    <form>
+                                        <label>
+                                            <span className="text-left">Visible to customer</span>
+                                            <div>
+                                                <input
+                                                    className="checkbox"
+                                                    name="visible"
+                                                    type="checkbox"
+                                                    checked={formInputs['visible']}
+                                                    onChange={(e) => this.onHandleInput(e)}
+                                                />
+                                            </div>
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Select a Freight Provider*</span>
+                                            <select 
+                                                required
+                                                name='fp'
+                                                onChange={(e) => this.onHandleInput(e)}
+                                                value={formInputs['fp']}
+                                            >
+                                                <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                                {fpOptions}
+                                            </select>
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Service Name*</span>
+                                            <input
+                                                className="form-control"
+                                                required
+                                                name="name"
+                                                value={formInputs['name']}
+                                                onChange={(e) => this.onHandleInput(e)}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">
+                                                Connote / Reference
+                                                <Button
+                                                    className="auto-gen-connote btn btn-success"
+                                                    onClick={() => this.onClickAutoGen()}
+                                                    title="Auto generate connote number based on Freight Provider and Booking info"
+                                                >
+                                                    Auto Gen
+                                                </Button>
+                                            </span>
+                                            <input
+                                                className="form-control"
+                                                name="connote_or_reference"
+                                                value={formInputs['connote_or_reference']}
+                                                onChange={(e) => this.onHandleInput(e)}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Booked Date</span>
+                                            <DateTimePicker
+                                                onChange={(date) => this.onChangeDateTime(date, 'booked_date')}
+                                                value={formInputs['booked_date'] ?
+                                                    new Date(moment(formInputs['booked_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    : null}
+                                                format={'dd/MM/yyyy HH:mm'}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Estimated Pickup Date</span>
+                                            <DateTimePicker
+                                                onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
+                                                value={formInputs['eta_pu_date'] ?
+                                                    new Date(moment(formInputs['eta_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    : null}
+                                                format={'dd/MM/yyyy HH:mm'}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Estimated Delivery Date</span>
+                                            <DateTimePicker
+                                                onChange={(date) => this.onChangeDateTime(date, 'eta_de_date')}
+                                                value={formInputs['eta_de_date'] ?
+                                                    new Date(moment(formInputs['eta_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    : null}
+                                                format={'dd/MM/yyyy HH:mm'}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Actual Pickup Date</span>
+                                            <DateTimePicker
+                                                onChange={(date) => this.onChangeDateTime(date, 'actual_pu_date')}
+                                                value={formInputs['actual_pu_date'] ?
+                                                    new Date(moment(formInputs['actual_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    : null}
+                                                format={'dd/MM/yyyy HH:mm'}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Actual Delivery Date</span>
+                                            <DateTimePicker
+                                                onChange={(date) => this.onChangeDateTime(date, 'actual_de_date')}
+                                                value={formInputs['actual_de_date'] ?
+                                                    new Date(moment(formInputs['actual_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    : null}
+                                                format={'dd/MM/yyyy HH:mm'}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Amount ($)*</span>
+                                            <input
+                                                className="form-control"
+                                                required
+                                                type="number"
+                                                step="0.01"
+                                                name="amount"
+                                                value={formInputs['amount']}
+                                                onChange={(e) => this.onHandleInput(e)}
+                                            />
+                                        </label><br />
+                                        <label>
+                                            <span className="text-left">Quantity*</span>
+                                            <input
+                                                className="form-control"
+                                                required
+                                                type="number"
+                                                step="1"
+                                                name="qty"
+                                                value={formInputs['qty']}
+                                                onChange={(e) => this.onHandleInput(e)}
+                                            />
+                                        </label><br />
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <br />
+                        <div className="optional">
+                            {selectedField === 'status' && <label className="value">Event Date: </label>}
+                            {selectedField === 'status' &&
+                                <DateTimePicker
+                                    onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
+                                    value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                    format={'dd/MM/yyyy HH:mm'}
+                                />
+                            }
+                        </div>
+                        <br />
+                        {errorMsg ? <p className="red">{errorMsg}<br /></p> : null}
+                        <Button
+                            type="submit"
+                            color="primary"
+                            disabled={!selectedField || !selectedValue ? true : false }
+                        >
+                            Update
+                        </Button>
+                        <Button color="secondary" onClick={() => this.onClickCancel()}>Cancel</Button>
+                    </form>
                 </div>
             </SlidingPane>
         );

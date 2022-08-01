@@ -54,7 +54,7 @@ class FreightOptionAccordion extends Component {
                                 <input
                                     name="b_booking_tail_lift_pickup"
                                     type="checkbox"
-                                    value={formInputs['b_booking_tail_lift_pickup']}
+                                    value={formInputs['b_booking_tail_lift_pickup'] ? true : false}
                                     onChange={(e) => this.props.onHandleInput(e)}
                                 />
                             </label>
@@ -173,7 +173,7 @@ class FreightOptionAccordion extends Component {
                                 <input
                                     name="b_booking_tail_lift_deliver"
                                     type="checkbox"
-                                    value={formInputs['b_booking_tail_lift_deliver']}
+                                    value={formInputs['b_booking_tail_lift_deliver'] ? true : false}
                                     onChange={(e) => this.props.onHandleInput(e)}
                                 />
                             </label>

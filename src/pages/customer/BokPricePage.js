@@ -42,7 +42,7 @@ class BokPricePage extends Component {
             isShowTriggerEmailModal: false,
             isShowDeleteConfirmModal: false,
             isShowBokLineSlider: false,
-            currentPackedStatus: 'original',
+            currentPackedStatus: '',
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -332,6 +332,7 @@ class BokPricePage extends Component {
         let hasUnknownItems = false;
         let errorList = [];
         let lowest_price_summary = 'not available';
+        let _currentPackedStatus = currentPackedStatus || 'original';
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -378,6 +379,10 @@ class BokPricePage extends Component {
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
 
+            // Show `Auto Repack` as default when it is available
+            const bok_2s_auto = bokWithPricings['bok_2s'].filter(bok_2 => bok_2['b_093_packed_status'] === 'auto');
+            if (!currentPackedStatus && bok_2s_auto.length > 0) _currentPackedStatus = 'auto';
+
             if (bok_1 && bok_1['zb_105_text_5']) {
                 // Errors are joined with delimiter('***')
                 errorList = bok_1['zb_105_text_5']
@@ -391,7 +396,7 @@ class BokPricePage extends Component {
             }
 
             bok_2s = bok_1['bok_2s']
-                .filter(bok_2 => bok_2['b_093_packed_status'] === currentPackedStatus)
+                .filter(bok_2 => bok_2['b_093_packed_status'] === _currentPackedStatus)
                 .map((bok_2, index) => {
                     totalLinesKg += Number.parseFloat(getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']));
                     totalLinesCnt += bok_2['l_002_qty'];
@@ -422,8 +427,8 @@ class BokPricePage extends Component {
                             <td>{bok_2['l_007_dim_height']}</td>
                             <td>{bok_2['pallet_cubic_meter'].toFixed(3)} (m3)</td>
                             <td>{(bok_2['l_002_qty'] * bok_2['l_009_weight_per_each']).toFixed(3)} ({bok_2['l_008_weight_UOM']})</td>
-                            {currentPackedStatus === 'auto' ? <td>{packedCubicMeter.toFixed(3)} (m3)</td> : null}
-                            {currentPackedStatus === 'auto' ? <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td> : null}
+                            {_currentPackedStatus === 'auto' ? <td>{packedCubicMeter.toFixed(3)} (m3)</td> : null}
+                            {_currentPackedStatus === 'auto' ? <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td> : null}
                             <td>
                                 <Button color="primary" onClick={() => this.onClickEditLine(bok_2)}>Edit</Button>{'   '}
                                 <Button color="danger" onClick={() => this.onClickDeleteLine(bok_2)}>Delete</Button>
@@ -433,7 +438,7 @@ class BokPricePage extends Component {
                 });
 
             pricings = sortedPricings
-                .filter(pricing => pricing.packed_status === currentPackedStatus)
+                .filter(pricing => pricing.packed_status === _currentPackedStatus)
                 .map((price, index) => {
                     return (
                         <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
@@ -479,7 +484,7 @@ class BokPricePage extends Component {
             bok_3s = [];
             if (isShowLineData) {
                 bok_3s = bok_1['bok_3s']
-                    .filter(bok_3 => bok_3.fk_booking_lines_id === selectedBok_2Id && currentPackedStatus !== 'manual')
+                    .filter(bok_3 => bok_3.fk_booking_lines_id === selectedBok_2Id && _currentPackedStatus !== 'manual')
                     .map((bok_3, index) => (
                         <tr key={index}>
                             <td>{bok_3['zbld_104_text_4']}</td>
@@ -579,19 +584,19 @@ class BokPricePage extends Component {
                             <h3><i className="fa fa-circle"></i> Lines:</h3>
                             <div className='action-btns'>
                                 <Button
-                                    color={currentPackedStatus === 'original' ? 'success' : 'secondary'}
+                                    color={_currentPackedStatus === 'original' ? 'success' : 'secondary'}
                                     onClick={() => this.onChangePackedStatus('original')}
                                 >
                                     Send As Is
                                 </Button>
                                 <Button
-                                    color={currentPackedStatus === 'auto' ? 'success' : 'secondary'}
+                                    color={_currentPackedStatus === 'auto' ? 'success' : 'secondary'}
                                     onClick={() => this.onChangePackedStatus('auto')}
                                 >
                                     Auto Repack
                                 </Button>
                                 <Button
-                                    color={currentPackedStatus === 'manual' ? 'success' : 'secondary'}
+                                    color={_currentPackedStatus === 'manual' ? 'success' : 'secondary'}
                                     onClick={() => this.onChangePackedStatus('manual')}
                                 >
                                     Manual Repack
@@ -600,7 +605,7 @@ class BokPricePage extends Component {
                                     className='mar-left-30 reset'
                                     color='danger'
                                     onClick={() => this.onChangePackedStatus('reset')}
-                                    disabled={(currentPackedStatus === 'auto' || currentPackedStatus === 'manual') ? '' : 'disabled'}
+                                    disabled={(_currentPackedStatus === 'auto' || _currentPackedStatus === 'manual') ? '' : 'disabled'}
                                     title="Reset all lines and LineDetails."
                                 >
                                     Reset
@@ -654,10 +659,10 @@ class BokPricePage extends Component {
                                         <th className="valign-top">Length</th>
                                         <th className="valign-top">Width</th>
                                         <th className="valign-top">Height</th>
-                                        <th className="valign-top">{currentPackedStatus === 'auto' ? 'Pallet CBM' : 'CBM'}</th>
+                                        <th className="valign-top">{_currentPackedStatus === 'auto' ? 'Pallet CBM' : 'CBM'}</th>
                                         <th className="valign-top">Total Weight</th>
-                                        {currentPackedStatus === 'auto' ? <th className="valign-top">Total Packed CBM</th> : null}
-                                        {currentPackedStatus === 'auto' ? <th className="valign-top">Show Line Details</th> : null}
+                                        {_currentPackedStatus === 'auto' ? <th className="valign-top">Total Packed CBM</th> : null}
+                                        {_currentPackedStatus === 'auto' ? <th className="valign-top">Show Line Details</th> : null}
                                         <th className="valign-top">
                                             Actions <Button color="success" className='float-r' onClick={() => this.onclickAddLine()}>New Line</Button>
                                         </th>

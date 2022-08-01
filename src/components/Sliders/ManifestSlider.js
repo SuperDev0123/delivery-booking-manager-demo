@@ -81,7 +81,7 @@ class ManifestSlider extends React.Component {
                 index += 1;
 
                 summaryList.push(
-                    <div>
+                    <div key={index}>
                         <label>
                             <h5>#{index}</h5>
                             <strong>Freight Provider name:</strong> {fp}<br />
