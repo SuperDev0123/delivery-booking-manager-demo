@@ -18,6 +18,7 @@ import { Popover, PopoverBody } from 'reactstrap';
 import { getAddressesWithPrefix } from '../../state/services/elasticsearchService';
 import { getQuickPricing } from '../../state/services/extraService';
 import { debounce } from '../../commons/browser';
+import SimpleTooltipComponent from '../Tooltip/SimpleTooltipComponent';
 
 class Header extends Component {
     constructor(props) {
@@ -454,7 +455,12 @@ class Header extends Component {
                             <h5>Tel: (02) 8311 1500</h5>
                         </div>
                         <div className="col-sm-6 d-flex justify-content-between" >
-                            <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={() => this.onOpenQuickQuote()}>Quick Quote</a>
+                            <div id={'booking-column-header-tooltip-LoginRequired'}>
+                                {isLoggedIn !== 'true' && <SimpleTooltipComponent text={'Login Required'} />}
+                                <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={() => this.onOpenQuickQuote()}>
+                                    Quick Quote
+                                </a>
+                            </div>
                             <Popover
                                 className="quick-quote"
                                 isOpen={this.state.isOpenQuickQuote}

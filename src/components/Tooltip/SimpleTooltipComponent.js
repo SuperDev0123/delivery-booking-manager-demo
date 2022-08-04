@@ -26,7 +26,7 @@ class SimpleTooltipComponent extends React.Component {
             <Tooltip
                 placement='top'
                 isOpen={this.state.tooltipOpen}
-                target={'booking-column-header-tooltip-' + text}
+                target={'booking-column-header-tooltip-' + text.replace(/[^A-z]/g, '')}
                 toggle={() => this.toggleTooltip()}
                 hideArrow={true}
                 className={'booking-column-header-tooltip'}>
