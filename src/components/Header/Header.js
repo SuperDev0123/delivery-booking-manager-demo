@@ -18,6 +18,7 @@ import { Popover, PopoverBody } from 'reactstrap';
 import { getAddressesWithPrefix } from '../../state/services/elasticsearchService';
 import { getQuickPricing } from '../../state/services/extraService';
 import { debounce } from '../../commons/browser';
+import SimpleTooltipComponent from '../Tooltip/SimpleTooltipComponent';
 
 class Header extends Component {
     constructor(props) {
@@ -80,12 +81,15 @@ class Header extends Component {
 
         if (isLoggedIn && token && token.length > 0)
             this.props.getUser(token);
-        this.props.getDMEClients();
+        if (isLoggedIn === 'true')
+            this.props.getDMEClients();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { username, clientname, isLoggedIn, quickPricings, dmeClients } = newProps;
-
+        if (isLoggedIn && (!dmeClients || !dmeClients.length)){
+            this.props.getDMEClients(); 
+        }
         if (username)
             this.setState({ username });
 
@@ -247,8 +251,16 @@ class Header extends Component {
 
     onOpenQuickQuote() {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
-        if (isLoggedIn === 'true')
+        if (isLoggedIn === 'true') {
+            const { clientname, dmeClients } = this.props;
+            const { customer } = this.state;
+            if(dmeClients.length > 0 && clientname !== 'dme') {
+                if(customer.value !== dmeClients[0].pk_id_dme_client){
+                    this.handleChangeCustomer({value: dmeClients[0].pk_id_dme_client});
+                }
+            }
             this.setState({ isOpenQuickQuote: !this.state.isOpenQuickQuote });
+        }
     }
 
     onCloseQuickQuote() {
@@ -297,7 +309,8 @@ class Header extends Component {
 
         this.props.getQuickPricing({
             'booking': this.state.formInputs,
-            'booking_lines': this.state.lines
+            'booking_lines': this.state.lines,
+            'clientId': this.state.customer.value   ,
         });
         this.setState({ isGettingQuickQuote: true });
     }
@@ -321,11 +334,7 @@ class Header extends Component {
         const { quickPricings, clientname, dmeClients } = this.props;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
-        if(dmeClients.length > 0 && clientname !== 'dme') {
-            if(customer.value !== dmeClients[0].pk_id_dme_client){
-                this.handleChangeCustomer({value: dmeClients[0].pk_id_dme_client});
-            }
-        }
+        
         const clientOptionsList = dmeClients
             .map((client) => { return {label: client.company_name, value: client.pk_id_dme_client}; });
 
@@ -454,7 +463,12 @@ class Header extends Component {
                             <h5>Tel: (02) 8311 1500</h5>
                         </div>
                         <div className="col-sm-6 d-flex justify-content-between" >
-                            <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={() => this.onOpenQuickQuote()}>Quick Quote</a>
+                            <div id={'booking-column-header-tooltip-LoginRequired'}>
+                                {isLoggedIn !== 'true' && <SimpleTooltipComponent text={'Login Required'} />}
+                                <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={() => this.onOpenQuickQuote()}>
+                                    Quick Quote
+                                </a>
+                            </div>
                             <Popover
                                 className="quick-quote"
                                 isOpen={this.state.isOpenQuickQuote}
