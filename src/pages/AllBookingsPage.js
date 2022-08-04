@@ -2533,7 +2533,14 @@ class AllBookingsPage extends React.Component {
                                                     <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
                                                 </div>
                                             }
-                                            {((clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') && (activeTabInd === 3 || activeTabInd === 7)) &&
+                                            {(
+                                                (
+                                                    clientname === 'dme' ||
+                                                    clientname === 'Jason L' ||
+                                                    clientname === 'Bathroom Sales Direct' ||
+                                                    clientname === 'Anchor Packaging Pty Ltd'
+                                                ) &&
+                                                (activeTabInd === 3 || activeTabInd === 7)) &&
                                                 <div className="disp-inline-block">
                                                     <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowManifestSliderButton()}>Manifest</button>
                                                 </div>
