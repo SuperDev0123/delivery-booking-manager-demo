@@ -474,7 +474,8 @@ class Header extends Component {
                                 isOpen={this.state.isOpenQuickQuote}
                                 target="Popover"
                                 placement="bottom"
-                                hideArrow={false} >
+                                hideArrow={false}
+                                onToggle={this.state.isOpenQuickQuote} >
                                 <PopoverBody>
                                     <LoadingOverlay
                                         active={this.state.isGettingQuickQuote}
