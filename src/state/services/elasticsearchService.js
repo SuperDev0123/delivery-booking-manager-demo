@@ -8,26 +8,56 @@ import { ES_URL, ES_USERNAME, ES_PASSWORD } from '../../config';
 
 export const getAddressesWithPrefix = (src, suburbPrefix, postalCodePrefix) => {
     const indexName = 'address';
+    const rangeSearch = {
+        'bool': {
+            'should': [
+                {
+                    'range': {
+                        'postal_code': {'gte': '2000'}
+                    }
+                }, 
+                {
+                    'range': {
+                        'postal_code': {'lt': '1000'}
+                    }
+                }
+            ]
+        }
+    };
 
     let data;
     if (suburbPrefix && !postalCodePrefix) {
         data = {
             'query': {
-                'match_phrase_prefix': {
-                    'suburb': {
-                        'query': suburbPrefix,
-                        'slop': 3
-                    }
+                'bool' : {
+                    'must': [
+                        {
+                            'match_phrase_prefix': {
+                                'suburb': {
+                                    'query': suburbPrefix,
+                                    'slop': 3
+                                }
+                            }
+                        },
+                        rangeSearch
+                    ]
                 }
             }
         };
     } else if (!suburbPrefix && postalCodePrefix) {
         data = {
             'query': {
-                'match_phrase_prefix': {
-                    'postal_code': {
-                        'query': postalCodePrefix
-                    }
+                'bool' : {
+                    'must': [
+                        {
+                            'match_phrase_prefix': {
+                                'postal_code': {
+                                    'query': postalCodePrefix
+                                }
+                            },
+                        },
+                        rangeSearch
+                    ]
                 }
             }
         };
@@ -50,7 +80,8 @@ export const getAddressesWithPrefix = (src, suburbPrefix, postalCodePrefix) => {
                                     'query': postalCodePrefix
                                 }
                             }
-                        }
+                        },
+                        rangeSearch
                     ]
                 }
             }
