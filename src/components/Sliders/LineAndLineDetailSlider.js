@@ -86,6 +86,9 @@ class LineAndLineDetailSlider extends React.Component {
                 e_weightUOM: 'kg',
                 e_weightPerEach: 0,
                 sscc: null,
+                e_util_height: 0,
+                e_util_cbm: 0,
+                e_util_kg: 0,
             },
             lineDetailFormInputs: {}
         });
@@ -166,6 +169,12 @@ class LineAndLineDetailSlider extends React.Component {
                     this.props.toggleUpdateBookingModal();
                 }
 
+                if (lineFormInputs['e_util_kg'] === 'N/A') {
+                    lineFormInputs['e_util_height'] = 0;
+                    lineFormInputs['e_util_kg'] = 0;
+                    lineFormInputs['e_util_cbm'] = 0;
+                }
+
                 this.props.updateBookingLine(lineFormInputs);
             } else if (lineOrLineDetail === 2) {
                 this.props.updateBookingLineDetail(lineDetailFormInputs);
@@ -184,6 +193,9 @@ class LineAndLineDetailSlider extends React.Component {
                 e_weightUOM: 'kg',
                 e_weightPerEach: 0,
                 sscc: null,
+                e_util_height: 0,
+                e_util_cbm: 0,
+                e_util_kg: 0,
             },
             lineDetailFormInputs: {}
         });
