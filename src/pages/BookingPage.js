@@ -938,6 +938,9 @@ class BookingPage extends Component {
         let b_fp_qty_delivered = 0;
         let total_kgs = 0;
         let cubic_meter = 0;
+        let total_utilised_height = 0;
+        let total_utilised_kgs = 0;
+        let total_utilised_cubic_meter = 0;
 
         let _currentPackedStatus = this.state.currentPackedStatus;
         if (!_currentPackedStatus) {
@@ -986,6 +989,9 @@ class BookingPage extends Component {
                 cubic_meter += bookingLine['cubic_meter'];
                 total_qty_collected += bookingLine['e_qty_collected'];
                 total_qty_scanned += bookingLine['e_qty_scanned_fp'];
+                total_utilised_height += isNaN(bookingLine['e_util_height']) ? 0 : bookingLine['e_util_height'];
+                total_utilised_kgs += isNaN(bookingLine['e_util_kg']) ? 0 : bookingLine['e_util_kg'];
+                total_utilised_cubic_meter += isNaN(bookingLine['e_util_cbm']) ? 0 : bookingLine['e_util_cbm'];
             }
 
             return bookingLine;
@@ -1002,7 +1008,10 @@ class BookingPage extends Component {
                 total_qty_scanned,
                 b_fp_qty_delivered: b_fp_qty_delivered,
                 total_kgs: total_kgs.toFixed(2),
-                cubic_meter: cubic_meter.toFixed(2)
+                cubic_meter: cubic_meter.toFixed(2),
+                total_utilised_height: total_utilised_height.toFixed(2),
+                total_utilised_cubic_meter: total_utilised_cubic_meter.toFixed(2),
+                total_utilised_kgs: total_utilised_kgs.toFixed(2),
             }];
 
         return newBookingLines;
@@ -3081,6 +3090,15 @@ class BookingPage extends Component {
             }, {
                 dataField: 'cubic_meter',
                 text: 'Total Cubic Meter'
+            },  {
+                dataField: 'total_utilised_height',
+                text: 'Total Utilised Height'
+            }, {
+                dataField: 'total_utilised_kgs',
+                text: 'Total Utilised Kgs'
+            }, {
+                dataField: 'total_utilised_cubic_meter',
+                text: 'Total Utilised Cubic Meter'
             },
         ];
 
