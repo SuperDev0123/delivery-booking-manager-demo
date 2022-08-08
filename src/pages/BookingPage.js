@@ -1005,7 +1005,7 @@ class BookingPage extends Component {
                 b_fp_qty_delivered: b_fp_qty_delivered,
                 total_kgs: total_kgs.toFixed(2),
                 cubic_meter: cubic_meter.toFixed(2),
-                total_utilised_kgs: total_utilised_kgs.toFixed(2),
+                total_utilised_cubic_meter: total_utilised_cubic_meter.toFixed(2),
             }];
 
         return newBookingLines;
@@ -3084,7 +3084,7 @@ class BookingPage extends Component {
             }, {
                 dataField: 'cubic_meter',
                 text: 'Total Cubic Meter'
-            }{
+            }, {
                 dataField: 'total_utilised_cubic_meter',
                 text: 'Total Utilised Cubic Meter'
             },
