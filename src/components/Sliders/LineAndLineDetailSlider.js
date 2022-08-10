@@ -537,8 +537,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_qty"
-                                                    value={lineFormInputs['e_qty'] ? lineFormInputs['e_qty'] : 0} 
+                                                    value={!isNaN(lineFormInputs['e_qty']) ? lineFormInputs['e_qty'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
+                                                    required
                                                 />
                                             </label>
                                             <label>
@@ -560,8 +561,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_weightPerEach" 
-                                                    value={lineFormInputs['e_weightPerEach'] ? lineFormInputs['e_weightPerEach'] : 0} 
+                                                    value={!isNaN(lineFormInputs['e_weightPerEach']) ? lineFormInputs['e_weightPerEach'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
+                                                    required
                                                 />
                                             </label>
                                             <label>
@@ -573,7 +575,8 @@ class LineAndLineDetailSlider extends React.Component {
                                                     min="0"
                                                     disabled="disabled"
                                                     name="e_Total_KG_weight" 
-                                                    value={lineFormInputs['e_Total_KG_weight'] ? lineFormInputs['e_Total_KG_weight'] : 0} 
+                                                    value={!isNaN(lineFormInputs['e_Total_KG_weight']) ? lineFormInputs['e_Total_KG_weight'] : 0} 
+                                                    required
                                                 />
                                             </label>
                                             <label>
@@ -595,8 +598,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_dimLength" 
-                                                    value={lineFormInputs['e_dimLength'] ? lineFormInputs['e_dimLength'] : 0} 
+                                                    value={!isNaN(lineFormInputs['e_dimLength']) ? lineFormInputs['e_dimLength'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
+                                                    required
                                                 />
                                             </label>
                                             <label>
@@ -607,8 +611,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_dimWidth" 
-                                                    value={lineFormInputs['e_dimWidth'] ? lineFormInputs['e_dimWidth'] : 0} 
+                                                    value={!isNaN(lineFormInputs['e_dimWidth']) ? lineFormInputs['e_dimWidth'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
+                                                    required
                                                 />
                                             </label>
                                             <label>
@@ -619,8 +624,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_dimHeight" 
-                                                    value={lineFormInputs['e_dimHeight'] ? lineFormInputs['e_dimHeight'] : 0} 
+                                                    value={!isNaN(lineFormInputs['e_dimHeight']) ? lineFormInputs['e_dimHeight'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
+                                                    required
                                                 />
                                             </label>
                                             <label>
@@ -632,7 +638,8 @@ class LineAndLineDetailSlider extends React.Component {
                                                     min="0"
                                                     disabled="disabled"
                                                     name="e_1_Total_dimCubicMeter" 
-                                                    value={lineFormInputs['e_1_Total_dimCubicMeter'] ? lineFormInputs['e_1_Total_dimCubicMeter'] : 0} 
+                                                    value={!isNaN(lineFormInputs['e_1_Total_dimCubicMeter']) ? lineFormInputs['e_1_Total_dimCubicMeter'] : 0} 
+                                                    required
                                                 />
                                             </label>
                                             <label>
@@ -692,8 +699,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="quantity" 
-                                                    value={lineDetailFormInputs['quantity'] ? lineDetailFormInputs['quantity'] : 0} 
+                                                    value={!isNaN(lineDetailFormInputs['quantity']) ? lineDetailFormInputs['quantity'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
+                                                    required
                                                 />
                                             </label>
                                             <label>
