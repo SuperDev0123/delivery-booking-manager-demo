@@ -442,6 +442,9 @@ class BookingPage extends Component {
                 result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : 0;
                 result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : 0;
                 result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : 0;
+                result['e_util_height'] = bookingLine.e_util_height ? bookingLine.e_util_height : 'N/A';
+                result['e_util_cbm'] = bookingLine.e_util_cbm ? bookingLine.e_util_cbm : 'N/A';
+                result['e_util_kg'] = bookingLine.e_util_kg ? bookingLine.e_util_kg : 'N/A';
                 result['e_qty_awaiting_inventory'] = bookingLine.e_qty_awaiting_inventory ? bookingLine.e_qty_awaiting_inventory : 0;
                 result['e_qty_collected'] = bookingLine.e_qty_collected ? bookingLine.e_qty_collected : 0;
                 result['e_qty_scanned_depot'] = bookingLine.e_qty_scanned_depot ? bookingLine.e_qty_scanned_depot : 0;
@@ -935,6 +938,7 @@ class BookingPage extends Component {
         let b_fp_qty_delivered = 0;
         let total_kgs = 0;
         let cubic_meter = 0;
+        let total_utilised_cubic_meter = 0;
 
         let _currentPackedStatus = this.state.currentPackedStatus;
         if (!_currentPackedStatus) {
@@ -983,6 +987,7 @@ class BookingPage extends Component {
                 cubic_meter += bookingLine['cubic_meter'];
                 total_qty_collected += bookingLine['e_qty_collected'];
                 total_qty_scanned += bookingLine['e_qty_scanned_fp'];
+                total_utilised_cubic_meter += isNaN(bookingLine['e_util_cbm']) ? 0 : bookingLine['e_util_cbm'];
             }
 
             return bookingLine;
@@ -999,7 +1004,8 @@ class BookingPage extends Component {
                 total_qty_scanned,
                 b_fp_qty_delivered: b_fp_qty_delivered,
                 total_kgs: total_kgs.toFixed(2),
-                cubic_meter: cubic_meter.toFixed(2)
+                cubic_meter: cubic_meter.toFixed(2),
+                total_utilised_cubic_meter: total_utilised_cubic_meter.toFixed(2),
             }];
 
         return newBookingLines;
@@ -2865,6 +2871,9 @@ class BookingPage extends Component {
                 dataField: 'e_dimHeight',
                 text: 'Height',
             }, {
+                dataField: 'e_util_height',
+                text: 'Utilised Height'
+            }, {
                 dataField: 'e_1_Total_dimCubicMeter',
                 text: 'Cubic Meter',
                 editable: false,
@@ -2872,7 +2881,13 @@ class BookingPage extends Component {
                 dataField: 'total_2_cubic_mass_factor_calc',
                 text: 'Cubic KG',
                 editable: false,
-            }
+            }, {
+                dataField: 'e_util_cbm',
+                text: 'Utilised Cubic Meter'
+            }, {
+                dataField: 'e_util_kg',
+                text: 'Utilised Cubic KG'
+            }, 
         ];
 
         let pickedUpProducts = [];
@@ -3069,6 +3084,9 @@ class BookingPage extends Component {
             }, {
                 dataField: 'cubic_meter',
                 text: 'Total Cubic Meter'
+            }, {
+                dataField: 'total_utilised_cubic_meter',
+                text: 'Total Utilised Cubic Meter'
             },
         ];
 
