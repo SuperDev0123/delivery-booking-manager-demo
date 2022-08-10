@@ -2824,7 +2824,7 @@ class AllBookingsPage extends React.Component {
                                                                 </th>
                                                                 <th
                                                                     name="z_pod_url"
-                                                                    id={'booking-column-header-tooltip-POD-or-POD-Signed'}
+                                                                    id={'booking-column-header-tooltip-PODorPODSigned'}
                                                                     className={(sortField === 'z_pod_url') ? 'narrow-column current' : 'narrow-column'}
                                                                     onClick={() => this.onChangeSortField('z_pod_url')} 
                                                                 >
