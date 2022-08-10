@@ -1514,10 +1514,10 @@ class BookingPage extends Component {
     };
 
     handleChangeSuburb = (selectedOption, src) => {
-        const {formInputs, isBookedBooking} = this.state;
+        const {formInputs, isBookedBooking, clientname} = this.state;
         const {puAddresses, deToAddresses} = this.props;
 
-        if (isBookedBooking == false) {
+        if (clientname === 'dme' || isBookedBooking == false) {
             if (src === 'puSuburb') {
                 const address = this._findAddress(puAddresses, selectedOption.value);
                 formInputs['pu_Address_State'] = address._source.state;
