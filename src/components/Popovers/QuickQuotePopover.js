@@ -22,7 +22,7 @@ class QuickQuotePopover extends React.Component {
             findKeyword: '',
             isOpenQuickQuote: false,
             isGettingQuickQuote: false,
-            activeTabInd: 1,
+            activeTabInd: 0,
             customer: { value: '' },
             puSuburb: { value: '' },
             deToSuburb: { value: '' },

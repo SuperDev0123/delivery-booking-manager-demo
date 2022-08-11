@@ -30,7 +30,15 @@ span.arrow {
 .popover {
   max-width: 1000px;
   width: auto;
-  margin: 20px;
+  margin: 0 20px;
+}
+
+.popover-btn {
+  &:focus {
+    text-decoration: none !important;
+    border: none !important;
+    outline: none !important;
+  }
 }
 
 .disp-inline-block {
