@@ -104,6 +104,7 @@ const defaultState = {
     booking: null,
     bookings: [],
     filteredBookingIds: [],
+    filteredBookingVisualIds: [],
     filteredConsignments: [],
     bookingsCnt: 0,
     pod: {},
@@ -183,6 +184,7 @@ export const BookingReducer = (state = defaultState, {
     pageInd,
     pageCnt,
     filteredBookingIds,
+    filteredBookingVisualIds,
     filteredConsignments,
     isAutoSelected,
 }) => {
@@ -248,6 +250,7 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 bookings: bookings,
                 filteredBookingIds: filteredBookingIds,
+                filteredBookingVisualIds: filteredBookingVisualIds,
                 filteredConsignments: filteredConsignments,
                 bookingsCnt: bookingsCnt,
                 pageInd: pageInd,
