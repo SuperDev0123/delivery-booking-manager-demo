@@ -107,6 +107,7 @@ export function successGetBookings(data) {
         type: SET_BOOKINGS,
         bookings: data['bookings'],
         filteredBookingIds: data['filtered_booking_ids'],
+        filteredBookingVisualIds: data['filtered_booking_visual_ids'],
         filteredConsignments: data['filtered_consignments'],
         bookingsCnt: data['count'],
         pageCnt: data['page_cnt'],
