@@ -106,7 +106,7 @@ class Header extends Component {
                     <nav className="qbootstrap-nav" role="navigation">
                         <div className="col-md-12" id="headr">
                             <div className="top">
-                                <div className="row">
+                                <div className="row" id="Popover">
                                     <div className="col-md-8 col-sm-12 col-lg-8 col-xs-12 col-md-push-1 ">
                                         <h3 className="label_hel"><a href="/">Company: {clientname ? clientname : '---'}    User: {username ? username : '---'}</a></h3>
                                         <h3 className="label_hel"></h3>
@@ -118,7 +118,7 @@ class Header extends Component {
                                         <span className="none">|</span>
                                         <a href="" className="none">Client Mode</a>
                                         <span className="none">|</span>
-                                        <a href='#' id="Popover" onClick={(e) => this.onOpenQuickQuote(e)}>Quick Quote</a>
+                                        <a href='#' onClick={(e) => this.onOpenQuickQuote(e)} className='popover-btn'>Quick Quote</a>
                                         <QuickQuotePopover isOpen={isOpenQuickQuote} setIsOpen={(val) => { this.setState({ isOpenQuickQuote: val }); }} dmeClients={dmeClients} />
                                         <span>|</span>
                                         <a href="/">Home</a>
@@ -139,7 +139,7 @@ class Header extends Component {
                         <div className="col-sm-6 d-flex justify-content-between" >
                             <div id={'booking-column-header-tooltip-LoginRequired'}>
                                 {isLoggedIn !== 'true' && <SimpleTooltipComponent text={'Login Required'} />}
-                                <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={() => this.onOpenQuickQuote()}>
+                                <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={(e) => this.onOpenQuickQuote(e)}>
                                     Quick Quote
                                 </a>
                                 <QuickQuotePopover isOpen={isOpenQuickQuote} setIsOpen={(val) => { this.setState({ isOpenQuickQuote: val }); }} dmeClients={dmeClients} />
