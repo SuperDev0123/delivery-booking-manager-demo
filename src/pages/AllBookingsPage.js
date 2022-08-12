@@ -188,6 +188,7 @@ class AllBookingsPage extends React.Component {
         clientname: PropTypes.string,
         startDate: PropTypes.any,
         filteredBookingIds: PropTypes.array,
+        filteredBookingVisualIds: PropTypes.array,
         filteredConsignments: PropTypes.array,
         clearErrorMessage: PropTypes.func.isRequired,
         bookingsSummary: PropTypes.object,
@@ -1818,7 +1819,6 @@ class AllBookingsPage extends React.Component {
 
     onCopyToClipboard(e, data, type) {
         e.preventDefault();
-
         if (data) {
             let finalData = '';
 
@@ -1826,7 +1826,8 @@ class AllBookingsPage extends React.Component {
                 finalData = data;
             } else if (type === 'bookingIds') {
                 // Data is selected bookingIDs
-                data.forEach((item) => finalData += item + '\n');
+                const {filteredBookingIds, filteredBookingVisualIds} = this.props;
+                data.forEach((item) => finalData += filteredBookingVisualIds[filteredBookingIds.findIndex(bookingId => bookingId == item)] + '\n');
             } else if (type === 'consignments') {
                 const {filteredBookingIds, filteredConsignments} = this.props;
                 // Data is selected bookingIDs
@@ -3597,6 +3598,7 @@ const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
         filteredBookingIds: state.booking.filteredBookingIds,
+        filteredBookingVisualIds: state.booking.filteredBookingVisualIds,
         filteredConsignments: state.booking.filteredConsignments,
         bookingsCnt: state.booking.bookingsCnt,
         needUpdateBookings: state.booking.needUpdateBookings,
