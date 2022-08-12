@@ -1818,7 +1818,7 @@ class AllBookingsPage extends React.Component {
 
     onCopyToClipboard(e, data, type) {
         e.preventDefault();
-
+        const { bookings } = this.props;
         if (data) {
             let finalData = '';
 
@@ -1826,7 +1826,7 @@ class AllBookingsPage extends React.Component {
                 finalData = data;
             } else if (type === 'bookingIds') {
                 // Data is selected bookingIDs
-                data.forEach((item) => finalData += item + '\n');
+                data.forEach((item) => finalData += bookings[bookings.findIndex(booking => booking.id == item)].b_bookingID_Visual + '\n');
             } else if (type === 'consignments') {
                 const {filteredBookingIds, filteredConsignments} = this.props;
                 // Data is selected bookingIDs
