@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getClientEmployee, updateClientEmployee } from '../../../../state/services/extraService';
@@ -129,9 +129,9 @@ class EditClientEmployee extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
+                            <li><Link to={this.props.urlAdminHome}>Home</Link>
                             </li>
-                            <li><a href="/admin/clientemployees">Client Employees</a></li>
+                            <li><Link to="/admin/clientemployees">Client Employees</Link></li>
                             <li className="active">Edit</li>
                         </ol>
                     </div>

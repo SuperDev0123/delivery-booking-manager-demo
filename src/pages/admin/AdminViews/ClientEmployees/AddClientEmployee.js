@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { createClientEmployee } from '../../../../state/services/extraService';
@@ -74,7 +74,7 @@ class AddClientEmployee extends Component {
             this.setState({ clients });
         }
         if (warehouses) {
-            this.setState({warehouses});
+            this.setState({ warehouses });
         }
     }
 
@@ -85,7 +85,7 @@ class AddClientEmployee extends Component {
     onSubmit(event) {
         this.setState({ loading: true });
         const { name_first, name_last, email, phone, job_title, role, fk_id_dme_client, warehouse_id } = this.state;
-        this.props.createClientEmployee({ name_first: name_first, name_last:name_last, email:email, phone:phone, clien_emp_job_title: job_title, role:role, fk_id_dme_client:fk_id_dme_client, warehouse_id: parseInt(warehouse_id) });
+        this.props.createClientEmployee({ name_first: name_first, name_last: name_last, email: email, phone: phone, clien_emp_job_title: job_title, role: role, fk_id_dme_client: fk_id_dme_client, warehouse_id: parseInt(warehouse_id) });
         this.setState({ loading: false });
         this.props.history.push('/admin/clientemployees');
         event.preventDefault();
@@ -100,9 +100,9 @@ class AddClientEmployee extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
+                            <li><Link to={this.props.urlAdminHome}>Home</Link>
                             </li>
-                            <li><a href="/admin/clientemployees">Client Employees</a></li>
+                            <li><Link to="/admin/clientemployees">Client Employees</Link></li>
                             <li className="active">Add New</li>
                         </ol>
                     </div>

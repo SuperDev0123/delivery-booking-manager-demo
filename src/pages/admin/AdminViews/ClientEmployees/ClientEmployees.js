@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
@@ -85,7 +85,7 @@ class ClientEmployees extends Component {
         const onClickEditBtn = (cell, row) => {
             return (
                 <div>
-                    <a className="btn btn-info btn-sm" href={'/admin/clientemployees/edit/' + row.pk_id_client_emp}>Edit</a>
+                    <Link className="btn btn-info btn-sm" to={'/admin/clientemployees/edit/' + row.pk_id_client_emp}>Edit</Link>
                 </div>
             );
         };
@@ -149,7 +149,7 @@ class ClientEmployees extends Component {
                         <div className="panel-heading">
                             <h3 className="panel-title">Client Employees</h3>
                             <div className="actions pull-right">
-                                <a className="btn btn-success" href="/admin/clientemployees/add">Add New</a>
+                                <Link className="btn btn-success" to="/admin/clientemployees/add">Add New</Link>
                             </div>
                         </div>
                         <div className="panel-body">
@@ -189,7 +189,7 @@ class ClientEmployees extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
+                            <li><Link to={this.props.urlAdminHome}>Home</Link>
                             </li>
                             <li className="active">Client Employees</li>
                         </ol>
