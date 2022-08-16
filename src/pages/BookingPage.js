@@ -1329,6 +1329,8 @@ class BookingPage extends Component {
             this.notify('You can lose modified booking info. Please update it');
         } else if (isBookedBooking) {
             this.notify('Error: This booking (' + booking.b_bookingID_Visual + ') for ' + clientname + ' - has already been booked"');
+        } else if (!booking.b_status) {
+            this.notify('Booking has no status, please set a status and try again.');
         } else if (booking.b_status === 'Parent Booking') {
             this.notify('This is "Parent Booking". Please book the children');
         } else {
