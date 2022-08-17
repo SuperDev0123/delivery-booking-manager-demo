@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
@@ -92,7 +92,7 @@ class EmailTemplates extends Component {
                     <td>{fp.id}</td>
                     <td>{fp.emailName}</td>
                     <td>{fp.sectionName}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/emails/edit/' + fp.id}>Edit</a></td>
+                    <td><Link className="btn btn-info btn-sm" to={'/emails/edit/' + fp.id}>Edit</Link></td>
                 </tr>
             );
         });
@@ -140,7 +140,7 @@ class EmailTemplates extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
+                            <li><Link to={this.props.urlAdminHome}>Home</Link>
                             </li>
                             <li className="active">Email Templates</li>
                         </ol>
