@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { isUndefined } from 'lodash';
 import LoadingOverlay from 'react-loading-overlay';
 import { confirmAlert } from 'react-confirm-alert';
@@ -252,7 +252,7 @@ class Users extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a></li>
+                            <li><Link to={this.props.urlAdminHome}>Home</Link></li>
                             <li className="active">Users</li>
                         </ol>
                     </div>
@@ -264,9 +264,9 @@ class Users extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Users List</h3>
                                     <div className="actions pull-right">
-                                        <a className="btn btn-success" href="/admin/users/add">
+                                        <Link className="btn btn-success" to="/admin/users/add">
                                             Add New
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className="panel-body">

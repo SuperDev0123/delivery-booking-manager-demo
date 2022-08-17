@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { createFpDetail } from '../../../../state/services/fpService';
@@ -77,9 +77,9 @@ class AddUser extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
+                            <li><Link to={this.props.urlAdminHome}>Home</Link>
                             </li>
-                            <li><a href="/admin/users">Edit Users</a></li>
+                            <li><Link to="/admin/users">Edit Users</Link></li>
                             <li className="active">Add New</li>
                         </ol>
                     </div>
