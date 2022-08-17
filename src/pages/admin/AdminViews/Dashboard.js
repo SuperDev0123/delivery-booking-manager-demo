@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import { isNull } from 'lodash';
 import { getNumBookingsPerFp } from '../../../state/services/chartService';
-
+import { Link } from 'react-router-dom';
   
 class Dashboard extends Component {
     constructor(props) {
@@ -110,30 +110,30 @@ class Dashboard extends Component {
                             padding: '15px'
                         }}>
                             <li style={{padding:'5px'}}>
-                                <a href='/admin/chart/totaldeliveries'>
+                                <Link to='/admin/chart/totaldeliveries'>
                                     <span className="icon">
                                         <i className="fa fa-cog"></i>
-                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Total Deliveries by transport company</a>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Total Deliveries by transport company</Link>
                             </li>
 
                             <li style={{padding:'5px'}}>
-                                <a href='/admin/chart/ontimelatedeliveries'>
+                                <Link to='/admin/chart/ontimelatedeliveries'>
                                     <span className="icon">
                                         <i className="fa fa-cog"></i>
-                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Ontime/Late Deliveries</a>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Ontime/Late Deliveries</Link>
                             </li>
 
                             <li style={{padding:'5px'}}>
-                                <a href='/admin/chart/deliveriesbyclient'>
+                                <Link to='/admin/chart/deliveriesbyclient'>
                                     <span className="icon">
                                         <i className="fa fa-cog"></i>
-                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Total Client Bookings</a>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Total Client Bookings</Link>
                             </li>
                             <li style={{padding:'5px'}}>
-                                <a href='/admin/chart/activebooking'>
+                                <Link to='/admin/chart/activebooking'>
                                     <span className="icon">
                                         <i className="fa fa-cog"></i>
-                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Active Bookings</a>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Active Bookings</Link>
                             </li>
                         </ul>
                     </div>
