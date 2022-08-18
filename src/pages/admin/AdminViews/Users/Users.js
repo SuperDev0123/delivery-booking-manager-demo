@@ -11,9 +11,9 @@ import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import moment from 'moment';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
-import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
+import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';
 
-class Users extends Component {    
+class Users extends Component {
     constructor(props) {
         super(props);
 
@@ -25,7 +25,7 @@ class Users extends Component {
             clientPK: 0
         };
     }
-    
+
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
@@ -110,7 +110,8 @@ class Users extends Component {
         }
     }
 
-    updateUserStatus(event, user, status){
+    updateUserStatus(event, user, status) {
+        event.preventDefault();
         this.setState({ loading: true });
         confirmAlert({
             title: 'Confirmation Alert',
@@ -118,7 +119,7 @@ class Users extends Component {
             buttons: [
                 {
                     label: 'Ok',
-                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); }
+                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); this.props.getAllUsers(this.state.clientPK); }
                 },
                 {
                     label: 'Cancel',
@@ -127,7 +128,28 @@ class Users extends Component {
             ]
         });
         this.setState({ loading: true });
+    }
+
+    onClickDelete(event, user) {
         event.preventDefault();
+        event.stopPropagation();
+        this.setState({ loading: true });
+        confirmAlert({
+            title: 'Confirm to delete User',
+            message: 'Are you sure to do this?',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => { this.props.deleteUserDetails(user); }
+                },
+                {
+                    label: 'No',
+                    onClick: () => console.log('Click No')
+                }
+            ]
+        });
+
+        this.setState({ loading: false });
     }
 
     render() {
@@ -153,14 +175,16 @@ class Users extends Component {
         const actionButtons = (cell, row) => {
             return (
                 <div>
+                    <Link to={'/admin/users/edit/' + row.id} style={{padding: 0}}>
+                        <i
+                            className="fa fa-edit"
+                            style={{ fontSize: '24px', color: 'green' }}
+                        >
+                        </i>
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;
                     <i
-                        onClick={() => this.onClickEdit(2, 1, row.id)}
-                        className="fa fa-edit"
-                        style={{ fontSize: '24px', color: 'green' }}
-                    >
-                    </i>&nbsp;&nbsp;&nbsp;
-                    <i
-                        onClick={() => this.onClickDelete(0, { id: row.id })}
+                        onClick={(event) => this.onClickDelete(event, { id: row.id })}
                         className="fa fa-trash"
                         style={{ fontSize: '24px', color: 'red' }}
                     >
@@ -178,7 +202,7 @@ class Users extends Component {
                 </div>
             );
         };
-    
+
         const datetimeFormatter = (cell) => {
             if (cell)
                 return (
@@ -221,7 +245,7 @@ class Users extends Component {
                 editable: true,
                 style: editableStyle,
                 formatter: datetimeFormatter,
-            }, 
+            },
             {
                 dataField: 'last_login',
                 text: 'Last Login',
@@ -289,11 +313,11 @@ class Users extends Component {
                                                     <div className="row">
                                                         <div className="col-sm-6">
                                                             <label>
-                                                                Find By Client:&nbsp; 
-                                                                <select 
-                                                                    id="client-select" 
-                                                                    required 
-                                                                    onChange={(e) => this.onSelected(e, 'client')} 
+                                                                Find By Client:&nbsp;
+                                                                <select
+                                                                    id="client-select"
+                                                                    required
+                                                                    onChange={(e) => this.onSelected(e, 'client')}
                                                                     value={clientPK}
                                                                 >
                                                                     { clientOptionsList }

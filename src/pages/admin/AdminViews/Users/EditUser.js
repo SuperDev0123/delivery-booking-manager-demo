@@ -2,29 +2,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, } from 'react-router-dom';
-import CKEditor from 'ckeditor4-react';
+import { withRouter, Link } from 'react-router-dom';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getUserDetails, updateUserDetails } from '../../../../state/services/userService';
 
-class EditUser extends Component {
+class AddUser extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            id: 0,
+            first_name: '',
+            last_name: '',
+            user_name: '',
+            user_email: '',
             loading: false,
-            isShowFPDataSlider: false,
-            emailName: '',
-            sectionName: '',
-            emailBody: '',
-            emailTemplateDetails: { id: 0, emailName: '', sectionName: '', emailBody: '' },
-            pageItemCnt: 10,
-            pageInd: 0,
-            pageCnt: 0,
+            userDetails: {},
         };
-
     }
 
     static propTypes = {
@@ -32,19 +26,16 @@ class EditUser extends Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
         match: PropTypes.object.isRequired,
         getUserDetails: PropTypes.func.isRequired,
-        cleanRedirectState: PropTypes.func.isRequired,
         updateUserDetails: PropTypes.func.isRequired,
-        deleteFpCarrier: PropTypes.func.isRequired,
-        deleteFpZone: PropTypes.func.isRequired,
-        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
-        const id = this.props.match.params.id;
-
         const token = localStorage.getItem('token');
+        const userId = this.props.match.params.id;
 
         if (token && token.length > 0) {
             this.props.verifyToken();
@@ -53,12 +44,11 @@ class EditUser extends Component {
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
-
-        this.props.getUserDetails(id);
+        this.props.getUserDetails(userId);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, emailTemplateDetails, id, pageInd, pageCnt } = newProps;
+        const { redirect, userDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -66,113 +56,78 @@ class EditUser extends Component {
             this.props.history.push('/admin');
         }
 
-        if (emailTemplateDetails) {
-            this.setState({ emailTemplateDetails: emailTemplateDetails });
-            this.setState({ emailName: emailTemplateDetails.emailName });
-            this.setState({ sectionName: emailTemplateDetails.sectionName });
-            this.setState({ emailBody: emailTemplateDetails.emailBody });
+        if (userDetails) {
+            const { first_name, last_name, username, email } = userDetails;
+            this.setState({ userDetails, first_name, last_name, user_name: username, user_email: email });
         }
+    }
 
-        if (id) {
-            this.setState({ id: id });
-        }
-
-        if (pageCnt) {
-            this.setState({ pageCnt: parseInt(pageCnt), pageInd: parseInt(pageInd) });
-        }
+    onInputChange(event) {
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     onSubmit(event) {
         this.setState({ loading: true });
-        const { emailTemplateDetails, emailName, sectionName, emailBody } = this.state;
-        let data = { id: emailTemplateDetails.id, emailName: emailName, sectionName: sectionName, emailBody: emailBody };
-        this.props.updateUserDetails(data);
+        const { first_name, last_name, user_email, userDetails } = this.state;
+        this.props.updateUserDetails({ id: userDetails.id, first_name, last_name, user_email });
         this.setState({ loading: false });
-        this.props.history.push('/admin/emails');
+        this.props.history.push('/admin/users');
         event.preventDefault();
     }
 
-    onClickDelete(typeNum, row) {
-        if (typeNum === 0) { // Duplicate line
-            this.props.deleteFpCarrier({ id: row.id });
-        } else if (typeNum === 1) { // Duplicate line detail
-            this.props.deleteFpZone({ id: row.id });
-        }
-    }
-
     render() {
-        const { emailTemplateDetails, loading } = this.state;
-
         return (
             <div>
-
                 <div className="pageheader">
-                    <h1>Edit Email Template</h1>
+                    <h1>Add User</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
+                            <li><Link to={this.props.urlAdminHome}>Home</Link>
                             </li>
-                            <li><a href="/admin/users">Edit User</a></li>
-                            <li className="active">Edit</li>
+                            <li><Link to="/admin/users">Edit Users</Link></li>
+                            <li className="active">Add New</li>
                         </ol>
                     </div>
                 </div>
                 <section id="main-content" className="animated fadeInUp">
                     <LoadingOverlay
-                        active={loading}
+                        active={this.state.loading}
                         spinner
                         text='Loading...'
                     />
-
                     <div className="row">
-                        <div className="col-md-12">
+                        <div className="col-md-6">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Edit Email Template <b>{emailTemplateDetails.emailName}</b></h3>
+                                    <h3 className="panel-title">Add New</h3>
                                     <div className="actions pull-right">
-                                        <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
+
                                     </div>
                                 </div>
                                 <div className="panel-body">
                                     <form onSubmit={(e) => this.onSubmit(e)} role="form">
-                                        <input name="id" type="hidden" value={this.state.id} />
                                         <div className="form-group">
-                                            <label htmlFor="exampleInputEmail1">Template Name</label>
-                                            <input readOnly name="emailName" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Email Name" value={this.state.emailName} onChange={(e) => this.setState({ emailName: e.target.value })} />
+                                            <label htmlFor="first_name">First Name</label>
+                                            <input name="first_name" type="text" className="form-control" id="first_name" placeholder="Enter First Name" value={this.state.first_name} onChange={(e) => this.onInputChange(e)} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="last_name">Last Name</label>
+                                            <input name="last_name" type="text" className="form-control" id="last_name" placeholder="Enter Last Name" value={this.state.last_name} onChange={(e) => this.onInputChange(e)} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="user_name">User Name</label>
+                                            <input name="user_name" type="text" className="form-control" id="user_name" placeholder="Enter User Name" value={this.state.user_name} onChange={(e) => this.onInputChange(e)} readOnly />
                                             <i>*This field cannot be changed</i>
                                         </div>
-
                                         <div className="form-group">
-                                            <label htmlFor="exampleInputEmail1">Section Name</label>
-                                            <input readOnly name="sectionName" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Section Name" value={this.state.sectionName} onChange={(e) => this.setState({ sectionName: e.target.value })} />
-                                            <i>*This field cannot be changed</i>
+                                            <label htmlFor="user_email">Email</label>
+                                            <input name="user_email" type="email" className="form-control" id="user_email" placeholder="Enter Email" value={this.state.user_email} onChange={(e) => this.onInputChange(e)} />
                                         </div>
-
-                                        <div className="form-group">
-                                            <label htmlFor="exampleInputEmail1">Email Body</label>
-                                            <br /><i>*Please do no modify or remove variables with curly braces {}</i>
-                                            <CKEditor
-                                                data={this.state.emailBody}
-                                                onInit={editor => {
-                                                    console.log('Editor is ready to use!', editor);
-                                                }}
-                                                onChange={(event, editor) => {
-                                                    const data = editor.getData();
-                                                    this.setState({ emailBody: data });
-                                                    console.log({ event, editor, data });
-                                                }}
-                                                onBlur={(event, editor) => {
-                                                    console.log('Blur.', editor);
-                                                }}
-                                                onFocus={(event, editor) => {
-                                                    console.log('Focus.', editor);
-                                                }}
-                                            />
-                                        </div>
-
-                                        <button type="submit" className="btn btn-primary pull-right">Submit</button>
+                                        <button type="submit" className="btn btn-primary mt-5 mb-5">Submit</button>
                                     </form>
+
+
                                 </div>
                             </div>
                         </div>
@@ -186,12 +141,9 @@ class EditUser extends Component {
 const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
-        emailTemplateDetails: state.emailTemplate.emailTemplateDetails,
         username: state.auth.username,
-        pageCnt: state.fp.pageCnt,
-        pageItemCnt: state.fp.pageItemCnt,
-        pageInd: state.fp.pageInd,
         urlAdminHome: state.url.urlAdminHome,
+        userDetails: state.user.userDetails,
     };
 };
 
@@ -199,9 +151,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getUserDetails: (fp_id) => dispatch(getUserDetails(fp_id)),
-        updateUserDetails: (emailTemplateDetails) => dispatch(updateUserDetails(emailTemplateDetails)),
+        getUserDetails: (userId) => dispatch(getUserDetails(userId)),
+        updateUserDetails: (user) => dispatch(updateUserDetails(user)),
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditUser));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AddUser));

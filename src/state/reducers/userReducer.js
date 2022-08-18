@@ -46,7 +46,8 @@ export const UserReducer = (state = defaultState, {
         case SUCCESS_CREATE_USER:
             return {
                 ...state,
-                needUpdateUserDetails: true
+                needUpdateUserDetails: true,
+                needUpdateUsers: true,                
             };
         case SUCCESS_UPDATE_USER:
             return {
@@ -57,7 +58,8 @@ export const UserReducer = (state = defaultState, {
         case SUCCESS_DELETE_USER:
             return {
                 ...state,
-                needUpdateUserDetails: true
+                needUpdateUserDetails: true,
+                needUpdateUsers: true,                
             };
         case SET_FETCH_USERS_FLAG:
             return {
