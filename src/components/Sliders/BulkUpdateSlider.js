@@ -390,183 +390,179 @@ class BulkUpdateSlider extends React.Component {
                             {selectedField && (selectedField === 'fp_scan') &&
                                 <div className="form-view">
                                     <h2>{'Create a new FP Scan for selected Bookings'}</h2>
-                                    <form>
-                                        <label>
-                                            <span className="text-left">Status*</span>
-                                            <input
-                                                className="form-control"
-                                                required
-                                                name="status"
-                                                value={formInputs['status']}
-                                                onChange={(e) => this.onHandleInput(e)}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Description*</span>
-                                            <input
-                                                className="form-control"
-                                                required
-                                                name="desc"
-                                                value={formInputs['desc']}
-                                                onChange={(e) => this.onHandleInput(e)}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Select a Freight Provider*</span>
-                                            <select 
-                                                required
-                                                name='fp'
-                                                onChange={(e) => this.onHandleInput(e)}
-                                                value={formInputs['fp']}
-                                            >
-                                                <option key={0} value="" disabled selected='selected'>Select a FP</option>
-                                                {fpOptions}
-                                            </select>
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Scan timestamp*</span>
-                                            <DateTimePicker
-                                                onChange={(date) => this.onChangeDateTime(date, 'event_timestamp')}
-                                                value={formInputs['event_timestamp'] ?
-                                                    new Date(moment(formInputs['event_timestamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                    : null}
-                                                format={'dd/MM/yyyy HH:mm'}
-                                            />
-                                        </label>
-                                    </form>
+                                    <label>
+                                        <span className="text-left">Status*</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="status"
+                                            value={formInputs['status']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Description*</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="desc"
+                                            value={formInputs['desc']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Select a Freight Provider*</span>
+                                        <select 
+                                            required
+                                            name='fp'
+                                            onChange={(e) => this.onHandleInput(e)}
+                                            value={formInputs['fp']}
+                                        >
+                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                            {fpOptions}
+                                        </select>
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Scan timestamp*</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'event_timestamp')}
+                                            value={formInputs['event_timestamp'] ?
+                                                new Date(moment(formInputs['event_timestamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label>
                                 </div>
                             }
                             {selectedField && (selectedField === 'additional_surcharge') &&
                                 <div className="form-view">
                                     <h2>{'Create a new Linked Service'}</h2>
-                                    <form>
-                                        <label>
-                                            <span className="text-left">Visible to customer</span>
-                                            <div>
-                                                <input
-                                                    className="checkbox"
-                                                    name="visible"
-                                                    type="checkbox"
-                                                    checked={formInputs['visible']}
-                                                    onChange={(e) => this.onHandleInput(e)}
-                                                />
-                                            </div>
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Select a Freight Provider*</span>
-                                            <select 
-                                                required
-                                                name='fp'
+                                    <label>
+                                        <span className="text-left">Visible to customer</span>
+                                        <div>
+                                            <input
+                                                className="checkbox"
+                                                name="visible"
+                                                type="checkbox"
+                                                checked={formInputs['visible']}
                                                 onChange={(e) => this.onHandleInput(e)}
-                                                value={formInputs['fp']}
+                                            />
+                                        </div>
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Select a Freight Provider*</span>
+                                        <select 
+                                            required
+                                            name='fp'
+                                            onChange={(e) => this.onHandleInput(e)}
+                                            value={formInputs['fp']}
+                                        >
+                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                            {fpOptions}
+                                        </select>
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Service Name*</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="name"
+                                            value={formInputs['name']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">
+                                            Connote / Reference
+                                            <Button
+                                                className="auto-gen-connote btn btn-success"
+                                                onClick={() => this.onClickAutoGen()}
+                                                title="Auto generate connote number based on Freight Provider and Booking info"
                                             >
-                                                <option key={0} value="" disabled selected='selected'>Select a FP</option>
-                                                {fpOptions}
-                                            </select>
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Service Name*</span>
-                                            <input
-                                                className="form-control"
-                                                required
-                                                name="name"
-                                                value={formInputs['name']}
-                                                onChange={(e) => this.onHandleInput(e)}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">
-                                                Connote / Reference
-                                                <Button
-                                                    className="auto-gen-connote btn btn-success"
-                                                    onClick={() => this.onClickAutoGen()}
-                                                    title="Auto generate connote number based on Freight Provider and Booking info"
-                                                >
-                                                    Auto Gen
-                                                </Button>
-                                            </span>
-                                            <input
-                                                className="form-control"
-                                                name="connote_or_reference"
-                                                value={formInputs['connote_or_reference']}
-                                                onChange={(e) => this.onHandleInput(e)}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Booked Date</span>
-                                            <DateTimePicker
-                                                onChange={(date) => this.onChangeDateTime(date, 'booked_date')}
-                                                value={formInputs['booked_date'] ?
-                                                    new Date(moment(formInputs['booked_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                    : null}
-                                                format={'dd/MM/yyyy HH:mm'}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Estimated Pickup Date</span>
-                                            <DateTimePicker
-                                                onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
-                                                value={formInputs['eta_pu_date'] ?
-                                                    new Date(moment(formInputs['eta_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                    : null}
-                                                format={'dd/MM/yyyy HH:mm'}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Estimated Delivery Date</span>
-                                            <DateTimePicker
-                                                onChange={(date) => this.onChangeDateTime(date, 'eta_de_date')}
-                                                value={formInputs['eta_de_date'] ?
-                                                    new Date(moment(formInputs['eta_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                    : null}
-                                                format={'dd/MM/yyyy HH:mm'}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Actual Pickup Date</span>
-                                            <DateTimePicker
-                                                onChange={(date) => this.onChangeDateTime(date, 'actual_pu_date')}
-                                                value={formInputs['actual_pu_date'] ?
-                                                    new Date(moment(formInputs['actual_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                    : null}
-                                                format={'dd/MM/yyyy HH:mm'}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Actual Delivery Date</span>
-                                            <DateTimePicker
-                                                onChange={(date) => this.onChangeDateTime(date, 'actual_de_date')}
-                                                value={formInputs['actual_de_date'] ?
-                                                    new Date(moment(formInputs['actual_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                    : null}
-                                                format={'dd/MM/yyyy HH:mm'}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Amount ($)*</span>
-                                            <input
-                                                className="form-control"
-                                                required
-                                                type="number"
-                                                step="0.01"
-                                                name="amount"
-                                                value={formInputs['amount']}
-                                                onChange={(e) => this.onHandleInput(e)}
-                                            />
-                                        </label><br />
-                                        <label>
-                                            <span className="text-left">Quantity*</span>
-                                            <input
-                                                className="form-control"
-                                                required
-                                                type="number"
-                                                step="1"
-                                                name="qty"
-                                                value={formInputs['qty']}
-                                                onChange={(e) => this.onHandleInput(e)}
-                                            />
-                                        </label><br />
-                                    </form>
+                                                Auto Gen
+                                            </Button>
+                                        </span>
+                                        <input
+                                            className="form-control"
+                                            name="connote_or_reference"
+                                            value={formInputs['connote_or_reference']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Booked Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'booked_date')}
+                                            value={formInputs['booked_date'] ?
+                                                new Date(moment(formInputs['booked_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Estimated Pickup Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
+                                            value={formInputs['eta_pu_date'] ?
+                                                new Date(moment(formInputs['eta_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Estimated Delivery Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'eta_de_date')}
+                                            value={formInputs['eta_de_date'] ?
+                                                new Date(moment(formInputs['eta_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Actual Pickup Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'actual_pu_date')}
+                                            value={formInputs['actual_pu_date'] ?
+                                                new Date(moment(formInputs['actual_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Actual Delivery Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'actual_de_date')}
+                                            value={formInputs['actual_de_date'] ?
+                                                new Date(moment(formInputs['actual_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Amount ($)*</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            type="number"
+                                            step="0.01"
+                                            name="amount"
+                                            value={formInputs['amount']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Quantity*</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            type="number"
+                                            step="1"
+                                            name="qty"
+                                            value={formInputs['qty']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
                                 </div>
                             }
                         </div>
