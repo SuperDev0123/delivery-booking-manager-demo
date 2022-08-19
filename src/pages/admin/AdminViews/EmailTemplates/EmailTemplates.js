@@ -92,7 +92,7 @@ class EmailTemplates extends Component {
                     <td>{fp.id}</td>
                     <td>{fp.emailName}</td>
                     <td>{fp.sectionName}</td>
-                    <td><Link className="btn btn-info btn-sm" to={'/emails/edit/' + fp.id}>Edit</Link></td>
+                    <td><Link className="btn btn-info btn-sm" to={'/admin/emails/edit/' + fp.id}>Edit</Link></td>
                 </tr>
             );
         });
@@ -140,7 +140,7 @@ class EmailTemplates extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><Link to={this.props.urlAdminHome}>Home</Link>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Email Templates</li>
                         </ol>
