@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
@@ -94,7 +94,7 @@ class FreightProviders extends Component {
                     <td>{fp.id}</td>
                     <td>{fp.fp_company_name}</td>
                     <td>{fp.fp_address_country}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + fp.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
+                    <td><Link className="btn btn-info btn-sm" to={'/admin/providers/edit/' + fp.id}>Edit</Link>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
                 </tr>
             );
         });
@@ -124,7 +124,7 @@ class FreightProviders extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Freight Providers</h3>
                                     <div className="actions pull-right">
-                                        <a className="btn btn-success" href="/providers/add">Add New</a>
+                                        <Link className="btn btn-success" to="/admin/providers/add">Add New</Link>
                                     </div>
                                 </div>
                                 <div className="panel-body">
