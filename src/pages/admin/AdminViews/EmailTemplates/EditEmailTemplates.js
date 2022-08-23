@@ -159,10 +159,10 @@ class EditEmailTemplates extends Component {
                                                 onInit={editor => {
                                                     console.log('Editor is ready to use!', editor);
                                                 }}
-                                                onChange={(event, editor) => {
-                                                    const data = editor.getData();
+                                                onChange={(event) => {
+                                                    const data = event.editor.getData();
                                                     this.setState({ emailBody: data });
-                                                    console.log({ event, editor, data });
+                                                    console.log({ event, data });
                                                 }}
                                                 onBlur={(event, editor) => {
                                                     console.log('Blur.', editor);
