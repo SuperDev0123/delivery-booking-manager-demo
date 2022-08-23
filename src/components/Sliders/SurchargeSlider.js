@@ -61,7 +61,7 @@ class SurchargeSlider extends React.Component {
                 }
         }
 
-        if (nextProps.needToUpdateSurcharges) {
+        if (nextProps.needToUpdateSurcharges && nextProps.booking.id) {
             this.props.getSurcharges(nextProps.booking.id);
         }
     }
