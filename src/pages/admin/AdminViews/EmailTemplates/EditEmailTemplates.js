@@ -163,12 +163,6 @@ class EditEmailTemplates extends Component {
                                                     const data = event.editor.getData();
                                                     this.setState({ emailBody: data });
                                                 }}
-                                                onBlur={(event, editor) => {
-                                                    console.log('Blur.', editor);
-                                                }}
-                                                onFocus={(event, editor) => {
-                                                    console.log('Focus.', editor);
-                                                }}
                                             />
                                         </div>
 
