@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import CKEditor from 'ckeditor4-react';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
@@ -115,7 +115,7 @@ class EditEmailTemplates extends Component {
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/admin/emails">Email Templates</a></li>
+                            <li><Link to="/admin/emails">Email Templates</Link></li>
                             <li className="active">Edit</li>
                         </ol>
                     </div>
