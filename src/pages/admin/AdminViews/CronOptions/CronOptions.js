@@ -107,13 +107,17 @@ class CronOptions extends Component {
 
     onChangeDateTime(date, option, fieldName) {
         const allCronOptions = this.state.allCronOptions;
-        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
-
-        if (fieldName === 'arg2' && conveted_date) {
+        if (fieldName === 'arg2') {
             allCronOptions.map(cronOption => {
                 if (cronOption.id === option.id) {
-                    cronOption.arg2 = moment(conveted_date).format('YYYY-MM-DD HH:mmZ');
+                    if (date) {
+                        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+                        conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
+                        cronOption.arg2 = moment(conveted_date).format('YYYY-MM-DD HH:mmZ');
+                    }
+                    else {
+                        cronOption.arg2 = null;
+                    }
                 }
             });
             this.setState({allCronOptions});
