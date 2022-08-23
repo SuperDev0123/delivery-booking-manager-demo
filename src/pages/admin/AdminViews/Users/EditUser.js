@@ -5,7 +5,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter, Link } from 'react-router-dom';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getUserDetails, updateUserDetails } from '../../../../state/services/userService';
+import { getAllUsers, getUserDetails, updateUserDetails } from '../../../../state/services/userService';
 
 class AddUser extends Component {
     constructor(props) {
@@ -31,6 +31,7 @@ class AddUser extends Component {
         match: PropTypes.object.isRequired,
         getUserDetails: PropTypes.func.isRequired,
         updateUserDetails: PropTypes.func.isRequired,
+        getAllUsers: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -71,6 +72,7 @@ class AddUser extends Component {
         const { first_name, last_name, user_email, userDetails } = this.state;
         this.props.updateUserDetails({ id: userDetails.id, first_name, last_name, user_email });
         this.setState({ loading: false });
+        this.props.getAllUsers();
         this.props.history.push('/admin/users');
         event.preventDefault();
     }
@@ -153,6 +155,7 @@ const mapDispatchToProps = (dispatch) => {
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getUserDetails: (userId) => dispatch(getUserDetails(userId)),
         updateUserDetails: (user) => dispatch(updateUserDetails(user)),
+        getAllUsers: () => dispatch(getAllUsers()),
     };
 };
 
