@@ -189,7 +189,7 @@ class ClientEmployees extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><Link to={this.props.urlAdminHome}>Home</Link>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Client Employees</li>
                         </ol>
