@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Modal from 'react-modal';
 
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -313,7 +313,7 @@ class SqlQueriesAction extends Component {
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/admin/sqlqueries">SQL Queries</a></li>
+                            <li><Link to="/admin/sqlqueries">SQL Queries</Link></li>
                             <li className="active">{this.toCamelCase(action)}</li>
                         </ol>
                     </div>
