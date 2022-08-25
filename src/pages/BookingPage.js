@@ -4132,7 +4132,7 @@ class BookingPage extends Component {
                                     <div className='row col-sm-12 booking-form-02'>
                                         <SurchargeTable
                                             clientname={clientname}
-                                            bookingId={booking ? `${booking.id}` : null}
+                                            bookingId={booking ? booking.id : null}
                                             fps={this.props.allFPs}
                                         />
                                     </div>
