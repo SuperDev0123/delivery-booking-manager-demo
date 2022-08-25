@@ -54,15 +54,15 @@ class SurchargeSlider extends React.Component {
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.isOpen) {
-            if (nextProps.fps.length > 0 && nextProps.booking.id)
-                if (nextProps.booking.id !== this.state.bookingId) {
-                    this.setState({bookingId: nextProps.booking.id});
-                    this.props.getSurcharges(nextProps.booking.id);
+            if (nextProps.fps.length > 0 && nextProps.bookingId)
+                if (nextProps.bookingId !== this.state.bookingId) {
+                    this.setState({bookingId: nextProps.bookingId});
+                    this.props.getSurcharges(nextProps.bookingId);
                 }
         }
 
-        if (nextProps.needToUpdateSurcharges && nextProps.booking.id) {
-            this.props.getSurcharges(nextProps.booking.id);
+        if (nextProps.needToUpdateSurcharges && nextProps.bookingId) {
+            this.props.getSurcharges(nextProps.bookingId);
         }
     }
 

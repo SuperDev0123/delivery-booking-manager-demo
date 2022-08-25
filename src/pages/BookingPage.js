@@ -6135,6 +6135,7 @@ class BookingPage extends Component {
                     isOpen={this.state.isShowSurchargeSlider}
                     toggleSlider={this.toggleSurchargeSlider}
                     booking={booking}
+                    bookingId={booking ? `${booking.id}` : null}
                     clientname={clientname}
                     fps={this.props.allFPs}
                 />
