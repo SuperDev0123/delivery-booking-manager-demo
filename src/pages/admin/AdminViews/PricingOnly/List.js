@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 // Libs
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -178,7 +178,7 @@ class List extends Component {
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/pricing-only">Quote Shipping Histories</a></li>
+                            <li><Link to="/admin/pricing-only">Quote Shipping Histories</Link></li>
                             <li className="active">List</li>
                         </ol>
                     </div>

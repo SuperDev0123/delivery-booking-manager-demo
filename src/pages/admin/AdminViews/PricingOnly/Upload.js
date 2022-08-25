@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import DropzoneComponent from 'react-dropzone-component';
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
@@ -100,7 +100,7 @@ class Upload extends Component {
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a></li>
-                            <li><a href="/pricing-only">Quote Shipping Histories</a></li>
+                            <li><Link to="/admin/pricing-only">Quote Shipping Histories</Link></li>
                             <li className="active">Upload</li>
                         </ol>
                     </div>
