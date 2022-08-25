@@ -57,13 +57,11 @@ class SurchargeSlider extends React.Component {
             if (nextProps.fps.length > 0 && nextProps.bookingId)
                 if (nextProps.bookingId !== this.state.bookingId) {
                     this.setState({bookingId: nextProps.bookingId});
-                    console.log('@2 - ', nextProps.bookingId);
                     this.props.getSurcharges(nextProps.bookingId);
                 }
         }
 
         if (nextProps.needToUpdateSurcharges && nextProps.bookingId) {
-            console.log('@3 - ', nextProps.bookingId);
             this.props.getSurcharges(nextProps.bookingId);
         }
     }
