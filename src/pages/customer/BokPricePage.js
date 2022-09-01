@@ -449,7 +449,7 @@ class BokPricePage extends Component {
                     let clientCustomerPrice = price['sell'];
 
                     if (price['cost'] > 0 && clientSalesTotal5Percent > clientCustomerPrice) {
-                        clientCustomerMarkup = 0;
+                        clientCustomerMarkup = ((clientSalesTotal5Percent / price['client_mu_1_minimum_values']) - 1) * 100;
                         clientCustomerPrice = clientSalesTotal5Percent;
                     }
 
