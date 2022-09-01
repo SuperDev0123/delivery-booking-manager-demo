@@ -450,6 +450,7 @@ class BokPricePage extends Component {
 
                     if (price['cost'] > 0 && clientSalesTotal5Percent > clientCustomerPrice) {
                         clientCustomerMarkup = ((clientSalesTotal5Percent / price['client_mu_1_minimum_values']) - 1) * 100;
+                        clientCustomerMarkup = clientCustomerMarkup.toFixed(2);
                         clientCustomerPrice = clientSalesTotal5Percent;
                     }
 
