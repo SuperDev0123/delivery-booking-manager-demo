@@ -450,7 +450,7 @@ class BokPricePage extends Component {
 
                     if (clientSalesTotal5Percent > clientCustomerPrice) {
                         clientCustomerMarkup = 0;
-                        clientCustomerPrice = clientSalesTotal;
+                        clientCustomerPrice = clientSalesTotal5Percent;
                     }
 
                     return (
@@ -626,7 +626,7 @@ class BokPricePage extends Component {
                                 {
                                     (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
                                         <p className='lowest-price-summary disp-inline-block mar-left-30'>
-                                            <strong>Sales Total Value:</strong> `$${bokWithPricings.b_094_client_sales_total}`
+                                            <strong>Sales Total Value:</strong> ${bokWithPricings.b_094_client_sales_total}
                                         </p>
                                 }
                                 <Button
