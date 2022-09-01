@@ -475,7 +475,7 @@ class BokPricePage extends Component {
                             <td>{clientCustomerMarkup}%</td>
                             <td>
                                 ${clientCustomerPrice}&nbsp;&nbsp;&nbsp;
-                                <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['sell'])}></i>
+                                <i className="fa fa-copy" onClick={() => this.copyToClipBoard(clientCustomerPrice)}></i>
                             </td>
                             <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
                             {isPricingPage && !isSalesQuote &&
