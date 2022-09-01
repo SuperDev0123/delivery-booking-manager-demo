@@ -626,7 +626,7 @@ class BokPricePage extends Component {
                                 {
                                     (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
                                         <p className='lowest-price-summary disp-inline-block mar-left-30'>
-                                            <strong>Sales Order Total $:</strong> ${bokWithPricings.b_094_client_sales_total}
+                                            <strong>Sales Order Total $:</strong> ${bokWithPricings.b_094_client_sales_total.toLocaleString('en-US')}
                                         </p>
                                 }
                                 <Button
