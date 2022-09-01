@@ -624,7 +624,10 @@ class BokPricePage extends Component {
                                 </Button>
                                 <p className='lowest-price-summary disp-inline-block mar-left-30'><strong>Your Lowest Cost Option is - </strong>{lowest_price_summary}</p>
                                 {
-                                    (bokWithPricings && bokWithPricings.b_094_client_sales_total) && `$${bokWithPricings.b_094_client_sales_total}`
+                                    (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
+                                        <p className='lowest-price-summary disp-inline-block mar-left-30'>
+                                            <strong>Sales Total Value:</strong> `$${bokWithPricings.b_094_client_sales_total}`
+                                        </p>
                                 }
                                 <Button
                                     className='float-r'
