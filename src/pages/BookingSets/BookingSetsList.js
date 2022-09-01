@@ -1025,6 +1025,7 @@ class BookingSetList extends React.Component {
                         x_manual_booked_flag={this.state.selectedBooking.x_manual_booked_flag}
                         api_booking_quote_id={this.state.selectedBooking.api_booking_quote}
                         isBooked={this.state.selectedBooking.b_dateBookedDate ? true : false}
+                        clientSalesTotal={this.state.selectedBooking.client_sales_total}
                     />
                 }
 

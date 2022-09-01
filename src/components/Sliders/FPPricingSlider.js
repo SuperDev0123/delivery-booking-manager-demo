@@ -32,6 +32,7 @@ class FPPricingSlider extends React.Component {
         errors: PropTypes.array.isRequired,
         x_manual_booked_flag: PropTypes.bool,
         api_booking_quote_id: PropTypes.number,
+        clientSalesTotal: PropTypes.number,
     };
 
     notify = (text) => toast(text);
@@ -90,7 +91,7 @@ class FPPricingSlider extends React.Component {
     }
 
     render() {
-        const {isOpen, clientname, isBooked, api_booking_quote_id} = this.props;
+        const {isOpen, clientname, isBooked, api_booking_quote_id, clientSalesTotal} = this.props;
         const {pricingInfos, errors} = this.props;
         const { currentTab, selectedSurcharge} = this.state;
         let surchargeList = null;
@@ -101,6 +102,19 @@ class FPPricingSlider extends React.Component {
             const pricingList = pricingInfos
                 .filter(pricingInfo => pricingInfo.packed_status === packed_status)
                 .map((pricingInfo, index) => {
+                    let clientSalesTotal5Percent = 0;
+
+                    if (clientSalesTotal)
+                        clientSalesTotal5Percent = clientSalesTotal * 0.05;
+
+                    let clientCustomerMarkup = (pricingInfo.client_customer_mark_up * 100).toFixed(2);
+                    let clientCustomerPrice = (pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2);
+
+                    if (clientCustomerPrice < clientSalesTotal5Percent) {
+                        clientCustomerMarkup = 0;
+                        clientCustomerPrice = clientSalesTotal5Percent;
+                    }
+
                     return (
                         <tr key={index} className={api_booking_quote_id === pricingInfo.id ? 'selected' : '' }>
                             <td>{index + 1}</td>
@@ -122,8 +136,8 @@ class FPPricingSlider extends React.Component {
                                 {pricingInfo.surcharge_total_cl ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i> : null}
                             </td>
                             <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
-                            <td className="text-right">{(pricingInfo.client_customer_mark_up * 100).toFixed(2)}%</td>
-                            <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2)}</td>
+                            <td className="text-right">{clientCustomerMarkup}%</td>
+                            <td className="text-right">${clientCustomerPrice}</td>
                             <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
                                 {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
                             </td>
@@ -268,6 +282,9 @@ class FPPricingSlider extends React.Component {
                                 </Button>
                                 :
                                 null
+                            }
+                            {currentTab === 0 && clientSalesTotal &&
+                                <h3><strong>Sales Total Value:</strong> {clientSalesTotal}</h3>
                             }
                             {currentTab === 0 &&
                                 pricingTables.map((pricingTable, i) =>

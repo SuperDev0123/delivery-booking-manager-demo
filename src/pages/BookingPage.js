@@ -6124,6 +6124,7 @@ class BookingPage extends Component {
                     clientname={clientname}
                     onLoadPricingErrors={this.onLoadPricingErrors}
                     errors={this.state.errors}
+                    clientSalesTotal={booking.client_sales_total}
                 />
 
                 <EmailLogSlider

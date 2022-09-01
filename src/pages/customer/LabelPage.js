@@ -341,6 +341,7 @@ class LabelPage extends Component {
                             errors={this.state.errors}
                             isBooked={bookingLabels.b_dateBookedDate ? true : false}
                             clientname={this.props.clientname}
+                            clientSalesTotal={bookingLabels.client_sales_total}
                         />
                     </div>
                 }
