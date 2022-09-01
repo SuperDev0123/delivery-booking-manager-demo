@@ -440,6 +440,19 @@ class BokPricePage extends Component {
             pricings = sortedPricings
                 .filter(pricing => pricing.packed_status === _currentPackedStatus)
                 .map((price, index) => {
+                    const clientSalesTotal = bokWithPricings.b_094_client_sales_total;
+                    let clientSalesTotal5Percent = 0;
+
+                    if (clientSalesTotal) clientSalesTotal5Percent = clientSalesTotal * 0.05;
+
+                    let clientCustomerMarkup = (price['client_customer_mark_up'] * 100).toFixed(2);
+                    let clientCustomerPrice = price['sell'];
+
+                    if (clientSalesTotal5Percent > clientCustomerPrice) {
+                        clientCustomerMarkup = 0;
+                        clientCustomerPrice = clientSalesTotal;
+                    }
+
                     return (
                         <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
                             <td>{price['fp_name']}</td>
@@ -459,10 +472,9 @@ class BokPricePage extends Component {
                                 &nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                             </td>
-                            <td>{(price['client_customer_mark_up'] * 100).toFixed(2)}%</td>
+                            <td>{clientCustomerMarkup}%</td>
                             <td>
-                                ${price['sell']}
-                                &nbsp;&nbsp;&nbsp;
+                                ${clientCustomerPrice}&nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['sell'])}></i>
                             </td>
                             <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
@@ -611,6 +623,9 @@ class BokPricePage extends Component {
                                     Reset
                                 </Button>
                                 <p className='lowest-price-summary disp-inline-block mar-left-30'><strong>Your Lowest Cost Option is - </strong>{lowest_price_summary}</p>
+                                {
+                                    (bokWithPricings && bokWithPricings.b_094_client_sales_total) && `$${bokWithPricings.b_094_client_sales_total}`
+                                }
                                 <Button
                                     className='float-r'
                                     color='primary'
