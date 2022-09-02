@@ -43,6 +43,7 @@ class BokPricePage extends Component {
             isShowDeleteConfirmModal: false,
             isShowBokLineSlider: false,
             currentPackedStatus: '',
+            viewMode: 'adminView', // adminView | salesView
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -317,8 +318,12 @@ class BokPricePage extends Component {
         }
     }
 
+    onClickViewMode(viewMode) {
+        this.setState({viewMode: viewMode});
+    }
+
     render() {
-        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus} = this.state;
+        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode} = this.state;
         const {bokWithPricings} = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
@@ -333,6 +338,12 @@ class BokPricePage extends Component {
         let errorList = [];
         let lowest_price_summary = 'not available';
         let _currentPackedStatus = currentPackedStatus || 'original';
+
+        if (bokWithPricings) {
+            // Show `Auto Repack` as default when it is available
+            const bok_2s_auto = bokWithPricings['bok_2s'].filter(bok_2 => bok_2['b_093_packed_status'] === 'auto');
+            if (!currentPackedStatus && bok_2s_auto.length > 0) _currentPackedStatus = 'auto';
+        }
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -352,14 +363,75 @@ class BokPricePage extends Component {
             });
         }
 
-        if (bokWithPricings && sortedBy === 'lowest') {
-            sortedPricings = sortBy(bokWithPricings['pricings'], ['sell']);
-        } else if (bokWithPricings && sortedBy === 'fastest') {
-            sortedPricings = sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
+        let salesViewPricings;
+        if (bokWithPricings && viewMode === 'salesView') {
+            let customerCollectPrice;
+            let inHouseFleetPrice;
+            let dmeLinehaulPrice;
+            let lowestPrice1;
+            let lowestPrice2;
+            let _sortedPricings = sortBy(bokWithPricings['pricings'], ['sell']);
+
+            _sortedPricings
+                .filter((price) => price['packed_status'] === _currentPackedStatus)
+                .map((price) => {
+                    if (!customerCollectPrice && price['fp_name'] === 'Customer Collect')
+                        customerCollectPrice = price;
+
+                    if (!dmeLinehaulPrice && price['fp_name'] === 'Deliver-ME')
+                        dmeLinehaulPrice = price;
+
+                    if (!inHouseFleetPrice && price['fp_name'] === 'In House Fleet')
+                        inHouseFleetPrice = price;
+
+                    if (
+                        !lowestPrice1 &&
+                        price['fp_name'] !== 'Customer Collect' &&
+                        price['fp_name'] !== 'In House Fleet' &&
+                        price['fp_name'] !== 'Deliver-ME'
+                    )
+                        lowestPrice1 = price;
+
+                    if (
+                        lowestPrice1 &&
+                        !lowestPrice2 &&
+                        lowestPrice1['cost_id'] !== price['cost_id'] &&
+                        price['fp_name'] !== 'Customer Collect' &&
+                        price['fp_name'] !== 'In House Fleet' &&
+                        price['fp_name'] !== 'Deliver-ME'
+                    )
+                        lowestPrice2 = price;
+                });
+
+
+            let _pricings = [];
+            if (inHouseFleetPrice || dmeLinehaulPrice) {                
+                if (customerCollectPrice) _pricings.push(customerCollectPrice);
+                if (inHouseFleetPrice) _pricings.push(inHouseFleetPrice);
+                if (dmeLinehaulPrice) _pricings.push(dmeLinehaulPrice);
+                if (lowestPrice1) _pricings.push(lowestPrice1);
+            } else {
+                if (customerCollectPrice) _pricings.push(customerCollectPrice);
+                if (inHouseFleetPrice) _pricings.push(inHouseFleetPrice);
+                if (dmeLinehaulPrice) _pricings.push(dmeLinehaulPrice);
+                if (lowestPrice1) _pricings.push(lowestPrice1);
+                if (lowestPrice2) _pricings.push(lowestPrice2);
+            }
+
+            salesViewPricings = _pricings;
         }
 
-        if (bokWithPricings && bokWithPricings['pricings']) {
-            const _pricings = sortBy(bokWithPricings['pricings'], ['sell']);
+        let filteredPricings;
+        if (bokWithPricings) filteredPricings = salesViewPricings || bokWithPricings['pricings'];
+
+        if (bokWithPricings && sortedBy === 'lowest') {
+            sortedPricings = sortBy(filteredPricings, ['sell']);
+        } else if (bokWithPricings && sortedBy === 'fastest') {
+            sortedPricings = sortBy(filteredPricings, ['eta_in_hour']);
+        }
+
+        if (bokWithPricings && filteredPricings) {
+            const _pricings = sortBy(filteredPricings, ['sell']);
 
             if (_pricings.length > 0) {
                 const lowest_price = _pricings[0];
@@ -378,10 +450,6 @@ class BokPricePage extends Component {
 
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
-
-            // Show `Auto Repack` as default when it is available
-            const bok_2s_auto = bokWithPricings['bok_2s'].filter(bok_2 => bok_2['b_093_packed_status'] === 'auto');
-            if (!currentPackedStatus && bok_2s_auto.length > 0) _currentPackedStatus = 'auto';
 
             if (bok_1 && bok_1['zb_105_text_5']) {
                 // Errors are joined with delimiter('***')
@@ -713,7 +781,23 @@ class BokPricePage extends Component {
                                     </tbody>
                                 </table>
                             }
-                            <h3><i className="fa fa-circle"></i> Freight Rates:</h3>
+                            <h3>
+                                <i className="fa fa-circle"></i> Freight Rates:{'   '}
+                                <Button
+                                    className='disp-inline-block'
+                                    color={viewMode === 'salesView' ? 'primary' : 'secondary'}
+                                    onClick={() => this.onClickViewMode('salesView')}
+                                >
+                                    Sales View
+                                </Button>{'   '}
+                                <Button
+                                    className='disp-inline-block'
+                                    color={viewMode === 'adminView' ? 'primary' : 'secondary'}
+                                    onClick={() => this.onClickViewMode('adminView')}
+                                >
+                                    Admin View
+                                </Button>
+                            </h3>
                             {pricings.length > 0 ?
                                 <table className="table table-hover table-bordered sortable fixed_headers">
                                     <thead>
