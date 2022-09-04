@@ -510,6 +510,7 @@ class BokPricePage extends Component {
                 .map((price, index) => {
                     const clientSalesTotal = bokWithPricings.b_094_client_sales_total;
                     let clientSalesTotal5Percent = 0;
+                    let percentOfClientSalesTotal = 0;
 
                     if (clientSalesTotal) clientSalesTotal5Percent = clientSalesTotal * 0.05;
 
@@ -522,32 +523,46 @@ class BokPricePage extends Component {
                         clientCustomerPrice = clientSalesTotal5Percent;
                     }
 
+                    // Sell $ / Sales Order Total $
+                    if (clientSalesTotal) percentOfClientSalesTotal = (clientCustomerPrice / clientSalesTotal * 100).toFixed(2);
+
                     return (
                         <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
-                            <td>{price['fp_name']}</td>
-                            <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
                             <td>
+                                {price['fp_name']}
+                            </td>
+                            <td>
+                                {price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}
+                            </td>
+                            <td className={viewMode === 'salesView' ? 'none' : null}>
                                 ${price['cost_dollar'].toFixed(2)}
                                 &nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost_dollar'].toFixed(2))}></i>
                             </td>
-                            <td>{(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%</td>
-                            <td>${price['fuel_levy_base_cl'].toFixed(2)}</td>
-                            <td>
+                            <td className={viewMode === 'salesView' ? 'none' : null}>
+                                {(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%
+                            </td>
+                            <td  className={viewMode === 'salesView' ? 'none' : null}>
+                                ${price['fuel_levy_base_cl'].toFixed(2)}
+                            </td>
+                            <td className={viewMode === 'salesView' ? 'none' : null}>
                                 ${price['surcharge_total_cl'].toFixed(2)} {price['surcharge_total_cl'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                             </td>
-                            <td>
+                            <td className={viewMode === 'salesView' ? 'none' : null}>
                                 ${price['client_mu_1_minimum_values'].toFixed(2)}
                                 &nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                             </td>
                             <td>{clientCustomerMarkup}%</td>
+                            {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <td>{percentOfClientSalesTotal}%</td> : null}
                             <td>
                                 ${clientCustomerPrice}&nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(clientCustomerPrice)}></i>
                             </td>
-                            <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
-                            {isPricingPage && !isSalesQuote &&
+                            <td  className={viewMode === 'salesView' ? 'none' : null}>
+                                {moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})
+                            </td>
+                            {isPricingPage && !isSalesQuote && viewMode !== 'salesView' &&
                                 <td>
                                     <Button
                                         color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
@@ -804,15 +819,16 @@ class BokPricePage extends Component {
                                         <tr>
                                             <th>Freight Provider</th>
                                             <th>Service (Vehicle)</th>
-                                            <th>Cost $</th>
-                                            <th>Fuel Levy %</th>
-                                            <th>Fuel Levy $</th>
-                                            <th>Extra $</th>
-                                            <th>Total $</th>
-                                            <th>Client Customer Markup %</th>
+                                            <th className={viewMode === 'salesView' ? 'none' : null}>Cost $</th>
+                                            <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy %</th>
+                                            <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy $</th>
+                                            <th className={viewMode === 'salesView' ? 'none' : null}>Extra $</th>
+                                            <th className={viewMode === 'salesView' ? 'none' : null}>Total $</th>
+                                            <th title="Client Customer Markup ">CC Markup %</th>
+                                            {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
                                             <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
-                                            <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                            {isPricingPage && !isSalesQuote && <th>Action</th>}
+                                            <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                            {isPricingPage && !isSalesQuote && viewMode !== 'salesView' && <th>Action</th>}
                                         </tr>
                                     </thead>
                                     <tbody>
