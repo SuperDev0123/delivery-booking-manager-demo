@@ -553,10 +553,12 @@ class BokPricePage extends Component {
                                 &nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                             </td>
-                            <td>{clientCustomerMarkup}%</td>
+                            <td className={viewMode === 'salesView' ? 'none' : null}>
+                                {clientCustomerMarkup}%
+                            </td>
                             {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <td>{percentOfClientSalesTotal}%</td> : null}
                             <td>
-                                ${clientCustomerPrice}&nbsp;&nbsp;&nbsp;
+                                ${clientCustomerPrice.toFixed(2)}&nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(clientCustomerPrice)}></i>
                             </td>
                             <td  className={viewMode === 'salesView' ? 'none' : null}>
@@ -824,7 +826,7 @@ class BokPricePage extends Component {
                                             <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy $</th>
                                             <th className={viewMode === 'salesView' ? 'none' : null}>Extra $</th>
                                             <th className={viewMode === 'salesView' ? 'none' : null}>Total $</th>
-                                            <th title="Client Customer Markup ">CC Markup %</th>
+                                            <th className={viewMode === 'salesView' ? 'none' : null} title="Client Customer Markup ">CC Markup %</th>
                                             {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
                                             <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
                                             <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
