@@ -564,7 +564,7 @@ class BokPricePage extends Component {
                             <td  className={viewMode === 'salesView' ? 'none' : null}>
                                 {moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})
                             </td>
-                            {isPricingPage && !isSalesQuote && viewMode !== 'salesView' &&
+                            {isPricingPage && !isSalesQuote &&
                                 <td>
                                     <Button
                                         color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
@@ -830,7 +830,7 @@ class BokPricePage extends Component {
                                             {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
                                             <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
                                             <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                            {isPricingPage && !isSalesQuote && viewMode !== 'salesView' && <th>Action</th>}
+                                            {isPricingPage && !isSalesQuote && <th>Action</th>}
                                         </tr>
                                     </thead>
                                     <tbody>
