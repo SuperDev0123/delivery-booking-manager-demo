@@ -60,15 +60,15 @@ class BookingLinesPage extends React.Component {
                     <td>{bookingLine.pk_auto_id_lines}</td>
                     <td>{bookingLine.e_type_of_packaging}</td>
                     <td>{bookingLine.e_item}</td>
-                    <td className="qty">{bookingLine.e_qty}</td>
+                    <td className="qty">{parseFloat(bookingLine.e_qty).toLocaleString('en')}</td>
                     <td>{bookingLine.e_weightUOM}</td>
-                    <td>{bookingLine.e_weightPerEach}</td>
-                    <td>{bookingLine.total_kgs}</td>
+                    <td>{parseFloat(bookingLine.e_weightPerEach).toLocaleString('en')}</td>
+                    <td>{parseFloat(bookingLine.total_kgs).toLocaleString('en')}</td>
                     <td>{bookingLine.e_dimUOM}</td>
-                    <td>{bookingLine.e_dimLength}</td>
-                    <td>{bookingLine.e_dimWidth}</td>
-                    <td>{bookingLine.e_dimHeight}</td>
-                    <td>{bookingLine.cubic_meter}</td>
+                    <td>{parseFloat(bookingLine.e_dimLength).toLocaleString('en')}</td>
+                    <td>{parseFloat(bookingLine.e_dimWidth).toLocaleString('en')}</td>
+                    <td>{parseFloat(bookingLine.e_dimHeight).toLocaleString('en')}</td>
+                    <td>{parseFloat(bookingLine.cubic_meter).toLocaleString('en')}</td>
                 </tr>
             );
         });

@@ -154,7 +154,7 @@ class ByClient extends Component {
 
         const decimalFormatter = (cell) => {
             if (cell) {
-                return Number(cell).toFixed(2);
+                return parseFloat(Number(cell).toFixed(2)).toLocaleString('en');
             }
             else
                 return 0;
