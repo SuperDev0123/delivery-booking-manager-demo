@@ -555,7 +555,15 @@ class BookingPage extends Component {
                     if (currentBooking.vx_freight_provider === 'TNT' && res !== 'valid') {
                         this.notify(res);
                     } else {
-                        this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                        if (
+                            this.state.booking.kf_client_id === '7EAA4B16-484B-3944-902E-BC936BFEF535' && // BioPak
+                            this.state.booking.vx_freight_provider === 'Startrack' &&
+                            this.state.booking.b_client_warehouse_code === 'BIO - RIC'
+                        ) {
+                            this.props.dmeLabel(booking.id);
+                        } else {
+                            this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                        }
                     }
                 }
             }
@@ -1279,7 +1287,15 @@ class BookingPage extends Component {
             const result = isValid4Label(formInputs, bookingLineDetailsProduct);
 
             if (result === 'valid') {
-                this.props.fpLabel(booking.id, booking.vx_freight_provider);
+                if (
+                    booking.kf_client_id === '7EAA4B16-484B-3944-902E-BC936BFEF535' && // BioPak
+                    booking.vx_freight_provider === 'Startrack' &&
+                    booking.b_client_warehouse_code === 'BIO - RIC'
+                ) {
+                    this.props.dmeLabel(booking.id);
+                } else {
+                    this.props.fpLabel(booking.id, booking.vx_freight_provider);
+                }
             } else {
                 this.notify(result);
             }
