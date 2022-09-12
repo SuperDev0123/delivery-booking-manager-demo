@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingLines } from '../state/services/bookingLinesService';
+import { numberWithCommas } from '../commons/helpers'
 
 class BookingLinesPage extends React.Component {
     constructor(props) {
@@ -60,15 +61,15 @@ class BookingLinesPage extends React.Component {
                     <td>{bookingLine.pk_auto_id_lines}</td>
                     <td>{bookingLine.e_type_of_packaging}</td>
                     <td>{bookingLine.e_item}</td>
-                    <td className="qty">{parseFloat(bookingLine.e_qty).toLocaleString('en')}</td>
+                    <td className="qty">{numberWithCommas(bookingLine.e_qty)}</td>
                     <td>{bookingLine.e_weightUOM}</td>
-                    <td>{parseFloat(bookingLine.e_weightPerEach).toLocaleString('en')}</td>
-                    <td>{parseFloat(bookingLine.total_kgs).toLocaleString('en')}</td>
+                    <td>{numberWithCommas(bookingLine.e_weightPerEach)}</td>
+                    <td>{numberWithCommas(bookingLine.total_kgs)}</td>
                     <td>{bookingLine.e_dimUOM}</td>
-                    <td>{parseFloat(bookingLine.e_dimLength).toLocaleString('en')}</td>
-                    <td>{parseFloat(bookingLine.e_dimWidth).toLocaleString('en')}</td>
-                    <td>{parseFloat(bookingLine.e_dimHeight).toLocaleString('en')}</td>
-                    <td>{parseFloat(bookingLine.cubic_meter).toLocaleString('en')}</td>
+                    <td>{numberWithCommas(bookingLine.e_dimLength)}</td>
+                    <td>{numberWithCommas(bookingLine.e_dimWidth)}</td>
+                    <td>{numberWithCommas(bookingLine.e_dimHeight)}</td>
+                    <td>{numberWithCommas(bookingLine.cubic_meter)}</td>
                 </tr>
             );
         });

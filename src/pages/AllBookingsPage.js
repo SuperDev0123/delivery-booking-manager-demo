@@ -30,6 +30,7 @@ import {
 } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+import { numberWithCommas } from '../commons/helpers';
 import { getAllBookingStatus, getAllFPs, getAllProjectNames, getBookingSets, createBookingSet, updateBookingSet } from '../state/services/extraService';
 // Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
@@ -2129,7 +2130,7 @@ class AllBookingsPage extends React.Component {
                             onClick={() => this.onClickPencil('b_bookingID_Visual', booking)}>
                         </i>
                     </td>
-                    <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider} {booking.cost_dollar ? `($${parseFloat(booking.cost_dollar).toLocaleString('en')})` : ''}</td>
+                    <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider} {booking.cost_dollar ? `($${numberWithCommas(booking.cost_dollar)})` : ''}</td>
                     <td name='v_FPBookingNumber' className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
                     <td name='b_status' className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.b_status}</p>
@@ -2609,13 +2610,13 @@ class AllBookingsPage extends React.Component {
                                                     <option value="flagged">Flagged</option>
                                                 </select>
                                                 <label className='left-30px right-10px'>
-                                                    Total Cnt: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_qty.toFixed(2)).toLocaleString('en')}` : '*'}</strong>
+                                                    Total Cnt: <strong>{bookingsSummary ? `${numberWithCommas(bookingsSummary.total_qty.toFixed(2))}` : '*'}</strong>
                                                 </label>
                                                 <label className='right-10px'>
-                                                    Total KG: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_kgs.toFixed(2)).toLocaleString('en')} KG` : '*'}</strong>
+                                                    Total KG: <strong>{bookingsSummary ? `${numberWithCommas(bookingsSummary.total_kgs.toFixed(2))} KG` : '*'}</strong>
                                                 </label>
                                                 <label className='right-10px'>
-                                                    Total Cubic: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_cbm.toFixed(2)).toLocaleString('en')} m3` : '*'}</strong>
+                                                    Total Cubic: <strong>{bookingsSummary ? `${numberWithCommas(bookingsSummary.total_cbm.toFixed(2))} m3` : '*'}</strong>
                                                 </label>
                                             </div>
                                             <div className="col-sm-6 tbl-pagination">

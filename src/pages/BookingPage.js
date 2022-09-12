@@ -71,7 +71,7 @@ import { isFormValid, isValid4Label, isValid4Book, isValid4Pricing } from '../co
 // Constants
 import { timeDiff, BOOKING_IMPORTANT_FIELDS } from '../commons/constants';
 // Helpers
-import { milliseconds2Days, milliseconds2Hours } from '../commons/helpers';
+import { milliseconds2Days, milliseconds2Hours, numberWithCommas } from '../commons/helpers';
 import { debounce } from '../commons/browser';
 
 // Images
@@ -3941,7 +3941,7 @@ class BookingPage extends Component {
                                                 <div>
                                                     <span>Quoted Cost</span>
                                                     {parseInt(curViewMode) === 0 ?
-                                                        <p className="show-mode">{formInputs['inv_cost_quoted'] && `$${parseFloat(parseFloat(formInputs['inv_cost_quoted']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                        <p className="show-mode">{formInputs['inv_cost_quoted'] && `$${numberWithCommas(parseFloat(formInputs['inv_cost_quoted']).toFixed(2))}`}</p>
                                                         :
                                                         <input
                                                             className="form-control"
@@ -3960,7 +3960,7 @@ class BookingPage extends Component {
                                                 <div>
                                                     <span>Actual Cost</span>
                                                     {parseInt(curViewMode) === 0 ?
-                                                        <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(parseFloat(formInputs['inv_cost_actual']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                        <p className="show-mode">{formInputs['inv_cost_actual'] && `$${numberWithCommas(parseFloat(formInputs['inv_cost_actual']).toFixed(2))}`}</p>
                                                         :
                                                         clientname === 'dme' ?
                                                             <input
@@ -3972,7 +3972,7 @@ class BookingPage extends Component {
                                                                 onBlur={(e) => this.onHandleInputBlur(e)}
                                                             />
                                                             :
-                                                            <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(parseFloat(formInputs['inv_cost_actual']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                            <p className="show-mode">{formInputs['inv_cost_actual'] && `$${numberWithCommas(parseFloat(formInputs['inv_cost_actual']).toFixed(2))}`}</p>
                                                     }
                                                 </div>
                                             </div>
@@ -3981,7 +3981,7 @@ class BookingPage extends Component {
                                             <div>
                                                 <span className="c-red">Quoted $</span>
                                                 {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(parseFloat(formInputs['inv_sell_quoted']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                    <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${numberWithCommas(parseFloat(formInputs['inv_sell_quoted']).toFixed(2))}`}</p>
                                                     :
                                                     <input
                                                         className="form-control"
@@ -3998,7 +3998,7 @@ class BookingPage extends Component {
                                             <div>
                                                 <span className="c-red">Booked $</span>
                                                 {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_booked_quoted'] && `$${parseFloat(parseFloat(formInputs['inv_booked_quoted']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                    <p className="show-mode">{formInputs['inv_booked_quoted'] && `$${numberWithCommas(parseFloat(formInputs['inv_booked_quoted']).toFixed(2))}`}</p>
                                                     :
                                                     <input
                                                         className="form-control"
@@ -4015,7 +4015,7 @@ class BookingPage extends Component {
                                             <div>
                                                 <span className="c-red">Quoted $*</span>
                                                 {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_sell_quoted_override'] && `$${parseFloat(parseFloat(formInputs['inv_sell_quoted_override']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                    <p className="show-mode">{formInputs['inv_sell_quoted_override'] && `$${numberWithCommas(parseFloat(formInputs['inv_sell_quoted_override']).toFixed(2))}`}</p>
                                                     :
                                                     <input
                                                         className="form-control"
@@ -4032,7 +4032,7 @@ class BookingPage extends Component {
                                             <div>
                                                 <span>Actual $</span>
                                                 {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(parseFloat(formInputs['inv_sell_actual']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                    <p className="show-mode">{formInputs['inv_sell_actual'] && `$${numberWithCommas(parseFloat(formInputs['inv_sell_actual']).toFixed(2))}`}</p>
                                                     :
                                                     clientname === 'dme' ?
                                                         <input
@@ -4053,7 +4053,7 @@ class BookingPage extends Component {
                                                 <div>
                                                     <span>Customer $</span>
                                                     {(parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['customer_cost'] && `$${parseFloat(parseFloat(formInputs['customer_cost']).toFixed(2)).toLocaleString('en')}`}</p>
+                                                        <p className="show-mode">{formInputs['customer_cost'] && `$${numberWithCommas(parseFloat(formInputs['customer_cost']).toFixed(2))}`}</p>
                                                         :
                                                         <input
                                                             className="form-control"

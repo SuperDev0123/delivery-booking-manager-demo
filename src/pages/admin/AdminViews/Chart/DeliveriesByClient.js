@@ -9,6 +9,7 @@ import DatePicker from 'react-datepicker';
 import { isNull, orderBy } from 'lodash';
 import { getDMEClients } from '../../../../state/services/authService';
 import { getNumBookingsPerClient, getNumBookingsPerStatus } from '../../../../state/services/chartService';
+import { numberWithCommas } from '../../../../commons/helpers';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -154,7 +155,7 @@ class ByClient extends Component {
 
         const decimalFormatter = (cell) => {
             if (cell) {
-                return parseFloat(Number(cell).toFixed(2)).toLocaleString('en');
+                return numberWithCommas(Number(cell).toFixed(2));
             }
             else
                 return 0;

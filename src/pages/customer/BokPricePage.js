@@ -16,7 +16,7 @@ import PalletSlider from '../../components/Sliders/PalletSlider';
 import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import BokLineSlider from '../../components/Sliders/BokLineSlider';
 // Services
-import { getWeight } from '../../commons/helpers';
+import { getWeight, numberWithCommas } from '../../commons/helpers';
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, sendEmail, onAddBokLine, onUpdateBokLine, onDeleteBokLine, repack } from '../../state/services/bokService';
 import { getPackageTypes } from '../../state/services/extraService';
 
@@ -712,7 +712,7 @@ class BokPricePage extends Component {
                                 {
                                     (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
                                         <p className='lowest-price-summary disp-inline-block mar-left-30'>
-                                            <strong>Sales Order Total $:</strong> ${bokWithPricings.b_094_client_sales_total.toLocaleString('en-US')}
+                                            <strong>Sales Order Total $:</strong> ${numberWithCommas( bokWithPricings.b_094_client_sales_total)}
                                         </p>
                                 }
                                 <Button
