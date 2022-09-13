@@ -63,7 +63,7 @@ class ManifestReport extends React.Component {
     UNSAFE_componentWillReceiveProps(newProps) {
         const { reports, allFPs, clients } = newProps;
         const { reportStore } = this.state;
-        if (reports && reports.length !== 0) {
+        if (reports) {
             if (isNull(this.props.reports)) {
                 const newReportStore = [...reportStore, ...reports];
                 this.setState({
