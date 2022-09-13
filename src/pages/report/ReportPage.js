@@ -85,16 +85,11 @@ class ReportPage extends React.Component {
                 </div>
                 <div className="tab-pane fade in active">
                     <div className="content">
-                        <label>
-                            Report Type:
-                            <select value={selectedReportType} onChange={(e) => this.onChangeReportType(e)}>
-                                <option value="manifest">Manifest</option>
-                            </select>
-                        </label>
-                        <hr />
                         {selectedReportType === 'manifest' &&
                             <ManifestReport
                                 history={this.props.history}
+                                selectedReportType={selectedReportType}
+                                onChangeReportType={this.onChangeReportType}
                             />
                         }
                     </div>

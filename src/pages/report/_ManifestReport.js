@@ -36,6 +36,8 @@ class ManifestReport extends React.Component {
 
     static propTypes = {
         history: PropTypes.object.isRequired,
+        selectedReportType: PropTypes.string.isRequired,
+        onChangeReportType: PropTypes.func.isRequired,
         getUser: PropTypes.func.isRequired,
         getManifestReport: PropTypes.func.isRequired,
         getAllClients: PropTypes.func,
@@ -55,7 +57,7 @@ class ManifestReport extends React.Component {
             this.props.getUser(token);
 
         this.props.getManifestReport(0);
-        
+
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -96,7 +98,7 @@ class ManifestReport extends React.Component {
                 fpOptions: totalFps,
             });
         }
-        
+
         if (clients != this.props.clients) {
             const { clientOptions } = this.state;
             let newClientOps = [];
@@ -160,8 +162,8 @@ class ManifestReport extends React.Component {
     onChangeFilterType = (e, filterType) => {
         this.setState({[filterType]: e.target.value});
     }
-    
-    
+
+
     onFind = (reports) => {
         const { clientname } = this.props;
         const { fpFilter, clientFilter } = this.state;
@@ -241,9 +243,9 @@ class ManifestReport extends React.Component {
         }
         return true;
     }
-    
+
     render() {
-        const { clientname } = this.props;
+        const { clientname, onChangeReportType, selectedReportType } = this.props;
         const { loading, fpFilter, clientFilter, fpFilterOpts, clientsOpts, reportStore } = this.state;
         const reportList = reportStore? this.onFind(reportStore) : '';
         return (
@@ -253,6 +255,12 @@ class ManifestReport extends React.Component {
                 text='Loading...'
             >
                 <div>
+                    <label>
+                        Report Type:
+                        <select value={selectedReportType} onChange={(e) => onChangeReportType(e)}>
+                            <option value="manifest">Manifest</option>
+                        </select>
+                    </label>
                     {clientname === 'dme' &&
                         <label>Client:
                             <select value={clientFilter ? clientFilter : ''} onChange={(e) => this.onChangeFilterType(e, 'clientFilter')} >
@@ -266,7 +274,7 @@ class ManifestReport extends React.Component {
                             <option value="">All</option>
                             {fpFilterOpts}
                         </select>
-                    </label>                                  
+                    </label>
                     <hr />
                 </div>
                 <div className="manifest" onScroll={(e) => this.onHandleScroll(e)}>
