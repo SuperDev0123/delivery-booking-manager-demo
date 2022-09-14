@@ -90,8 +90,8 @@ export const AppRouter = () => (
             <Header />
             <Switch>
                 <Route exact path='/' component={HomePage} />
-                <Route exact path='/home' component={HomePage} />
-                <Route exact path='/files' component={FilesPage} />
+                <PrivateRoute exact path='/home' component={HomePage} />
+                <PrivateRoute exact path='/files' component={FilesPage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />
                 <Route path='/reset-password' component={ResetPasswordPage} />
