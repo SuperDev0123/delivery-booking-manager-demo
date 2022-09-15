@@ -16,6 +16,7 @@ export function PrivateRoute({ component: Component, ...rest }) {
                         <Redirect
                             to={{
                                 pathname: '/login',
+                                search: `?redirect_url=${encodeURIComponent(location.pathname+location.search)}`,
                                 state: { from: props.location }
                             }}
                         />
