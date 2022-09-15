@@ -36,8 +36,8 @@ class LoginPage extends Component {
         }
 
         if (username) {
-            const redirect_url = decodeURIComponent(this.useQuery().get('redirect_url'));
-            this.props.history.push(redirect_url ? redirect_url : '/home');
+            const redirect_url = this.useQuery().get('redirect_url');
+            this.props.history.push(redirect_url ? decodeURIComponent(redirect_url) : '/home');
             this.setState({loading: false});
         }
 
