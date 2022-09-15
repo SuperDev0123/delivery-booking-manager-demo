@@ -24,6 +24,9 @@ class LoginPage extends Component {
         history: PropTypes.object.isRequired,
         token: PropTypes.string
     };
+    useQuery() {
+        return new URLSearchParams(window.location.search);
+    }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { token, username, errorMessage } = newProps;
@@ -33,7 +36,8 @@ class LoginPage extends Component {
         }
 
         if (username) {
-            this.props.history.push('/home');
+            const redirect_url = decodeURIComponent(this.useQuery().get('redirect_url'));
+            this.props.history.push(redirect_url ? redirect_url : '/home');
             this.setState({loading: false});
         }
 
