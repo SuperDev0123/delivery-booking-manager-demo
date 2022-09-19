@@ -119,7 +119,7 @@ class FPPricingSlider extends React.Component {
                         <tr key={index} className={api_booking_quote_id === pricingInfo.id ? 'selected' : '' }>
                             <td>{index + 1}</td>
                             <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
-                            <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_name} (${pricingInfo.vehicle_name})` : pricingInfo.service_name}</td>
+                            <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_desc} (${pricingInfo.vehicle_name})` : pricingInfo.service_desc}</td>
                             <td>{pricingInfo.etd}</td>
                             {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
                             {clientname === 'dme' && <td className="text-right">${pricingInfo.surcharge_total.toFixed(2)}</td>}

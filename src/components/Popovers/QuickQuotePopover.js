@@ -293,7 +293,7 @@ class QuickQuotePopover extends React.Component {
                 return (
                     <tr key={index}>
                         <td>{price['fp_name']}</td>
-                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
+                        <td>{price['vehicle_name'] ? `${price['service_desc']} (${price['vehicle_name']})` : price['service_desc']}</td>
                         <td>
                             ${price['cost_dollar'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;
@@ -323,7 +323,7 @@ class QuickQuotePopover extends React.Component {
                 return (
                     <tr key={index}>
                         <td>{price['fp_name']}</td>
-                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
+                        <td>{price['vehicle_name'] ? `${price['service_desc']} (${price['vehicle_name']})` : price['service_desc']}</td>
                         <td>
                             ${price['cost_dollar'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;

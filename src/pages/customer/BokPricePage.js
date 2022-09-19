@@ -532,7 +532,7 @@ class BokPricePage extends Component {
                                 {price['fp_name']}
                             </td>
                             <td>
-                                {price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}
+                                {price['vehicle_name'] ? `${price['service_desc']} (${price['vehicle_name']})` : price['service_desc']}
                             </td>
                             <td className={viewMode === 'salesView' ? 'none' : null}>
                                 ${price['cost_dollar'].toFixed(2)}
