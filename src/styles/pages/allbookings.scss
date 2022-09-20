@@ -46,7 +46,18 @@ span.arrow {
   vertical-align: top;
 }
 
-table.booking-lines {
+.popover {
+  max-height: 40%;
+  overflow: auto;
+  margin: 10px 0;
+}
+
+.booking-lines-container {
+  max-height: 300px;
+  overflow: auto;
+}
+
+table.booking-lines {  
   border-collapse: collapse;
   width: 100%;
 
