@@ -39,7 +39,6 @@ class HomePage extends Component {
 
         if (token && token.length > 0) {
             this.props.verifyToken();
-            this.props.getUser(token);
         } else {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
