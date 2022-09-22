@@ -54,7 +54,7 @@ class AllBookingsPage extends React.Component {
         super(props);
 
         this.state = {
-            bookingLines: [],
+            bookingLines: null,
             bookingLineDetails: [],
             warehouses: [],
             bookingsCnt: 0,
@@ -76,6 +76,7 @@ class AllBookingsPage extends React.Component {
             loading: false,
             loadingBooking: false,
             loadingDownload: false,
+            loadingLines: false,
             activeTabInd: 7,
             allCheckStatus: 'None',
             showGearMenu: false,
@@ -338,6 +339,7 @@ class AllBookingsPage extends React.Component {
 
         if (bookingLines) {
             this.setState({bookingLines: this.calcBookingLine(bookingLines)});
+            this.setState({loadingLines: false});
         }
 
         if (warehouses) {
@@ -729,6 +731,8 @@ class AllBookingsPage extends React.Component {
 
         this.props.getBookingLines(pkBookingId);
         this.props.getBookingLineDetails(pkBookingId);
+
+        this.setState({loadingLines: true});
 
         let bookingLinesInfoOpens = this.state.bookingLinesInfoOpens;
         let flag = bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId];
@@ -1847,7 +1851,7 @@ class AllBookingsPage extends React.Component {
             filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword,
             showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft,
             isShowXLSModal, isShowProjectNameModal, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
-            projectNames, projectName, allCheckStatus } = this.state;
+            projectNames, projectName, allCheckStatus, loadingLines } = this.state;
         const { bookings, bookingsets, allBookingStatus, filteredBookingIds, bookingsSummary, allFPs } = this.props;
 
         // Table width
@@ -1895,7 +1899,7 @@ class AllBookingsPage extends React.Component {
                 </tr>
             ));
 
-        const bookingLinesList = bookingLines.map((bookingLine, index) =>
+        const bookingLinesList = bookingLines ? bookingLines.map((bookingLine, index) =>
             (
                 <tr key={index}>
                     <td>{bookingLine.pk_auto_id_lines}</td>
@@ -1911,7 +1915,7 @@ class AllBookingsPage extends React.Component {
                     <td>{bookingLine.e_dimHeight}</td>
                     <td>{bookingLine.cubic_meter.toFixed(2)}</td>
                 </tr>
-            ));
+            )) : [];
 
         const bookingsList = bookings.map((booking, index) => {
             let priorityBgColor = '';
@@ -1987,25 +1991,32 @@ class AllBookingsPage extends React.Component {
                             </div>
                             <div className="pad-10p">
                                 <p><strong>Lines</strong></p>
-                                <table className="booking-lines">
-                                    <thead>
-                                        <th>ID</th>
-                                        <th>Packaging</th>
-                                        <th>Item Description</th>
-                                        <th>Qty</th>
-                                        <th>Wgt UOM</th>
-                                        <th>Wgt Each</th>
-                                        <th>Total Kgs</th>
-                                        <th>Dim UOM</th>
-                                        <th>Length</th>
-                                        <th>Width</th>
-                                        <th>Height</th>
-                                        <th>Cubic Meter</th>
-                                    </thead>
-                                    <tbody>
-                                        { bookingLinesList }
-                                    </tbody>
-                                </table>
+                                <LoadingOverlay
+                                    active={loadingLines}
+                                    spinner
+                                    text='Loading...'
+                                    className='booking-lines-container'
+                                >
+                                    <table className="booking-lines">
+                                        <thead>
+                                            <th>ID</th>
+                                            <th>Packaging</th>
+                                            <th>Item Description</th>
+                                            <th>Qty</th>
+                                            <th>Wgt UOM</th>
+                                            <th>Wgt Each</th>
+                                            <th>Total Kgs</th>
+                                            <th>Dim UOM</th>
+                                            <th>Length</th>
+                                            <th>Width</th>
+                                            <th>Height</th>
+                                            <th>Cubic Meter</th>
+                                        </thead>
+                                        <tbody>
+                                            { loadingLines ? <tr><td colSpan={12} style={{height: 100}}></td></tr> : bookingLinesList }
+                                        </tbody>
+                                    </table>
+                                </LoadingOverlay>
                             </div>
                             <div className="pad-10p">
                                 <p><strong>Line Details</strong></p>
