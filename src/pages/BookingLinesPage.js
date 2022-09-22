@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingLines } from '../state/services/bookingLinesService';
-import { numberWithCommas } from '../commons/helpers'
+import { numberWithCommas } from '../commons/helpers';
 
 class BookingLinesPage extends React.Component {
     constructor(props) {

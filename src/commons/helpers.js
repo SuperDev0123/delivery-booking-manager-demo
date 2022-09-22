@@ -1,3 +1,5 @@
+const { isNull } = require('lodash');
+
 /**
  * Encode a string of text as base64
  *
@@ -122,9 +124,10 @@ const milliseconds2Days = (milliseconds) => ~~(milliseconds / (1000*60*60*24));
 const milliseconds2Hours = (milliseconds) => ~~(milliseconds / (1000*60*60));
 
 function numberWithCommas(num) {
+    if(isNull(num)) return '';
     if(isNaN(num)) return num;
-    let temp = num.split('.');
-    temp[0] = temp[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    let temp = num.toString().split('.');
+    temp[0] = temp[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return temp.join('.');
 }
 

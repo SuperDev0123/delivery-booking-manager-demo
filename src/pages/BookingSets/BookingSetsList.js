@@ -21,6 +21,7 @@ import VehicleSlider from '../../components/Sliders/VehicleSlider';
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
 import { getBookingSets, deleteBookingSet, updateBookingSet, resetBookingSetFlags, getAllFPs } from '../../state/services/extraService';
 import { getBookings, setGetBookingsFilter, setAllGetBookingsFilter, getPricingInfos, updateBooking } from '../../state/services/bookingService';
+import { numberWithCommas } from '../../commons/helpers';
 
 class BookingSetList extends React.Component {
     constructor(props) {
@@ -485,7 +486,7 @@ class BookingSetList extends React.Component {
                     <td className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}>{booking.de_To_Address_Suburb}</td>
                     <td className={(sortField === 'de_To_Address_State') ? 'current' : ''}>{booking.de_To_Address_State}</td>
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
-                    <td>{booking.pricing_cost && `$${booking.pricing_cost.toFixed(2)}`}</td>
+                    <td>{booking.pricing_cost && `$${numberWithCommas(booking.pricing_cost.toFixed(2))}`}</td>
                     <td>{booking.eta_de_by && moment(booking.eta_de_by).utc().format('DD/MM/YYYY')}</td>
                     <td className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
                     <td>{booking.pricing_service_name}</td>

@@ -10,7 +10,7 @@ import { Button } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // Custom
-import { getCubicMeter, getWeight } from '../../commons/helpers';
+import { getCubicMeter, getWeight, numberWithCommas } from '../../commons/helpers';
 import { LINE_IMPORTANT_FIELDS } from '../../commons/constants';
 
 class LineAndLineDetailSlider extends React.Component {
@@ -354,7 +354,7 @@ class LineAndLineDetailSlider extends React.Component {
                         <td>{lineDetail.itemDescription}</td>
                         <td>{lineDetail.quantity}</td>
                         <td>{lineDetail.itemFaultDescription}</td>
-                        <td>${lineDetail.insuranceValueEach}</td>
+                        <td>${numberWithCommas(lineDetail.insuranceValueEach)}</td>
                         <td>{lineDetail.gap_ra}</td>
                         <td>{lineDetail.clientRefNumber}</td>
                         <td className="edit"><Button color="primary" onClick={() => this.onClickEdit(2, 2, index)}>Edit</Button></td>

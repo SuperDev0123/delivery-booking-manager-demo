@@ -1890,7 +1890,7 @@ class AllBookingsPage extends React.Component {
                     <td>{bookingLineDetail.itemDescription}</td>
                     <td className="qty">{bookingLineDetail.quantity}</td>
                     <td>{bookingLineDetail.itemFaultDescription}</td>
-                    <td>{bookingLineDetail.insuranceValueEach}</td>
+                    <td>{numberWithCommas(bookingLineDetail.insuranceValueEach)}</td>
                     <td>{bookingLineDetail.gap_ra}</td>
                     <td>{bookingLineDetail.clientRefNumber}</td>
                 </tr>
@@ -2274,7 +2274,7 @@ class AllBookingsPage extends React.Component {
                     <td name='b_client_sales_inv_num' className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}>{booking.b_client_sales_inv_num}</td>
                     <td name='vx_serviceName' className={(sortField === 'vx_serviceName') ? 'current' : ''}>{booking.vx_serviceName}</td>
                     <td name='cheapest_freight_provider'>
-                        <strong>{booking.cheapest_quote.fp ? `${booking.cheapest_quote.fp} ($${booking.cheapest_quote.cost_dollar})` : ''}</strong>
+                        <strong>{booking.cheapest_quote.fp ? `${booking.cheapest_quote.fp} ($${numberWithCommas(booking.cheapest_quote.cost_dollar)})` : ''}</strong>
                         {booking.cheapest_quote.fp && <button className='btn btn-primary btn-use-cheapest-quote' onClick={() => this.onClickUseCheapest(booking.cheapest_quote, booking)}>USE</button>}
                     </td>
                     <td name='z_lock_status' className={booking.z_lock_status ? 'status-active' : 'status-inactive'} onClick={() => this.onClickStatusLock(booking)}>

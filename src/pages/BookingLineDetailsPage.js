@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+import { numberWithCommas } from '../commons/helpers';
 
 class BookingLineDetailsPage extends React.Component {
     constructor(props) {
@@ -61,7 +62,7 @@ class BookingLineDetailsPage extends React.Component {
                     <td>{bookingLineDetail.itemDescription}</td>
                     <td className="qty">{bookingLineDetail.quantity}</td>
                     <td>{bookingLineDetail.itemFaultDescription}</td>
-                    <td>{bookingLineDetail.insuranceValueEach}</td>
+                    <td>{numberWithCommas(bookingLineDetail.insuranceValueEach)}</td>
                     <td>{bookingLineDetail.gap_ra}</td>
                     <td>{bookingLineDetail.clientRefNumber}</td>
                 </tr>

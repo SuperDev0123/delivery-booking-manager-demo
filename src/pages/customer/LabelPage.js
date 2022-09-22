@@ -11,6 +11,7 @@ import axios from 'axios';
 import FPPricingSlider from '../../components/Sliders/FPPricingSlider';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../../config';
 import { getLabels4Booking, getPricingInfos } from '../../state/services/bookingService';
+import { numberWithCommas } from '../../commons/helpers';
 
 class LabelPage extends Component {
     constructor(props) {
@@ -314,16 +315,16 @@ class LabelPage extends Component {
                                 <p>
                                     <strong>Current Provider: </strong>
                                     {bookingLabels.quote.original &&
-                                        `${bookingLabels.quote.original.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.original.cost_dollar).toFixed(2)}, `
+                                        `${bookingLabels.quote.original.fp} Quoted Cost at Time of Order: $${numberWithCommas(parseFloat(bookingLabels.quote.original.cost_dollar).toFixed(2))}, `
                                     }
                                     {bookingLabels.quote.scanned &&
-                                        `${bookingLabels.quote.scanned.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.scanned.cost_dollar).toFixed(2)}`
+                                        `${bookingLabels.quote.scanned.fp} Quoted Cost at Time of Order: $${numberWithCommas(parseFloat(bookingLabels.quote.scanned.cost_dollar).toFixed(2))}`
                                     }
                                 </p><br />
                                 <p>
                                     <strong>Most Cost Effective Provider: </strong> 
                                     {bookingLabels.quote.cheapest.fp} Quoted Cost on Actual DIMS: 
-                                    ${parseFloat(bookingLabels.quote.cheapest.cost_dollar).toFixed(2)}, Savings: ${parseFloat(bookingLabels.quote.cheapest.savings).toFixed(2)}
+                                    ${numberWithCommas(parseFloat(bookingLabels.quote.cheapest.cost_dollar).toFixed(2))}, Savings: ${numberWithCommas(parseFloat(bookingLabels.quote.cheapest.savings).toFixed(2))}
                                 </p>
                                 <Button color="info" onClick={() => this.onClickUseCheapest(bookingLabels.quote.cheapest)}>YES CHANGE</Button>
                             </div>
