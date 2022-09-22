@@ -558,7 +558,7 @@ class BookingPage extends Component {
                         if (
                             this.state.booking.kf_client_id === '7EAA4B16-484B-3944-902E-BC936BFEF535' && // BioPak
                             this.state.booking.vx_freight_provider === 'Startrack' &&
-                            this.state.booking.b_client_warehouse_code === 'BIO - RIC'
+                            (this.state.booking.b_client_warehouse_code === 'BIO - RIC' || this.state.booking.b_client_warehouse_code === 'BIO - HAZ')
                         ) {
                             this.props.dmeLabel(booking.id);
                         } else {
@@ -1290,7 +1290,7 @@ class BookingPage extends Component {
                 if (
                     booking.kf_client_id === '7EAA4B16-484B-3944-902E-BC936BFEF535' && // BioPak
                     booking.vx_freight_provider === 'Startrack' &&
-                    booking.b_client_warehouse_code === 'BIO - RIC'
+                    (booking.b_client_warehouse_code === 'BIO - RIC' || booking.b_client_warehouse_code === 'BIO - HAZ')
                 ) {
                     this.props.dmeLabel(booking.id);
                 } else {
