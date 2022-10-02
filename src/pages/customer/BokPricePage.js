@@ -43,7 +43,8 @@ class BokPricePage extends Component {
             isShowDeleteConfirmModal: false,
             isShowBokLineSlider: false,
             currentPackedStatus: '',
-            viewMode: 'adminView', // adminView | salesView
+            viewMode: 'salesView', // adminView | salesView
+            isAdminView: false, // adminView | salesView
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -93,7 +94,7 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, lineOperationSuccess} = newProps;
+        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, lineOperationSuccess, username} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
@@ -149,6 +150,13 @@ class BokPricePage extends Component {
             this.setState({isRepacking: false, isLoadingBok: true});
             this.props.getBokWithPricings(this.props.match.params.id);
         }
+        
+        if (username) {
+            if(username != 'jasonL_sales') {
+                this.setState({isAdminView: true, viewMode: 'adminView'});
+            }
+        }
+
     }
 
     notify = (text) => toast(text);
@@ -327,7 +335,7 @@ class BokPricePage extends Component {
     }
 
     render() {
-        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode} = this.state;
+        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode, isAdminView} = this.state;
         const {bokWithPricings} = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
@@ -818,13 +826,13 @@ class BokPricePage extends Component {
                                     >
                                         Sales View
                                     </Button>{'   '}
-                                    <Button
+                                    {isAdminView && <Button
                                         className='disp-inline-block'
                                         color={viewMode === 'adminView' ? 'primary' : 'secondary'}
                                         onClick={() => this.onClickViewMode('adminView')}
                                     >
                                         Admin View
-                                    </Button>
+                                    </Button>}
                                 </h3>
                                 {pricings.length > 0 ?
                                     <table className="table table-hover table-bordered sortable fixed_headers">
@@ -956,6 +964,7 @@ const mapStateToProps = (state) => {
         repackSuccess: state.bok.repackSuccess,
         lineOperationSuccess: state.bok.lineOperationSuccess,
         packageTypes: state.extra.packageTypes,
+        username: state.auth.username,
     };
 };
 
