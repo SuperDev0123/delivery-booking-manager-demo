@@ -124,6 +124,10 @@ class BokPricePage extends Component {
             this.setState({isLoadingBok: false});
         }
 
+        if (this.state.isLoadingBok && errorMessage) {
+            this.setState({ isLoadingBok: false });
+        }
+
         if (this.state.isLoadingPricing && !this.props.selectPricingSuccess && newProps.selectPricingSuccess) {
             this.setState({isLoadingPricing: false});
         }
@@ -601,333 +605,341 @@ class BokPricePage extends Component {
         }
 
         return (
-            <section className="bok-price">
-                {this.state.errorMessage || !bok_1 ?
-                    <h1>{this.state.errorMessage}</h1>
-                    :
-                    <div>
-                        <h3><i className="fa fa-circle"></i> Main Info:</h3>
-                        <div className="main-info">
-                            <div className="">
-                                <strong>Client Name: </strong><span>{bok_1['b_client_name']}</span><br />
-                                <strong>Client Order Number: </strong><span>{bok_1['b_client_order_num']}</span><br />
-                                <strong>Client Sales Invoice Number: </strong><span>{bok_1['b_client_sales_inv_num']}</span><br />
-                                <strong>Despatch Date: </strong><span>{bok_1['b_021_b_pu_avail_from_date']}</span><br />
-                                <strong>Shipping Type: </strong><span>{bok_1['b_092_booking_type']}</span>
+            <LoadingOverlay
+                active={this.state.isLoadingBok}
+                styles={{height: 'calc(100% - 114px)'}}
+                className="loading-pane"
+                spinner
+                text='Loading...'
+            >
+                <section className="bok-price">
+                    {this.state.errorMessage || !bok_1 ?
+                        <h1>{this.state.errorMessage}</h1>
+                        :
+                        <div>
+                            <h3><i className="fa fa-circle"></i> Main Info:</h3>
+                            <div className="main-info">
+                                <div className="">
+                                    <strong>Client Name: </strong><span>{bok_1['b_client_name']}</span><br />
+                                    <strong>Client Order Number: </strong><span>{bok_1['b_client_order_num']}</span><br />
+                                    <strong>Client Sales Invoice Number: </strong><span>{bok_1['b_client_sales_inv_num']}</span><br />
+                                    <strong>Despatch Date: </strong><span>{bok_1['b_021_b_pu_avail_from_date']}</span><br />
+                                    <strong>Shipping Type: </strong><span>{bok_1['b_092_booking_type']}</span>
+                                </div>
+                                <div className="pu-info disp-inline-block">
+                                    <label>Pickup From</label><br />
+                                    <div className="title disp-inline-block">
+                                        <strong>Entity Name: </strong><br />
+                                        <strong>Street 1: </strong><br />
+                                        <strong>Street 2: </strong><br />
+                                        <strong>Suburb: </strong><br />
+                                        <strong>State: </strong><br />
+                                        <strong>PostalCode: </strong><br />
+                                        <strong>Country: </strong><br />
+                                        <strong>Contact Name: </strong><br />
+                                        <strong>Email: </strong><br />
+                                        <strong>Phone: </strong><br />
+                                    </div>
+                                    <div className="data disp-inline-block">
+                                        <span>{bok_1['b_028_b_pu_company']}</span><br />
+                                        <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
+                                        {bok_1 && bok_1['b_030_b_pu_address_street_2'] && (<span>{bok_1['b_030_b_pu_address_street_2']}</span>)}<br />
+                                        <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
+                                        <span>{bok_1['b_031_b_pu_address_state']}</span><br />
+                                        <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br />
+                                        <span>{bok_1['b_034_b_pu_address_country']}</span><br />
+                                        <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
+                                        <span>{bok_1['b_037_b_pu_email']}</span><br />
+                                        <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
+                                    </div>
+                                </div>
+                                <div className="de-info disp-inline-block">
+                                    <label>Deliver To</label><br />
+                                    <div className="title disp-inline-block">
+                                        <strong>Entity Name: </strong><br />
+                                        <strong>Street 1: </strong><br />
+                                        <strong>Street 2: </strong><br />
+                                        <strong>Suburb: </strong><br />
+                                        <strong>State: </strong><br />
+                                        <strong>PostalCode: </strong><br />
+                                        <strong>Country: </strong><br />
+                                        <strong>Contact Name: </strong><br />
+                                        <strong>Email: </strong><br />
+                                        <strong>Phone: </strong><br />
+                                    </div>
+                                    <div className="data disp-inline-block">
+                                        <span>{bok_1['b_054_b_del_company']}</span><br />
+                                        <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
+                                        {bok_1 && bok_1['b_056_b_del_address_street_2'] && (<span>{bok_1['b_056_b_del_address_street_2']}</span>)}<br />
+                                        <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
+                                        <span>{bok_1['b_057_b_del_address_state']}</span><br />
+                                        <span>{bok_1['b_059_b_del_address_postalcode']}</span><br />
+                                        <span>{bok_1['b_060_b_del_address_country']}</span><br />
+                                        <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
+                                        <span>{bok_1['b_063_b_del_email']}</span><br />
+                                        <span>{bok_1['b_064_b_del_phone_main']}</span><br />
+                                    </div>
+                                </div>
+                                <ul>{errorList}</ul>
                             </div>
-                            <div className="pu-info disp-inline-block">
-                                <label>Pickup From</label><br />
-                                <div className="title disp-inline-block">
-                                    <strong>Entity Name: </strong><br />
-                                    <strong>Street 1: </strong><br />
-                                    <strong>Street 2: </strong><br />
-                                    <strong>Suburb: </strong><br />
-                                    <strong>State: </strong><br />
-                                    <strong>PostalCode: </strong><br />
-                                    <strong>Country: </strong><br />
-                                    <strong>Contact Name: </strong><br />
-                                    <strong>Email: </strong><br />
-                                    <strong>Phone: </strong><br />
+                            <LoadingOverlay
+                                active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isRepacking || this.state.isUpdatingItemProduct}
+                                spinner
+                                text='Loading...'
+                            >
+                                <BokFreightOptionAccordion
+                                    bok_1={bok_1}
+                                />
+                                <h3><i className="fa fa-circle"></i> Lines:</h3>
+                                <div className='action-btns'>
+                                    <Button
+                                        color={_currentPackedStatus === 'original' ? 'success' : 'secondary'}
+                                        onClick={() => this.onChangePackedStatus('original')}
+                                    >
+                                        Send As Is
+                                    </Button>
+                                    <Button
+                                        color={_currentPackedStatus === 'auto' ? 'success' : 'secondary'}
+                                        onClick={() => this.onChangePackedStatus('auto')}
+                                    >
+                                        Auto Repack
+                                    </Button>
+                                    <Button
+                                        color={_currentPackedStatus === 'manual' ? 'success' : 'secondary'}
+                                        onClick={() => this.onChangePackedStatus('manual')}
+                                    >
+                                        Manual Repack
+                                    </Button>
+                                    <Button
+                                        className='mar-left-30 reset'
+                                        color='danger'
+                                        onClick={() => this.onChangePackedStatus('reset')}
+                                        disabled={(_currentPackedStatus === 'auto' || _currentPackedStatus === 'manual') ? '' : 'disabled'}
+                                        title="Reset all lines and LineDetails."
+                                    >
+                                        Reset
+                                    </Button>
+                                    <p className='lowest-price-summary disp-inline-block mar-left-30'><strong>Your Lowest Cost Option is - </strong>{lowest_price_summary}</p>
+                                    {
+                                        (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
+                                            <p className='lowest-price-summary disp-inline-block mar-left-30'>
+                                                <strong>Sales Order Total $:</strong> ${bokWithPricings.b_094_client_sales_total.toLocaleString('en-US')}
+                                            </p>
+                                    }
+                                    <Button
+                                        className='float-r'
+                                        color='primary'
+                                        onClick={() => this.onChangePackedStatus('quote')}
+                                        disabled={bok_2s.length > 0 ? null : 'disabled'}
+                                        title="Get quotes again"
+                                    >
+                                        Complete & Calc Quote
+                                    </Button>
                                 </div>
-                                <div className="data disp-inline-block">
-                                    <span>{bok_1['b_028_b_pu_company']}</span><br />
-                                    <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
-                                    {bok_1 && bok_1['b_030_b_pu_address_street_2'] && (<span>{bok_1['b_030_b_pu_address_street_2']}</span>)}<br />
-                                    <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
-                                    <span>{bok_1['b_031_b_pu_address_state']}</span><br />
-                                    <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br />
-                                    <span>{bok_1['b_034_b_pu_address_country']}</span><br />
-                                    <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
-                                    <span>{bok_1['b_037_b_pu_email']}</span><br />
-                                    <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
+                                {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
+                                {hasUnknownItems &&
+                                    <p className='c-red ignored-items'>
+                                        Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
+                                    </p>
+                                }
+                                {totalLinesCnt ?
+                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                        <thead>
+                                            <tr>
+                                                <th>Total Quantity</th>
+                                                <th>Total Weight (Kg)</th>
+                                                <th>Total Cubic Meter (M3)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{totalLinesCnt}</td>
+                                                <td>{totalLinesKg}</td>
+                                                <td>{totalCubicMeter.toFixed(2)}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    :
+                                    null
+                                }
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <thead>
+                                        <tr>
+                                            <th className="valign-top">Type Of Packaging</th>
+                                            <th className="valign-top">Seq #</th>
+                                            <th className="valign-top">Item No</th>
+                                            <th className="valign-top">Item Descripton</th>
+                                            <th className="valign-top">Qty</th>
+                                            <th className="valign-top">Dim UOM</th>
+                                            <th className="valign-top">Length</th>
+                                            <th className="valign-top">Width</th>
+                                            <th className="valign-top">Height</th>
+                                            <th className="valign-top">{_currentPackedStatus === 'auto' ? 'Pallet CBM' : 'CBM'}</th>
+                                            <th className="valign-top">Total Weight</th>
+                                            {_currentPackedStatus === 'auto' ? <th className="valign-top">Total Packed CBM</th> : null}
+                                            {_currentPackedStatus === 'auto' ? <th className="valign-top">Show Line Details</th> : null}
+                                            <th className="valign-top">
+                                                Actions <Button color="success" className='float-r' onClick={() => this.onclickAddLine()}>New Line</Button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bok_2s}
+                                    </tbody>
+                                </table>
+                                {isShowLineData && <h3><i className="fa fa-circle"></i> Line Data:</h3>}
+                                {isShowLineData &&
+                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                        <thead>
+                                            <tr>
+                                                <th>Type Of Packaging</th>
+                                                <th>Quantity</th>
+                                                <th>Item No</th>
+                                                <th>Item Description</th>
+                                                <th>Dim UOM</th>
+                                                <th>Length</th>
+                                                <th>Width</th>
+                                                <th>Height</th>
+                                                <th>Total Weight</th>
+                                                <th>CBM</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {bok_3s}
+                                        </tbody>
+                                    </table>
+                                }
+                                <h3>
+                                    <i className="fa fa-circle"></i> Freight Rates:{'   '}
+                                    <Button
+                                        className='disp-inline-block'
+                                        color={viewMode === 'salesView' ? 'primary' : 'secondary'}
+                                        onClick={() => this.onClickViewMode('salesView')}
+                                    >
+                                        Sales View
+                                    </Button>{'   '}
+                                    <Button
+                                        className='disp-inline-block'
+                                        color={viewMode === 'adminView' ? 'primary' : 'secondary'}
+                                        onClick={() => this.onClickViewMode('adminView')}
+                                    >
+                                        Admin View
+                                    </Button>
+                                </h3>
+                                {pricings.length > 0 ?
+                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                        <thead>
+                                            <tr>
+                                                <th>Freight Provider</th>
+                                                <th>Service (Vehicle)</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Cost $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy %</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Extra $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Total $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null} title="Client Customer Markup ">CC Markup %</th>
+                                                {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
+                                                <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                {isPricingPage && !isSalesQuote && <th>Action</th>}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {pricings}
+                                        </tbody>
+                                    </table>
+                                    :
+                                    <p>No results</p>
+                                }
+                                <div className="decision">
+                                    {(!isSalesQuote && bok_1 && bok_1['b_client_name'] !== 'Jason L') &&
+                                        <Button
+                                            disabled={canBeChanged ? null : 'disabled'}
+                                            color="primary"
+                                            onClick={() => this.onClickBookBtn()}
+                                        >
+                                            {this.props.bookedSuccess || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ? 'Booked' : 'Book'}
+                                        </Button>
+                                    }
+                                    {(bok_1 && bok_1['b_client_name'] === 'Jason L') &&
+                                        <Button
+                                            disabled={canBeChanged ? null : 'disabled'}
+                                            color="success"
+                                            title={!canBeChanged ? 'This booking has already been sent to Deliver-ME. Changes need to be made in the Deliver-ME portal'
+                                                : 'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
+                                            onClick={() => this.toggleTriggerEmailModal()}
+                                        >
+                                            Send Booking Now <i className="fa fa-envelope"></i>
+                                        </Button>
+                                    }
+                                    <Button
+                                        disabled={canBeChanged ? null : 'disabled'}
+                                        color="danger"
+                                        onClick={() => this.onClickCancelBtn()}
+                                    >
+                                        {this.props.canceledSuccess ? 'Quote Canceled' : 'Cancel Quote'}
+                                    </Button>
                                 </div>
-                            </div>
-                            <div className="de-info disp-inline-block">
-                                <label>Deliver To</label><br />
-                                <div className="title disp-inline-block">
-                                    <strong>Entity Name: </strong><br />
-                                    <strong>Street 1: </strong><br />
-                                    <strong>Street 2: </strong><br />
-                                    <strong>Suburb: </strong><br />
-                                    <strong>State: </strong><br />
-                                    <strong>PostalCode: </strong><br />
-                                    <strong>Country: </strong><br />
-                                    <strong>Contact Name: </strong><br />
-                                    <strong>Email: </strong><br />
-                                    <strong>Phone: </strong><br />
-                                </div>
-                                <div className="data disp-inline-block">
-                                    <span>{bok_1['b_054_b_del_company']}</span><br />
-                                    <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
-                                    {bok_1 && bok_1['b_056_b_del_address_street_2'] && (<span>{bok_1['b_056_b_del_address_street_2']}</span>)}<br />
-                                    <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
-                                    <span>{bok_1['b_057_b_del_address_state']}</span><br />
-                                    <span>{bok_1['b_059_b_del_address_postalcode']}</span><br />
-                                    <span>{bok_1['b_060_b_del_address_country']}</span><br />
-                                    <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
-                                    <span>{bok_1['b_063_b_del_email']}</span><br />
-                                    <span>{bok_1['b_064_b_del_phone_main']}</span><br />
-                                </div>
-                            </div>
-                            <ul>{errorList}</ul>
+                            </LoadingOverlay>
                         </div>
-                        <LoadingOverlay
-                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isRepacking || this.state.isUpdatingItemProduct}
-                            spinner
-                            text='Loading...'
-                        >
-                            <BokFreightOptionAccordion
-                                bok_1={bok_1}
-                            />
-                            <h3><i className="fa fa-circle"></i> Lines:</h3>
-                            <div className='action-btns'>
-                                <Button
-                                    color={_currentPackedStatus === 'original' ? 'success' : 'secondary'}
-                                    onClick={() => this.onChangePackedStatus('original')}
-                                >
-                                    Send As Is
-                                </Button>
-                                <Button
-                                    color={_currentPackedStatus === 'auto' ? 'success' : 'secondary'}
-                                    onClick={() => this.onChangePackedStatus('auto')}
-                                >
-                                    Auto Repack
-                                </Button>
-                                <Button
-                                    color={_currentPackedStatus === 'manual' ? 'success' : 'secondary'}
-                                    onClick={() => this.onChangePackedStatus('manual')}
-                                >
-                                    Manual Repack
-                                </Button>
-                                <Button
-                                    className='mar-left-30 reset'
-                                    color='danger'
-                                    onClick={() => this.onChangePackedStatus('reset')}
-                                    disabled={(_currentPackedStatus === 'auto' || _currentPackedStatus === 'manual') ? '' : 'disabled'}
-                                    title="Reset all lines and LineDetails."
-                                >
-                                    Reset
-                                </Button>
-                                <p className='lowest-price-summary disp-inline-block mar-left-30'><strong>Your Lowest Cost Option is - </strong>{lowest_price_summary}</p>
-                                {
-                                    (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
-                                        <p className='lowest-price-summary disp-inline-block mar-left-30'>
-                                            <strong>Sales Order Total $:</strong> ${bokWithPricings.b_094_client_sales_total.toLocaleString('en-US')}
-                                        </p>
-                                }
-                                <Button
-                                    className='float-r'
-                                    color='primary'
-                                    onClick={() => this.onChangePackedStatus('quote')}
-                                    disabled={bok_2s.length > 0 ? null : 'disabled'}
-                                    title="Get quotes again"
-                                >
-                                    Complete & Calc Quote
-                                </Button>
-                            </div>
-                            {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
-                            {hasUnknownItems &&
-                                <p className='c-red ignored-items'>
-                                    Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
-                                </p>
-                            }
-                            {totalLinesCnt ?
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <thead>
-                                        <tr>
-                                            <th>Total Quantity</th>
-                                            <th>Total Weight (Kg)</th>
-                                            <th>Total Cubic Meter (M3)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>{totalLinesCnt}</td>
-                                            <td>{totalLinesKg}</td>
-                                            <td>{totalCubicMeter.toFixed(2)}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                :
-                                null
-                            }
-                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                <thead>
-                                    <tr>
-                                        <th className="valign-top">Type Of Packaging</th>
-                                        <th className="valign-top">Seq #</th>
-                                        <th className="valign-top">Item No</th>
-                                        <th className="valign-top">Item Descripton</th>
-                                        <th className="valign-top">Qty</th>
-                                        <th className="valign-top">Dim UOM</th>
-                                        <th className="valign-top">Length</th>
-                                        <th className="valign-top">Width</th>
-                                        <th className="valign-top">Height</th>
-                                        <th className="valign-top">{_currentPackedStatus === 'auto' ? 'Pallet CBM' : 'CBM'}</th>
-                                        <th className="valign-top">Total Weight</th>
-                                        {_currentPackedStatus === 'auto' ? <th className="valign-top">Total Packed CBM</th> : null}
-                                        {_currentPackedStatus === 'auto' ? <th className="valign-top">Show Line Details</th> : null}
-                                        <th className="valign-top">
-                                            Actions <Button color="success" className='float-r' onClick={() => this.onclickAddLine()}>New Line</Button>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {bok_2s}
-                                </tbody>
-                            </table>
-                            {isShowLineData && <h3><i className="fa fa-circle"></i> Line Data:</h3>}
-                            {isShowLineData &&
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <thead>
-                                        <tr>
-                                            <th>Type Of Packaging</th>
-                                            <th>Quantity</th>
-                                            <th>Item No</th>
-                                            <th>Item Description</th>
-                                            <th>Dim UOM</th>
-                                            <th>Length</th>
-                                            <th>Width</th>
-                                            <th>Height</th>
-                                            <th>Total Weight</th>
-                                            <th>CBM</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {bok_3s}
-                                    </tbody>
-                                </table>
-                            }
-                            <h3>
-                                <i className="fa fa-circle"></i> Freight Rates:{'   '}
-                                <Button
-                                    className='disp-inline-block'
-                                    color={viewMode === 'salesView' ? 'primary' : 'secondary'}
-                                    onClick={() => this.onClickViewMode('salesView')}
-                                >
-                                    Sales View
-                                </Button>{'   '}
-                                <Button
-                                    className='disp-inline-block'
-                                    color={viewMode === 'adminView' ? 'primary' : 'secondary'}
-                                    onClick={() => this.onClickViewMode('adminView')}
-                                >
-                                    Admin View
-                                </Button>
-                            </h3>
-                            {pricings.length > 0 ?
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <thead>
-                                        <tr>
-                                            <th>Freight Provider</th>
-                                            <th>Service (Vehicle)</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Cost $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy %</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Extra $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Total $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null} title="Client Customer Markup ">CC Markup %</th>
-                                            {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
-                                            <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                            {isPricingPage && !isSalesQuote && <th>Action</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {pricings}
-                                    </tbody>
-                                </table>
-                                :
-                                <p>No results</p>
-                            }
-                            <div className="decision">
-                                {(!isSalesQuote && bok_1 && bok_1['b_client_name'] !== 'Jason L') &&
-                                    <Button
-                                        disabled={canBeChanged ? null : 'disabled'}
-                                        color="primary"
-                                        onClick={() => this.onClickBookBtn()}
-                                    >
-                                        {this.props.bookedSuccess || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ? 'Booked' : 'Book'}
-                                    </Button>
-                                }
-                                {(bok_1 && bok_1['b_client_name'] === 'Jason L') &&
-                                    <Button
-                                        disabled={canBeChanged ? null : 'disabled'}
-                                        color="success"
-                                        title={!canBeChanged ? 'This booking has already been sent to Deliver-ME. Changes need to be made in the Deliver-ME portal'
-                                            : 'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
-                                        onClick={() => this.toggleTriggerEmailModal()}
-                                    >
-                                        Send Booking Now <i className="fa fa-envelope"></i>
-                                    </Button>
-                                }
-                                <Button
-                                    disabled={canBeChanged ? null : 'disabled'}
-                                    color="danger"
-                                    onClick={() => this.onClickCancelBtn()}
-                                >
-                                    {this.props.canceledSuccess ? 'Quote Canceled' : 'Cancel Quote'}
-                                </Button>
-                            </div>
-                        </LoadingOverlay>
-                    </div>
-                }
+                    }
 
-                <ExtraCostSummarySlider
-                    isOpen={this.state.isShowExtraCostSummarySlider}
-                    toggleSlider={this.toggleExtraCostSummarySlider}
-                    selectedPrice = {this.state.selectedPrice}
-                    bok_2s = {bokWithPricings ? bokWithPricings['bok_2s'] : []}
-                />
+                    <ExtraCostSummarySlider
+                        isOpen={this.state.isShowExtraCostSummarySlider}
+                        toggleSlider={this.toggleExtraCostSummarySlider}
+                        selectedPrice = {this.state.selectedPrice}
+                        bok_2s = {bokWithPricings ? bokWithPricings['bok_2s'] : []}
+                    />
 
-                <PalletSlider
-                    isOpen={this.state.isShowPalletSlider}
-                    toggleSlider={this.togglePalletSlider}
-                    onCancelAutoRepack={this.onCancelAutoRepack}
-                    onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
-                />
+                    <PalletSlider
+                        isOpen={this.state.isShowPalletSlider}
+                        toggleSlider={this.togglePalletSlider}
+                        onCancelAutoRepack={this.onCancelAutoRepack}
+                        onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
+                    />
 
-                <BokLineSlider
-                    isOpen={this.state.isShowBokLineSlider}
-                    toggleSlider={this.toggleBokLineSlider}
-                    line={this.state.selectedLine}
-                    onSubmit={(newLineData, type) => this.onUpdateBokLine(newLineData, type)}
-                    packageTypes={this.props.packageTypes}
-                />
+                    <BokLineSlider
+                        isOpen={this.state.isShowBokLineSlider}
+                        toggleSlider={this.toggleBokLineSlider}
+                        line={this.state.selectedLine}
+                        onSubmit={(newLineData, type) => this.onUpdateBokLine(newLineData, type)}
+                        packageTypes={this.props.packageTypes}
+                    />
 
-                <ConfirmModal
-                    isOpen={this.state.isShowTriggerEmailModal}
-                    onOk={() => this.onClickConfirmBtn('trigger-email')}
-                    onCancel={this.toggleTriggerEmailModal}
-                    title={'Send Booking Now?'}
-                    text={'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
-                    okBtnName={'Yes'}
-                />
+                    <ConfirmModal
+                        isOpen={this.state.isShowTriggerEmailModal}
+                        onOk={() => this.onClickConfirmBtn('trigger-email')}
+                        onCancel={this.toggleTriggerEmailModal}
+                        title={'Send Booking Now?'}
+                        text={'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
+                        okBtnName={'Yes'}
+                    />
 
-                <ConfirmModal
-                    isOpen={this.state.isShowDeleteConfirmModal}
-                    onOk={() => this.onUpdateBokLine(null, 'delete')}
-                    onCancel={this.toggleDeleteConfirmModal}
-                    title={'Confirmation Modal'}
-                    text={'Do you really want to delete this line?'}
-                    okBtnName={'Delete'}
-                />
+                    <ConfirmModal
+                        isOpen={this.state.isShowDeleteConfirmModal}
+                        onOk={() => this.onUpdateBokLine(null, 'delete')}
+                        onCancel={this.toggleDeleteConfirmModal}
+                        title={'Confirmation Modal'}
+                        text={'Do you really want to delete this line?'}
+                        okBtnName={'Delete'}
+                    />
 
-                <ConfirmModal
-                    isOpen={this.state.isShowManualRepackModal}
-                    onOk={() => this.onClickConfirmBtn('manual-from-original')}
-                    onOk2={() => this.onClickConfirmBtn('manual-from-auto')}
-                    onOk3={() => this.onClickConfirmBtn('enter-from-scratch')}
-                    onCancel={() => this.toggleManualRepackModal()}
-                    title={'Manual Repack source selection'}
-                    text={'Copy data for manual re-repack from?'}
-                    okBtnName={'From Send As Is'}
-                    ok2BtnName={'From Auto Repack'}
-                    ok3BtnName={'Enter from Scratch'}
-                />
+                    <ConfirmModal
+                        isOpen={this.state.isShowManualRepackModal}
+                        onOk={() => this.onClickConfirmBtn('manual-from-original')}
+                        onOk2={() => this.onClickConfirmBtn('manual-from-auto')}
+                        onOk3={() => this.onClickConfirmBtn('enter-from-scratch')}
+                        onCancel={() => this.toggleManualRepackModal()}
+                        title={'Manual Repack source selection'}
+                        text={'Copy data for manual re-repack from?'}
+                        okBtnName={'From Send As Is'}
+                        ok2BtnName={'From Auto Repack'}
+                        ok3BtnName={'Enter from Scratch'}
+                    />
 
-                <ToastContainer />
-            </section>
+                    <ToastContainer />
+                </section>
+            </LoadingOverlay>
         );
     }
 }
