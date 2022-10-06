@@ -389,7 +389,7 @@ class SidebarPush extends React.Component {
                                     </li>
                                 </ul>
                             </li>
-                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('reports/quote') || this.activeRoute('reports/quote') ? 'active' : ''}>
+                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('reports/quote') || this.activeRoute('reports/daily-booked') ? 'active' : ''}>
                                 <a onClick={() => this.setState({ reportCollapsed: !reportCollapsed })}>
                                     <i className="fa fa-bars fa-fw"></i>
                                     <span className="menu-title">Reports</span>
@@ -398,6 +398,11 @@ class SidebarPush extends React.Component {
                                     <li>
                                         <Link title="Quote" to="/admin/reports/quote" className={this.activeRoute(['reports/quote']) ? 'active' : ''}>
                                             <span className="submenu-title">Quote report</span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link title="Quote" to="/admin/reports/daily-booked" className={this.activeRoute(['reports/daily-booked']) ? 'active' : ''}>
+                                            <span className="submenu-title">Daily Booked</span>
                                         </Link>
                                     </li>
                                 </ul>

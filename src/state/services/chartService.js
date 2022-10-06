@@ -7,8 +7,23 @@ import {
     failedGetNumBookingsPerStatus,
     successGetNumActiveBookingsPerClient,
     failedGetNumActiveBookingsPerClient,
+    successGetDailyBooked,
+    failedGetDailyBooked,
 } from '../actions/chartActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
+
+export const getDailyBooked = ({startDate, endDate, currentFPOption, currentClientnameOption}) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/charts/get_daily_booked/?startDate=${startDate}&endDate=${endDate}&fp=${currentFPOption}&client=${currentClientnameOption}`  ,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetDailyBooked(data)))
+            .catch((error) => dispatch(failedGetDailyBooked(error)));
+};
 
 export const getNumBookingsPerFp = ({startDate, endDate}) => {
     console.log('startDate', startDate);

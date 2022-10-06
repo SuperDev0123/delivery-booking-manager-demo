@@ -1,4 +1,6 @@
 import {
+    SUCCESS_GET_DAILY_BOOKED,
+    FAILED_GET_DAILY_BOOKED,
     SUCCESS_GET_NUM_BOOKINGS,
     FAILED_GET_NUM_BOOKINGS,
     SUCCESS_GET_NUM_BOOKINGS_PER_STATUS,
@@ -6,6 +8,20 @@ import {
     SUCCESS_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT,
     FAILED_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT
 } from '../constants/chartConstants';
+
+export function successGetDailyBooked(data) {
+    return {
+        type: SUCCESS_GET_DAILY_BOOKED,
+        payload: data.results,
+    };
+}
+
+export function failedGetDailyBooked(error) {
+    return {
+        type: FAILED_GET_DAILY_BOOKED,
+        payload: 'Unable to get num bookings per fp records. Error:' + error,
+    };
+}
 
 export function successGetNumBookingsPerFp(data) {
     return {

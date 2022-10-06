@@ -1,4 +1,6 @@
 import {
+    SUCCESS_GET_DAILY_BOOKED,
+    FAILED_GET_DAILY_BOOKED,
     SUCCESS_GET_NUM_BOOKINGS,
     FAILED_GET_NUM_BOOKINGS,
     SUCCESS_GET_NUM_BOOKINGS_PER_STATUS,
@@ -8,6 +10,7 @@ import {
 } from '../constants/chartConstants';
 
 const defaultState = {
+    num_daily_booked: [],
     num_bookings_fp: [],
     num_bookings_status:[],
     errorMessage: '',
@@ -15,7 +18,17 @@ const defaultState = {
 
 export const ChartReducer = (state = defaultState, { type, payload }) => {
     switch (type) {
-        
+        case SUCCESS_GET_DAILY_BOOKED:
+            // console.log('SUCCESS_GET_NUM_BOOKINGS', payload);
+            return {
+                ...state,
+                num_daily_booked: payload,
+            };
+        case FAILED_GET_DAILY_BOOKED:
+            return {
+                ...state,
+                errorMessage: payload,
+            };
         case SUCCESS_GET_NUM_BOOKINGS:
             // console.log('SUCCESS_GET_NUM_BOOKINGS', payload);
             return {

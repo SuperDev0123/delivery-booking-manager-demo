@@ -71,6 +71,7 @@ import EditClientEmployee from '../pages/admin/AdminViews/ClientEmployees/EditCl
 import QuickViewLogs from '../pages/admin/AdminViews/Logs/QuickView';
 import DownloadLogs from '../pages/admin/AdminViews/Logs/Download';
 import QuoteReport from '../pages/admin/AdminViews/Reports/QuoteReport';
+import DailyBookedReport from '../pages/admin/AdminViews/Reports/DailyBookedReport';
 
 import CustomerClientEmployees from '../pages/admin/CustomerViews/ClientEmployees/ClientEmployees';
 import CustomerAddClientEmployee from '../pages/admin/CustomerViews/ClientEmployees/AddClientEmployee';
@@ -161,6 +162,7 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/logs/download' component={DownloadLogs} />
 
                     <AdminPrivateRoute exact path='/admin/reports/quote' component={QuoteReport} />
+                    <AdminPrivateRoute exact path='/admin/reports/daily-booked' component={DailyBookedReport} />
 
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
