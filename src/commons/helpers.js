@@ -117,6 +117,12 @@ function fillZero (str, max) {
     return str.length < max ? fillZero('0' + str, max) : str;
 }
 
+function getTimeZone () {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    console.log(timezone);
+    return timezone;
+}
+
 // https://stackoverflow.com/questions/34077449/fastest-way-to-cast-a-float-to-an-int-in-javascript
 const milliseconds2Days = (milliseconds) => ~~(milliseconds / (1000*60*60*24));
 const milliseconds2Hours = (milliseconds) => ~~(milliseconds / (1000*60*60));
@@ -133,4 +139,5 @@ module.exports = {
     milliseconds2Days,
     milliseconds2Hours,
     fillZero,
+    getTimeZone,
 };

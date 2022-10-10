@@ -4258,7 +4258,7 @@ class BookingPage extends Component {
                                                 <div className="head text-white">
                                                     <ul>
                                                         <li>Pick Up Details</li>
-                                                        <li className="peclock"><Clock format={'DD MMM YYYY h:mm:ss A'} ticking={true} timezone={this.state.puTimeZone} /></li>
+                                                        <li className="peclock"><Clock format={'DD MMM YYYY hh:mm:ss A z'} ticking={true} timezone={this.state.puTimeZone} /></li>
                                                     </ul>
                                                 </div>
                                                 <form action="">
@@ -4556,9 +4556,9 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 (isBookedBooking) ?
-                                                                    <p className="show-mode">{booking.s_05_Latest_Pick_Up_Date_TimeSet ? moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).format('DD/MM/YYYY HH:mm') : ''}</p>
+                                                                    <p className="show-mode">{booking.s_05_Latest_Pick_Up_Date_TimeSet ? moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).format('DD MMM YYYY hh:mm:ss A z') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD/MM/YYYY HH:mm') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD MMM YYYY hh:mm:ss A z') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
@@ -4732,7 +4732,7 @@ class BookingPage extends Component {
                                                     <ul>
                                                         <li>Delivery Details</li>
                                                         <li className="peclock" >
-                                                            <Clock format={'DD MMM YYYY h:mm:ss A'} ticking={true} timezone={this.state.deTimeZone} />
+                                                            <Clock format={'DD MMM YYYY hh:mm:ss A z'} ticking={true} timezone={this.state.deTimeZone} />
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -5030,9 +5030,9 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 (isBookedBooking) ? 
-                                                                    <p className="show-mode">{booking.s_06_Latest_Delivery_Date_TimeSet ? moment(booking.s_06_Latest_Delivery_Date_TimeSet).format('DD/MM/YYYY HH:mm') : ''}</p>
+                                                                    <p className="show-mode">{booking.s_06_Latest_Delivery_Date_TimeSet ? moment(booking.s_06_Latest_Delivery_Date_TimeSet).format('DD MMM YYYY hh:mm:ss A z') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{formInputs['eta_de_by'] ? moment(formInputs['eta_de_by']).format('DD/MM/YYYY HH:mm') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_de_by'] ? moment(formInputs['eta_de_by']).format('DD MMM YYYY hh:mm:ss A z') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
