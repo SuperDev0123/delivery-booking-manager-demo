@@ -1077,18 +1077,19 @@ class AllBookingsPage extends React.Component {
     onClickLabelOrPOD(booking, type) {
         if (type === 'label') {
             if (booking.z_label_url && booking.z_label_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
+                    .then(() => {
+                        this.onClickFind();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+
                 if (booking.z_label_url.indexOf('http') !== -1) {
                     const win = window.open(booking.z_label_url, '_blank');
                     win.focus();
                 } else {
-                    this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
-                        .then(() => {
-                            this.onClickFind();
-                        })
-                        .catch((err) => {
-                            this.notify(err.response.data.message);
-                            this.setState({loading: false});
-                        });
                     const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                     win.focus();
                 }
