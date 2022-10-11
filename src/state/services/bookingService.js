@@ -41,6 +41,7 @@ import {
     setNeedUpdateBookingsFlag,
     successUpdateBooking,
     successDuplicateBooking,
+    failedDuplicateBooking,
     successCreateBooking,
     failedCreateBooking,
     successGenerateXLS,
@@ -654,7 +655,7 @@ export const duplicateBooking = (bookingId, data) => {
         dispatch(resetBooking());
         axios(options)
             .then(({ data }) => dispatch(successDuplicateBooking(data)))
-            .catch((error) => dispatch(console.log('@2 - Failed duplicateBooking', error)));
+            .catch((error) => dispatch(failedDuplicateBooking(JSON.stringify(error.response.data))));
     };
 };
 
