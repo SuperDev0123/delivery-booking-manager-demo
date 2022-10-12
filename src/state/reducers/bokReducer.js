@@ -9,6 +9,7 @@ import {
     FAILED_GET_BOK_WITH_PRICINGS,
     SUCCESS_SELECT_PRICING,
     FAILED_SELECT_PRICING,
+    SET_NEED_TO_UPDATE_PRICINGS,
     RESET_NEED_TO_UPDATE_PRICINGS,
     SUCCESS_GET_DE_STATUS,
     FAILED_GET_DE_STATUS,
@@ -54,6 +55,11 @@ const defaultState = {
 
 export const BokReducer = (state = defaultState, { type, payload }) => {
     switch (type) {
+        case SET_NEED_TO_UPDATE_PRICINGS:
+            return {
+                ...state,
+                needToUpdatePricings: true,
+            };
         case RESET_NEED_TO_UPDATE_PRICINGS:
             return {
                 ...state,

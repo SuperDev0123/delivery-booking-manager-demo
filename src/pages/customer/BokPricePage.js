@@ -9,6 +9,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
+import axios from 'axios';
 // Custom components
 import BokFreightOptionAccordion from '../../components/Accordion/BokFreightOptionAccordion';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
@@ -17,8 +18,20 @@ import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import BokLineSlider from '../../components/Sliders/BokLineSlider';
 // Services
 import { getWeight } from '../../commons/helpers';
-import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, sendEmail, onAddBokLine, onUpdateBokLine, onDeleteBokLine, repack } from '../../state/services/bokService';
+import {
+    getBokWithPricings,
+    onSelectPricing,
+    bookFreight,
+    cancelFreight,
+    sendEmail,
+    onAddBokLine,
+    onUpdateBokLine,
+    onDeleteBokLine,
+    repack,
+    setNeedToUpdatePricings
+} from '../../state/services/bokService';
 import { getPackageTypes } from '../../state/services/extraService';
+import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -45,6 +58,7 @@ class BokPricePage extends Component {
             currentPackedStatus: '',
             viewMode: 'salesView', // adminView | salesView
             isAdminView: false, // adminView | salesView
+            isTimerRunning: false,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -74,6 +88,7 @@ class BokPricePage extends Component {
         repackSuccess: PropTypes.bool,
         lineOperationSuccess: PropTypes.bool,
         repack: PropTypes.func.isRequired,
+        setNeedToUpdatePricings: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -94,7 +109,7 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, lineOperationSuccess, username} = newProps;
+        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, lineOperationSuccess, username, bokWithPricings} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
@@ -157,6 +172,17 @@ class BokPricePage extends Component {
             }
         }
 
+        if (!this.state.isTimerRunning && bokWithPricings) {
+            if (bokWithPricings.b_client_name === 'Jason L') {
+                const intervalId = setInterval(this.timer, 5000);
+                this.setState({isTimerRunning: true, intervalId});
+            }
+        }
+    }
+
+    UNSAFE_componentWillUnmount() {
+        // use intervalId from the state to clear the interval
+        clearInterval(this.state.intervalId);
     }
 
     notify = (text) => toast(text);
@@ -169,6 +195,23 @@ class BokPricePage extends Component {
             this.notify('Failed to copy!');
         }
     };
+
+    timer = () => {
+        const {bokWithPricings} = this.props;
+
+        const options = {
+            method: 'get',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/bok/quote-count/?identifier=' + bokWithPricings.pk_auto_id,
+        };
+
+        axios(options).then((response) => {
+            if (response.data.code === 'does_exist') {
+                if (response.data.result.quote_count !== bokWithPricings.pricings.length) {
+                    this.props.setNeedToUpdatePricings();
+                }
+            }
+        });
+    }
 
     onClickColumn = (arg) => {
         this.setState({sortedBy: arg});
@@ -834,6 +877,9 @@ class BokPricePage extends Component {
                                         Admin View
                                     </Button>}
                                 </h3>
+                                {(bok_1 && bok_1['b_client_name'] === 'Jason L') &&
+                                    <h4 className='c-red'>Maybe pricing is in progress, pricing list will be updated automatically soon.</h4>
+                                }
                                 {pricings.length > 0 ?
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <thead>
@@ -980,6 +1026,7 @@ const mapDispatchToProps = (dispatch) => {
         onDeleteBokLine: (lineId) => dispatch(onDeleteBokLine(lineId)),
         getPackageTypes: () => dispatch(getPackageTypes()),
         repack: (bookingId, repackStatus, palletId) => dispatch(repack(bookingId, repackStatus, palletId)),
+        setNeedToUpdatePricings: () => dispatch(setNeedToUpdatePricings()),
     };
 };
 

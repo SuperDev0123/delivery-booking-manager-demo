@@ -30,6 +30,7 @@ import {
     failedDeleteBokLine,
     successRepack,
     failedRepack,
+    setNeedToUpdatePricingsFlag,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -208,4 +209,8 @@ export const repack = (pk_auto_id, repackStatus, palletId) => {
             .then(() => dispatch(successRepack()))
             .catch((error) => dispatch(failedRepack(error)));
     };
+};
+
+export const setNeedToUpdatePricings = () => {
+    return dispatch => dispatch(setNeedToUpdatePricingsFlag());
 };

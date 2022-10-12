@@ -10,6 +10,7 @@ import {
     SUCCESS_SELECT_PRICING,
     FAILED_SELECT_PRICING,
     RESET_NEED_TO_UPDATE_PRICINGS,
+    SET_NEED_TO_UPDATE_PRICINGS,
     SUCCESS_GET_DE_STATUS,
     FAILED_GET_DE_STATUS,
     SUCCESS_BOOK_FREIGHT,
@@ -29,6 +30,12 @@ import {
     SUCCESS_BOK_REPACK,
     FAILED_BOK_REPACK,
 } from '../constants/bokConstants';
+
+export function setNeedToUpdatePricingsFlag () {
+    return {
+        type: SET_NEED_TO_UPDATE_PRICINGS,
+    };
+}
 
 export function successGetBok1Headers(data) {
     return {
