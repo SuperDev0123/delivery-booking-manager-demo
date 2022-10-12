@@ -32,6 +32,7 @@ import {
     SET_FETCH_BOOKINGS_FLAG,
     SUCCESS_UPDATE_BOOKING,
     SUCCESS_DUPLICATE_BOOKING,
+    FAILED_DUPLICATE_BOOKING,
     BOOK_CANCEL_SUCCESS,
     BOOK_CANCEL_FAILED,
     SET_LOCAL_FILTER_CLIENTPK,
@@ -298,6 +299,13 @@ export function successDuplicateBooking(data) {
     return {
         type: SUCCESS_DUPLICATE_BOOKING,
         booking: data,
+    };
+}
+
+export function failedDuplicateBooking(err) {
+    return {
+        type: FAILED_DUPLICATE_BOOKING,
+        errorMessage: err,
     };
 }
 
