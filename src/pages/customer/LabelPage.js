@@ -152,7 +152,9 @@ class LabelPage extends Component {
             });
     }
 
-    onSelectPricing(pricingInfo) {
+    onSelectPricing(pricingInfo, isLocking) {
+        this.notify('Locking is not supported on this page.');
+        console.log('Locking is not supported on this page.', isLocking);
         const {bookingLabels} = this.props;
 
         this.bulkBookingUpdate([bookingLabels['id']], 'vx_freight_provider', pricingInfo.freight_provider)
@@ -332,11 +334,12 @@ class LabelPage extends Component {
                         <FPPricingSlider
                             isOpen={this.state.isShowFPPricingSlider}
                             toggleSlider={this.toggleFPPricingSlider}
-                            pricingInfos={_pricingInfos}
-                            onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                            pricings={_pricingInfos}
+                            onSelectPricing={(pricingInfo, isLocking) => this.onSelectPricing(pricingInfo, isLocking)}
                             isLoading={this.state.loadingPricingInfos}
                             x_manual_booked_flag={bookingLabels.x_manual_booked_flag}
                             api_booking_quote_id={bookingLabels.api_booking_quote}
+                            is_quote_locked={bookingLabels.is_quote_locked}
                             onLoadPricingErrors={this.onLoadPricingErrors}
                             errors={this.state.errors}
                             isBooked={bookingLabels.b_dateBookedDate ? true : false}

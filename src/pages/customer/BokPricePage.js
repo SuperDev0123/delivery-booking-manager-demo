@@ -20,7 +20,7 @@ import BokLineSlider from '../../components/Sliders/BokLineSlider';
 import { getWeight } from '../../commons/helpers';
 import {
     getBokWithPricings,
-    onSelectPricing,
+    selectPricing,
     bookFreight,
     cancelFreight,
     sendEmail,
@@ -70,7 +70,7 @@ class BokPricePage extends Component {
 
     static propTypes = {
         getBokWithPricings: PropTypes.func.isRequired,
-        onSelectPricing: PropTypes.func.isRequired,
+        selectPricing: PropTypes.func.isRequired,
         onBookFreight: PropTypes.func.isRequired,
         onCancelFreight: PropTypes.func.isRequired,
         onAddBokLine: PropTypes.func.isRequired,
@@ -232,10 +232,21 @@ class BokPricePage extends Component {
         this.props.onBookFreight(this.props.match.params.id);
     }
 
-    onSelectPricing(cost_id) {
-        const {b_090_client_overrided_quote} = this.state;
+    onSelectPricing(cost_id, islocking=false) {
         this.setState({isLoadingPricing: true});
-        this.props.onSelectPricing(cost_id, this.props.match.params.id, parseFloat(b_090_client_overrided_quote).toFixed(2));
+        this.props.selectPricing(cost_id, this.props.match.params.id, islocking);
+    }
+
+    onLockPricing(costId, selectedCostId, lockStatus) {
+        if (!lockStatus) {
+            this.onSelectPricing(costId, true);
+        } else {
+            if (costId === selectedCostId) {
+                this.onSelectPricing(costId, !lockStatus);
+            } else {
+                this.onSelectPricing(costId, lockStatus);
+            }
+        }
     }
 
     toggleExtraCostSummarySlider() {
@@ -629,10 +640,22 @@ class BokPricePage extends Component {
                                     <Button
                                         color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
                                         disabled={canBeChanged ? null : 'disabled'}
-                                        onClick={() => this.onSelectPricing(price.cost_id)}
+                                        onClick={() => this.onSelectPricing(price.cost_id, bok_1.b_092_is_quote_locked)}
                                     >
                                         {bok_1.quote_id === price.cost_id ? <i className="fa fa-check"></i> : null} {bok_1.quote_id === price.cost_id ? 'Selected' : 'Select'}
                                     </Button>
+                                    {bok_1.quote_id} {price.cost_id}
+                                </td>
+                            }
+                            {isPricingPage && !isSalesQuote &&
+                                <td>
+                                    <input
+                                        type='checkbox'
+                                        color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
+                                        checked={bok_1.quote_id === price.cost_id && bok_1.b_092_is_quote_locked}
+                                        disabled={canBeChanged ? null : 'disabled'}
+                                        onClick={() => this.onLockPricing(price.cost_id, bok_1.quote_id, bok_1.b_092_is_quote_locked)}
+                                    />
                                 </td>
                             }
                         </tr>
@@ -680,7 +703,6 @@ class BokPricePage extends Component {
                                     <strong>Client Order Number: </strong><span>{bok_1['b_client_order_num']}</span><br />
                                     <strong>Client Sales Invoice Number: </strong><span>{bok_1['b_client_sales_inv_num']}</span><br />
                                     <strong>Despatch Date: </strong><span>{bok_1['b_021_b_pu_avail_from_date']}</span><br />
-                                    <strong>Shipping Type: </strong><span>{bok_1['b_092_booking_type']}</span>
                                 </div>
                                 <div className="pu-info disp-inline-block">
                                     <label>Pickup From</label><br />
@@ -900,7 +922,8 @@ class BokPricePage extends Component {
                                                 {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
                                                 <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
                                                 <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                                {isPricingPage && !isSalesQuote && <th>Action</th>}
+                                                {isPricingPage && !isSalesQuote && <th>Action (Select)</th>}
+                                                {isPricingPage && !isSalesQuote && <th>Action (Lock)</th>}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1022,7 +1045,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getBokWithPricings: (identifier) => dispatch(getBokWithPricings(identifier)),
-        onSelectPricing: (costId, identifier, client_overrided_quote) => dispatch(onSelectPricing(costId, identifier, client_overrided_quote)),
+        selectPricing: (costId, identifier, client_overrided_quote) => dispatch(selectPricing(costId, identifier, client_overrided_quote)),
         onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
         sendEmail: (identifier) => dispatch(sendEmail(identifier)),

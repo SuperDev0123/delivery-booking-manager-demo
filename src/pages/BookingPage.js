@@ -2676,7 +2676,7 @@ class BookingPage extends Component {
         }
     }
 
-    onSelectPricing(pricingInfo) {
+    onSelectPricing(pricingInfo, isLocking) {
         const {formInputs, booking} = this.state;
 
         formInputs['vx_freight_provider'] = pricingInfo['freight_provider'];
@@ -2700,6 +2700,8 @@ class BookingPage extends Component {
 
         booking['api_booking_quote'] = pricingInfo['id'];
         formInputs['api_booking_quote'] = booking['api_booking_quote'];
+        booking['is_quote_locked'] = isLocking;
+        formInputs['is_quote_locked'] = isLocking;
 
         const selectedFP = this.props.allFPs
             .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['freight_provider'].toLowerCase());
@@ -6132,11 +6134,12 @@ class BookingPage extends Component {
                 <FPPricingSlider
                     isOpen={this.state.isShowFPPricingSlider}
                     toggleSlider={this.toggleFPPricingSlider}
-                    pricingInfos={this.state.pricingInfos}
-                    onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                    pricings={this.state.pricingInfos}
+                    onSelectPricing={(pricingInfo, isLocking) => this.onSelectPricing(pricingInfo, isLocking)}
                     isLoading={this.state.loadingPricingInfos}
                     x_manual_booked_flag={this.state.booking.x_manual_booked_flag}
                     api_booking_quote_id={this.state.booking.api_booking_quote}
+                    is_quote_locked={this.state.booking.is_quote_locked}
                     isBooked={isBookedBooking}
                     clientname={clientname}
                     onLoadPricingErrors={this.onLoadPricingErrors}

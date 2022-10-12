@@ -351,7 +351,7 @@ class BookingSetList extends React.Component {
             this.props.history.push('/booking?bookingid=' + bookingId);
     }
 
-    onSelectPricing(pricingInfo) {
+    onSelectPricing(pricingInfo, isLocking) {
         const booking = this.state.selectedBooking;
         booking['vx_freight_provider'] = pricingInfo['freight_provider'];
         booking['vx_account_code'] = pricingInfo['account_code'];
@@ -360,6 +360,7 @@ class BookingSetList extends React.Component {
         booking['inv_cost_actual'] = pricingInfo['fee'];
         booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
+        booking['is_quote_locked'] = isLocking;
 
         const selectedFP = this.state.allFPs.find(fp => fp.fp_company_name === pricingInfo['freight_provider']);
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
@@ -1018,12 +1019,13 @@ class BookingSetList extends React.Component {
                     <FPPricingSlider
                         isOpen={this.state.isShowFPPricingSlider}
                         toggleSlider={this.toggleFPPricingSlider}
-                        pricingInfos={this.state.pricingInfos}
-                        onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                        pricings={this.state.pricingInfos}
+                        onSelectPricing={(pricingInfo, isLocking) => this.onSelectPricing(pricingInfo, isLocking)}
                         isLoading={this.state.loadingPricingInfos}
                         clientname={clientname}
                         x_manual_booked_flag={this.state.selectedBooking.x_manual_booked_flag}
                         api_booking_quote_id={this.state.selectedBooking.api_booking_quote}
+                        is_quote_locked={this.state.selectedBooking.is_quote_locked}
                         isBooked={this.state.selectedBooking.b_dateBookedDate ? true : false}
                         clientSalesTotal={this.state.selectedBooking.client_sales_total}
                     />
