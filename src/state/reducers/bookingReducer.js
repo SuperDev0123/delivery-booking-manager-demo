@@ -537,6 +537,14 @@ export const BookingReducer = (state = defaultState, {
                 errorMessage: errorMessage,
             };
         case SUCCESS_FP_PRICING:
+            return {
+                ...state,
+                pricingInfos: payload,
+                pricingInfosFlag: true,
+                needUpdateBooking: true,
+                errorMessage: errorMessage,
+                isAutoSelected: isAutoSelected,
+            };
         case SUCCESS_GET_PRICING_INFOS:
             return {
                 ...state,
