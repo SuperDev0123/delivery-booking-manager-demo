@@ -174,7 +174,7 @@ class BokPricePage extends Component {
 
         if (!this.state.isTimerRunning && bokWithPricings) {
             if (bokWithPricings.b_client_name === 'Jason L') {
-                const intervalId = setInterval(this.timer, 5000);
+                const intervalId = setInterval(this.timer, 10000);
                 this.setState({isTimerRunning: true, intervalId});
             }
         }
@@ -208,6 +208,11 @@ class BokPricePage extends Component {
             if (response.data.code === 'does_exist') {
                 if (response.data.result.quote_count !== bokWithPricings.pricings.length) {
                     this.props.setNeedToUpdatePricings();
+                }
+
+                if (response.data.result.quote_status === 'finished') {
+                    clearInterval(this.state.intervalId);
+                    this.setState({isTimerRunning: false, intervalId: null});
                 }
             }
         });
@@ -378,7 +383,7 @@ class BokPricePage extends Component {
     }
 
     render() {
-        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode, isAdminView} = this.state;
+        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode, isAdminView, isTimerRunning} = this.state;
         const {bokWithPricings} = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
@@ -877,8 +882,8 @@ class BokPricePage extends Component {
                                         Admin View
                                     </Button>}
                                 </h3>
-                                {(bok_1 && bok_1['b_client_name'] === 'Jason L') &&
-                                    <h4 className='c-red'>Maybe pricing is in progress, pricing list will be updated automatically soon.</h4>
+                                {(bok_1 && bok_1['b_client_name'] === 'Jason L' && isTimerRunning) &&
+                                    <h4 className='c-red'>Deliver-ME is still searching for cheaper prices options. Any additional prices will be displayed below when received.</h4>
                                 }
                                 {pricings.length > 0 ?
                                     <table className="table table-hover table-bordered sortable fixed_headers">
