@@ -644,7 +644,6 @@ class BokPricePage extends Component {
                                     >
                                         {bok_1.quote_id === price.cost_id ? <i className="fa fa-check"></i> : null} {bok_1.quote_id === price.cost_id ? 'Selected' : 'Select'}
                                     </Button>
-                                    {bok_1.quote_id} {price.cost_id}
                                 </td>
                             }
                             {isPricingPage && !isSalesQuote &&
