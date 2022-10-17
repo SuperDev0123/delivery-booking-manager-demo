@@ -34,6 +34,7 @@ class BookingSetList extends React.Component {
             isShowPricingConfirmModal: false,
             isShowDropConfirmModal: false,
             isShowBookConfirmModal: false,
+            isShowLabelConfirmModal: false,
             isShowFPPricingSlider: false,
             selectedBookingSet: null,
             bookings: [],
@@ -64,6 +65,7 @@ class BookingSetList extends React.Component {
         this.toggleDeleteConfirmModal = this.toggleDeleteConfirmModal.bind(this);
         this.togglePricingConfirmModal = this.togglePricingConfirmModal.bind(this);
         this.toggleBookConfirmModal = this.toggleBookConfirmModal.bind(this);
+        this.toggleLabelConfirmModal = this.toggleLabelConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleDropConfirmModal = this.toggleDropConfirmModal.bind(this);
         this.toggleVehicleSlider = this.toggleVehicleSlider.bind(this);
@@ -205,6 +207,10 @@ class BookingSetList extends React.Component {
         this.setState(prevState => ({isShowBookConfirmModal: !prevState.isShowBookConfirmModal}));
     }
 
+    toggleLabelConfirmModal() {
+        this.setState(prevState => ({isShowLabelConfirmModal: !prevState.isShowLabelConfirmModal}));
+    }
+
     toggleFPPricingSlider() {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
@@ -249,6 +255,19 @@ class BookingSetList extends React.Component {
         this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
         this.setState({loadingBookingSets: true});
         this.toggleBookConfirmModal();
+    }
+
+    onClickGetLabel(selectedBookingSet) {
+        this.setState({selectedBookingSet});
+        this.toggleLabelConfirmModal();        
+    }
+
+    onConfirmBuildLabel() {
+        const {selectedBookingSet} = this.state;
+        selectedBookingSet.status = 'Build Label again';
+        this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
+        this.setState({loadingBookingSets: true});
+        this.toggleLabelConfirmModal();
     }
 
     onClickRefreshBookingSets() {
@@ -437,9 +456,18 @@ class BookingSetList extends React.Component {
                         <Button
                             color="primary"
                             onClick={() => this.onClickBookBtn(bookingSet)}
-                            disabled={bookingSet.status.indexOf('Completed(Pricing)') === -1}
+                            disabled={bookingSet.status.indexOf('Completed') === -1}
                         >
                             BOOK
+                        </Button>
+                    </td>
+                    <td>
+                        <Button
+                            color="primary"
+                            onClick={() => this.onClickGetLabel(bookingSet)}
+                            disabled={bookingSet.status.indexOf('Completed') === -1}
+                        >
+                            Get Label
                         </Button>
                     </td>
                     <td>
@@ -1004,6 +1032,15 @@ class BookingSetList extends React.Component {
                     title={`BOOK all bookings of BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
                     text={'Are you sure you want to BOOK all bookings?'}
                     okBtnName={'BOOK'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowLabelConfirmModal}
+                    onOk={() => this.onConfirmBuildLabel()}
+                    onCancel={this.toggleLabelConfirmModal}
+                    title={`Build label of all bookings of BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
+                    text={'Are you sure you want to BUILD LABEL of all bookings?'}
+                    okBtnName={'Get Label'}
                 />
 
                 <ConfirmModal
