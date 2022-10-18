@@ -617,6 +617,7 @@ class BookingSetList extends React.Component {
                                                 <th>Show Bookings</th>
                                                 <th>Pricing</th>
                                                 <th>BOOK</th>
+                                                <th>Get Label</th>
                                                 <th>Delete</th>
                                             </tr>
                                         </thead>
