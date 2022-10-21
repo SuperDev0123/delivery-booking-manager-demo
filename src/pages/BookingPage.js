@@ -100,6 +100,7 @@ class BookingPage extends Component {
             loadingBookingLineDetail: false,
             loadingBookingSave: false,
             loadingBookingUpdate: false,
+            loadingBookingManual: false,
             loadingZohoTickets: false,
             loadingZohoDepartments: false,
             loadingZohoTicketSummaries: false,
@@ -348,6 +349,7 @@ class BookingPage extends Component {
     UNSAFE_componentWillReceiveProps(newProps) {
         const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
+        const prevBooking = this.state.booking;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -534,7 +536,7 @@ class BookingPage extends Component {
         if (!isEmpty(bookingErrorMessage)) {
             this.notify(bookingErrorMessage);
             this.props.clearErrorMessage();
-            this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
+            this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false, loadingBookingManual: false});
 
             if (this.state.booking
                 && !isBookedBooking
@@ -703,6 +705,11 @@ class BookingPage extends Component {
 
         if (clientprocess != this.state.clientprocess)  {
             this.setState({clientprocess});
+        }
+        if(booking && prevBooking.x_manual_booked_flag !== booking.x_manual_booked_flag) {
+            let {formInputs} = this.state;
+            formInputs = {...formInputs, x_manual_booked_flag: booking.x_manual_booked_flag};
+            this.setState({formInputs, booking, loadingBookingManual: false});
         }
     }
 
@@ -1880,12 +1887,13 @@ class BookingPage extends Component {
         const name = target.name;
         
         if (name === 'tickManualBook') {
-            const {booking} = this.state;
+            const {booking, formInputs} = this.state;
             const {clientname} = this.props;
-
+            formInputs['x_manual_booked_flag'] = value;
+            this.setState({formInputs});
             if (clientname === 'dme') {
                 this.props.tickManualBook(booking.id);
-                this.setState({loadingBookingUpdate: true, curViewMode: 2});
+                this.setState({loadingBookingManual: true, curViewMode: 2});
             } else {
                 this.notify('Only `DME` role users can use this feature');
             }
@@ -3335,7 +3343,7 @@ class BookingPage extends Component {
                 </div>
 
                 <LoadingOverlay
-                    active={this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate}
+                    active={this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate || this.state.loadingBookingManual}
                     spinner
                     text='Loading...'
                 >
@@ -5644,6 +5652,7 @@ class BookingPage extends Component {
                                                             name="tickManualBook"
                                                             type="checkbox"
                                                             value={formInputs['x_manual_booked_flag'] ? formInputs['x_manual_booked_flag'] : ''}
+                                                            checked={formInputs['x_manual_booked_flag'] ? true : false}
                                                             onChange={(e) => this.handleInputChange(e)}
                                                             disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                         />
