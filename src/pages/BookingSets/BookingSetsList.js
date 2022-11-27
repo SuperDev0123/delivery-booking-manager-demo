@@ -1029,7 +1029,7 @@ class BookingSetList extends React.Component {
                     isOpen={this.state.isShowBookConfirmModal}
                     onOk={() => this.onConfirmBook()}
                     onCancel={this.toggleBookConfirmModal}
-                    title={`BOOK all bookings of BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
+                    title={`BOOK all bookings in BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
                     text={'Are you sure you want to BOOK all bookings?'}
                     okBtnName={'BOOK'}
                 />
@@ -1038,9 +1038,9 @@ class BookingSetList extends React.Component {
                     isOpen={this.state.isShowLabelConfirmModal}
                     onOk={() => this.onConfirmBuildLabel()}
                     onCancel={this.toggleLabelConfirmModal}
-                    title={`Build label of all bookings of BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
+                    title={`Build label of all bookings in BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
                     text={'Are you sure you want to BUILD LABEL of all bookings?'}
-                    okBtnName={'Get Label'}
+                    okBtnName={'Build Labels'}
                 />
 
                 <ConfirmModal

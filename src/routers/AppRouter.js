@@ -28,6 +28,7 @@ import BokPage from '../pages/BokPage';
 import FilesPage from '../pages/FilesPage';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
+import WarehouseLabelPage from '../pages/customer/WarehouseLabelPage';
 
 // Admin pages
 import Main from '../pages/admin/Main';
@@ -101,6 +102,7 @@ export const AppRouter = () => (
                 <Route exact path='/order/:id' component={BokPricePage} />
                 <Route exact path='/status/:id' component={BokStatusPage} />
                 <Route exact path='/label/:id' component={LabelPage} />
+                <PrivateRoute exact path='/warehouse-label' component={WarehouseLabelPage} />
                 
                 <PrivateRoute exact path='/booking' component={BookingPage} />
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />

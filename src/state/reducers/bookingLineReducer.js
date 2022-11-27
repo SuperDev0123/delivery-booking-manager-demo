@@ -44,27 +44,41 @@ export const BookingLineReducer = (state = defaultState, { type, errorMessage, b
             return {
                 ...state,
                 needUpdateBookingLines: true,
+                bookingLines: [...state.bookingLines, payload],
             };
         case FAILED_CREATE_BOOKING_LINE:
             return {
                 ...state,
                 errorMessage: errorMessage
             };
-        case SUCCESS_UPDATE_BOOKING_LINE:
+        case SUCCESS_UPDATE_BOOKING_LINE: {
+            const index = state.bookingLines.findIndex(line => line.pk_lines_id === payload.pk_lines_id);
+            const _bookingLines = [...state.bookingLines];
+            _bookingLines[index] = payload;
+
             return {
                 ...state,
                 needUpdateBookingLines: true,
+                bookingLines: _bookingLines,
             };
+        }
         case FAILED_UPDATE_BOOKING_LINE:
             return {
                 ...state,
                 errorMessage: errorMessage
             };
-        case SUCCESS_DELETE_BOOKING_LINE:
+        case SUCCESS_DELETE_BOOKING_LINE: {
+            console.log('@1 - ', state.bookingLines, payload);
+            const index = state.bookingLines.findIndex(line => line.pk_lines_id === payload.pk_lines_id);
+            const _bookingLines = [...state.bookingLines];
+            _bookingLines.splice(index, 1);
+
             return {
                 ...state,
                 needUpdateBookingLines: true,
+                bookingLines: _bookingLines,
             };
+        }
         case FAILED_DELETE_BOOKING_LINE:
             return {
                 ...state,

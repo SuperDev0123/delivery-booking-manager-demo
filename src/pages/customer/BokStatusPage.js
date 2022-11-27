@@ -120,14 +120,7 @@ class BokStatusPage extends Component {
             });
         }
 
-        let dateOfETA;
-        
-        if (!misDeliveries.includes(status)) {
-            dateOfETA = `${etaDate ? moment(etaDate, 'DD/MM/YYYY HH:mm').format('DD MMM YYYY') : ''}`;
-        }
-        else {
-            dateOfETA = 'N/A';
-        }
+        const dateOfETA = etaDate ? moment(etaDate, 'DD/MM/YYYY HH:mm').format('DD MMM YYYY') : '';
 
         const scansColumns = [
             {

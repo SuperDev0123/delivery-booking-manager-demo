@@ -126,7 +126,6 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 canceledSuccess: true,
             };
         case SUCCESS_BOK_REPACK:
-            console.log('@0 -');
             return {
                 ...state,
                 repackSuccess: true,

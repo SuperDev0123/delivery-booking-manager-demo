@@ -21,7 +21,7 @@ export function resetFlag() {
 export function setBookingLineDetails(bookingLineDetails) {
     return {
         type: SET_BOOKINGLINEDETAILS,
-        bookingLineDetails: bookingLineDetails,
+        bookingLineDetails,
     };
 }
 
@@ -33,10 +33,10 @@ export function failedGetBookingLineDetails(error) {
     };
 }
 
-export function successCreateBookingLineDetail(bookingLine) {
+export function successCreateBookingLineDetail(bookingLineDetail) {
     return {
         type: SUCCESS_CREATE_BOOKING_LINE_DETAIL,
-        bookingLine,
+        payload: bookingLineDetail,
     };
 }
 
@@ -47,10 +47,10 @@ export function failedCreateBookingLineDetail(error) {
     };
 }
 
-export function successUpdateBookingLineDetail(bookingLine) {
+export function successUpdateBookingLineDetail(bookingLineDetail) {
     return {
         type: SUCCESS_UPDATE_BOOKING_LINE_DETAIL,
-        bookingLine,
+        payload: bookingLineDetail,
     };
 }
 
@@ -61,10 +61,10 @@ export function failedUpdateBookingLineDetail(error) {
     };
 }
 
-export function successDeleteBookingLineDetail(bookingLine) {
+export function successDeleteBookingLineDetail(bookingLineDetail) {
     return {
         type: SUCCESS_DELETE_BOOKING_LINE_DETAIL,
-        bookingLine,
+        payload: bookingLineDetail,
     };
 }
 

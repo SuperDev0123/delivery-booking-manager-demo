@@ -82,7 +82,7 @@ export const deleteBookingLineDetail = (bookingLineDetail) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successDeleteBookingLineDetail(data)))
+            .then(() => dispatch(successDeleteBookingLineDetail(bookingLineDetail)))
             .catch((error) => dispatch(failedDeleteBookingLineDetail(error)));
 };
 

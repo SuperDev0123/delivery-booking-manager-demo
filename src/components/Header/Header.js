@@ -102,7 +102,8 @@ class Header extends Component {
                     currentRoute === '/bookinglinedetails' ||
                     currentRoute === '/pods' ||
                     currentRoute === '/zoho' ||
-                    currentRoute === '/reports' ?
+                    currentRoute === '/reports' ||
+                    currentRoute === '/warehouse-label' ?
                     <nav className="qbootstrap-nav" role="navigation">
                         <div className="col-md-12" id="headr">
                             <div className="top">
@@ -118,10 +119,10 @@ class Header extends Component {
                                         <span className="none">|</span>
                                         <a href="" className="none">Client Mode</a>
                                         <span className="none">|</span>
-                                        <a id="Popover" href='#' onClick={(e) => this.onOpenQuickQuote(e)} className='popover-btn'>Quick Quote</a>
-                                        <QuickQuotePopover isOpen={isOpenQuickQuote} setIsOpen={(val) => { this.setState({ isOpenQuickQuote: val }); }} dmeClients={dmeClients} />
-                                        <span>|</span>
-                                        <a href="/">Home</a>
+                                        {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <a id="Popover" href='#' onClick={(e) => this.onOpenQuickQuote(e)} className='popover-btn'>Quick Quote</a>}
+                                        {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <QuickQuotePopover isOpen={isOpenQuickQuote} setIsOpen={(val) => { this.setState({ isOpenQuickQuote: val }); }} dmeClients={dmeClients} />}
+                                        {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <span>|</span>}
+                                        {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <a href="/">Home</a>}
                                     </div>
                                 </div>
                                 <div className="line"></div>
@@ -150,28 +151,40 @@ class Header extends Component {
                                         <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                             <i className="fa fa-user" aria-hidden="true"></i>
                                         </a>
-                                        <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
-                                            <a className="dropdown-item cut-user-name">
-                                                <i>Logged in as {username}</i>
-                                            </a>
-                                            {clientname === 'dme' && <div className='dropdown-divider'></div>}
-                                            {clientname === 'dme' && <a className='dropdown-item' href="/admin">DME Admin</a>}
-                                            {clientname != 'dme' && <a className='dropdown-item' href="/customerdashboard">Admin</a>}
-                                            {clientname === 'dme' && <div className="dropdown-divider"></div>}
-                                            {clientname === 'dme' && <a className="dropdown-item" href="/upload">Upload Files</a>}
-                                            {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <div className="dropdown-divider"></div>}
-                                            {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <a className="dropdown-item" href="/files">Files</a>}
-                                            <div className="dropdown-divider"></div>
-                                            <a className="dropdown-item" href="/bok">Find Order</a>
-                                            <div className="dropdown-divider"></div>
-                                            <a className="dropdown-item" href="/booking">Booking</a>
-                                            <div className="dropdown-divider"></div>
-                                            <a className="dropdown-item" href="/allbookings">All Bookings</a>
-                                            {clientname === 'dme' && <div className='dropdown-divider'></div>}
-                                            {clientname === 'dme' && <a className='dropdown-item' href="/reports">Reports</a>}
-                                            <div className="dropdown-divider"></div>
-                                            <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
-                                        </div>
+                                        {(username === 'anchor_packaging_afs' || username === 'tempo_calm') ?
+                                            <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
+                                                <a className="dropdown-item cut-user-name">
+                                                    <i>Logged in as {username}</i>
+                                                </a>
+                                                <div className='dropdown-divider'></div>
+                                                <a className='dropdown-item' href="/warehouse-label">Labels</a>
+                                                <div className="dropdown-divider"></div>
+                                                <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
+                                            </div>
+                                            :
+                                            <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
+                                                <a className="dropdown-item cut-user-name">
+                                                    <i>Logged in as {username}</i>
+                                                </a>
+                                                {clientname === 'dme' && <div className='dropdown-divider'></div>}
+                                                {clientname === 'dme' && <a className='dropdown-item' href="/admin">DME Admin</a>}
+                                                {clientname != 'dme' && <a className='dropdown-item' href="/customerdashboard">Admin</a>}
+                                                {clientname === 'dme' && <div className="dropdown-divider"></div>}
+                                                {clientname === 'dme' && <a className="dropdown-item" href="/upload">Upload Files</a>}
+                                                {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <div className="dropdown-divider"></div>}
+                                                {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <a className="dropdown-item" href="/files">Files</a>}
+                                                <div className="dropdown-divider"></div>
+                                                <a className="dropdown-item" href="/bok">Find Order</a>
+                                                <div className="dropdown-divider"></div>
+                                                <a className="dropdown-item" href="/booking">Booking</a>
+                                                <div className="dropdown-divider"></div>
+                                                <a className="dropdown-item" href="/allbookings">All Bookings</a>
+                                                {clientname === 'dme' && <div className='dropdown-divider'></div>}
+                                                {clientname === 'dme' && <a className='dropdown-item' href="/reports">Reports</a>}
+                                                <div className="dropdown-divider"></div>
+                                                <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
+                                            </div>
+                                        }
                                     </li>
                                     :
                                     <li className="nav-item">

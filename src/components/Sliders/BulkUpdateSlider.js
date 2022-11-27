@@ -195,6 +195,31 @@ class BulkUpdateSlider extends React.Component {
                     fp.fp_company_name === 'Deliver-ME'
                 )
                     return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
+            } else if (clientname === 'Anchor Packaging Pty Ltd') { // Anchor Packaging Pty Ltd
+                if (
+                    fp.fp_company_name === 'Allied' ||
+                    fp.fp_company_name === 'Sadleirs' ||
+                    fp.fp_company_name === 'Sendle' ||
+                    fp.fp_company_name === 'Camerons' ||
+                    fp.fp_company_name === 'Northline' ||
+                    fp.fp_company_name === 'Century' ||
+                    fp.fp_company_name === 'TNT' ||
+                    fp.fp_company_name === 'ATC' ||
+                    fp.fp_company_name === 'State Transport' ||
+                    fp.fp_company_name === 'Deliver-ME' ||
+                    fp.fp_company_name === 'DXT' ||
+                    fp.fp_company_name === 'Hunter' ||
+                    fp.fp_company_name === 'CTI Logistics' ||
+                    fp.fp_company_name === 'Action Couriers' ||
+                    fp.fp_company_name === 'Blacks' ||
+                    fp.fp_company_name === 'Blanner' ||
+                    fp.fp_company_name === 'Bluestar' ||
+                    fp.fp_company_name === 'Hi-Trans' ||
+                    fp.fp_company_name === 'VFS' ||
+                    fp.fp_company_name === 'Followmont' ||
+                    fp.fp_company_name === 'Startrack'
+                )
+                    return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
             } else {
                 return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
             }
@@ -221,7 +246,7 @@ class BulkUpdateSlider extends React.Component {
                                 {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
                                     <option value="puPickUpAvailFrom_Date">Pickup From Date</option>
                                 }
-                                {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
+                                {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct' || clientname === 'Anchor Packaging Pty Ltd') &&
                                     <option value="vx_freight_provider">Freight Provider</option>
                                 }
                                 {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}

@@ -132,7 +132,6 @@ class BookingPage extends Component {
             selectedLineIndex: -1,
             isBookingModified: false,
             curViewMode: 0, // 0: Show view, 1: Create view, 2: Update view
-            packageTypes: [],
             allBookingStatus: [],
             isShowLineTrackingSlider: false,
             activeTabInd: 0,
@@ -302,6 +301,7 @@ class BookingPage extends Component {
         cntAdditionalSurcharges: PropTypes.number,
         puAddresses: PropTypes.array,
         deToAddresses: PropTypes.array,
+        packageTypes: PropTypes.array,
     };
 
     componentDidMount() {
@@ -346,7 +346,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -394,10 +394,6 @@ class BookingPage extends Component {
 
         if (needUpdateStatusActions) {
             this.props.getStatusActions();
-        }
-
-        if (packageTypes) {
-            this.setState({packageTypes});
         }
 
         if (statusHistories) {
@@ -2732,7 +2728,7 @@ class BookingPage extends Component {
         this.props.getAllErrors(this.state.booking.pk_booking_id);
     }
 
-    // status: `original`, `auto`, `manual`
+    // status: `original`, `auto`, `manual`, `scanned`
     onChangePackedStatus(status) {
         const {booking, products} = this.state;
 
@@ -6049,8 +6045,9 @@ class BookingPage extends Component {
                     createBookingLineDetail={(bookingLine) => this.props.createBookingLineDetail(bookingLine)}
                     updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
                     moveLineDetails={(lineId, lineDetailIds) => this.props.moveLineDetails(lineId, lineDetailIds)}
-                    packageTypes={this.state.packageTypes}
+                    packageTypes={this.props.packageTypes}
                     currentPackedStatus={_currentPackedStatus}
+                    onChangePackedStatus={(status) => this.onChangePackedStatus(status)}
                     toggleUpdateBookingModal={this.toggleUpdateBookingModal}
                 />
 
