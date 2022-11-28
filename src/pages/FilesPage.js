@@ -11,6 +11,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import '../styles/pages/dmeapiinv.scss';
 import { getFiles } from '../state/services/fileService';
 import { API_HOST, HTTP_PROTOCOL } from '../config';
+import { cleanRedirectState } from '../state/services/authService';
 
 class FilesPage extends Component {
     constructor(props) {
@@ -211,6 +212,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getFiles: (fileType) => dispatch(getFiles(fileType)),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
     };
 };
 
