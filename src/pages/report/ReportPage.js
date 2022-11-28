@@ -37,9 +37,14 @@ class ReportPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, username } = newProps;
         const currentRoute = this.props.location.pathname;
 
+        if (username) {
+            if(username === 'anchor_packaging_afs' || username === 'tempo_calm') {
+                this.props.history.replace('/warehouse-label');                
+            }
+        }
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
@@ -103,6 +108,7 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         clientname: state.auth.clientname,
+        username: state.auth.username,
     };
 };
 

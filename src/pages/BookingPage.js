@@ -359,6 +359,9 @@ class BookingPage extends Component {
         }
 
         if (username) {
+            if(username === 'anchor_packaging_afs' || username === 'tempo_calm') {
+                this.props.history.replace('/warehouse-label');                
+            }
             this.setState({username});
         }
 
