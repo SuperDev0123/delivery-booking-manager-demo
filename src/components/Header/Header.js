@@ -122,7 +122,7 @@ class Header extends Component {
                                         {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <a id="Popover" href='#' onClick={(e) => this.onOpenQuickQuote(e)} className='popover-btn'>Quick Quote</a>}
                                         {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <QuickQuotePopover isOpen={isOpenQuickQuote} setIsOpen={(val) => { this.setState({ isOpenQuickQuote: val }); }} dmeClients={dmeClients} />}
                                         {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <span>|</span>}
-                                        {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') && <a href="/">Home</a>}
+                                        <a href="/">Home</a>
                                     </div>
                                 </div>
                                 <div className="line"></div>
@@ -138,13 +138,15 @@ class Header extends Component {
                             <h5>Tel: (02) 8311 1500</h5>
                         </div>
                         <div className="col-sm-6 d-flex justify-content-between" >
-                            <div id={'booking-column-header-tooltip-LoginRequired'}>
-                                {isLoggedIn !== 'true' && <SimpleTooltipComponent text={'Login Required'} />}
-                                <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={(e) => this.onOpenQuickQuote(e)}>
-                                    Quick Quote
-                                </a>
-                                <QuickQuotePopover isOpen={isOpenQuickQuote} setIsOpen={(val) => { this.setState({ isOpenQuickQuote: val }); }} dmeClients={dmeClients} />
-                            </div>
+                            {(username !== 'anchor_packaging_afs' &&  username !== 'tempo_calm') &&
+                                <div id={'booking-column-header-tooltip-LoginRequired'}>
+                                    {isLoggedIn !== 'true' && <SimpleTooltipComponent text={'Login Required'} />}
+                                    <a id="Popover" className={`btn btn-outline-light my-2 my-lg-0 login ${isLoggedIn !== 'true' && 'disabled'}`} onClick={(e) => this.onOpenQuickQuote(e)}>
+                                        Quick Quote
+                                    </a>
+                                    <QuickQuotePopover isOpen={isOpenQuickQuote} setIsOpen={(val) => { this.setState({ isOpenQuickQuote: val }); }} dmeClients={dmeClients} />
+                                </div>
+                            }
                             <ul className="navbar-nav flex-row ml-auto d-md-flex">
                                 {clientname && isLoggedIn === 'true' ?
                                     <li className="nav-item dropdown show">

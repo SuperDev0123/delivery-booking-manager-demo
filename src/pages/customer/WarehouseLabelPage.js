@@ -1531,7 +1531,7 @@ class WarehouseLabelPage extends React.Component {
                             {booking.b_bookingID_Visual}
                         </span>
                     </td>
-                    <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider} {booking.cost_dollar ? `($${booking.cost_dollar})` : ''}</td>
+                    <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
                     <td name='v_FPBookingNumber' className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
                     <td name='b_status' className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.b_status}</p>
