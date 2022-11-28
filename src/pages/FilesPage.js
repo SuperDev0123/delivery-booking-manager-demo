@@ -11,7 +11,6 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import '../styles/pages/dmeapiinv.scss';
 import { getFiles } from '../state/services/fileService';
 import { API_HOST, HTTP_PROTOCOL } from '../config';
-import { cleanRedirectState } from '../state/services/authService';
 
 class FilesPage extends Component {
     constructor(props) {
@@ -26,9 +25,7 @@ class FilesPage extends Component {
     }
     static propTypes = {
         getFiles: PropTypes.func.isRequired, 
-        cleanRedirectState: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         loadingFiles: PropTypes.bool.isRequired,
     };
@@ -38,12 +35,7 @@ class FilesPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {redirect, files, loadingFiles} = newProps;
-
-        if (redirect) {
-            this.props.cleanRedirectState();
-            this.props.history.push('/');
-        }
+        const {files, loadingFiles} = newProps;
 
         if (files) {
             this.setState({files});
@@ -203,7 +195,6 @@ const mapStateToProps = (state) => {
     return {
         username: state.auth.username,
         errorMessage: state.auth.errorMessage,
-        redirect: state.auth.redirect,
         files: state.files.files,
         loadingFiles: state.files.loadingFiles,
     };
@@ -212,7 +203,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getFiles: (fileType) => dispatch(getFiles(fileType)),
-        cleanRedirectState: () => dispatch(cleanRedirectState()),
     };
 };
 
