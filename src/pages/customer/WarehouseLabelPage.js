@@ -22,7 +22,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../../config';
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
 import { getWarehouses } from '../../state/services/warehouseService';
 import {
-    getBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel,
+    getWareHouseLabelBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel,
     setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState,
     fpOrder, changeBookingsStatus, changeBookingsFlagStatus,
     clearErrorMessage, fpOrderSummary, getSummaryOfBookings
@@ -119,7 +119,7 @@ class WarehouseLabelPage extends React.Component {
     static propTypes = {
         // Prop funcs
         verifyToken: PropTypes.func.isRequired,
-        getBookings: PropTypes.func.isRequired,
+        getWareHouseLabelBookings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
@@ -401,7 +401,7 @@ class WarehouseLabelPage extends React.Component {
                 clientPK,
             });
 
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues);
+            this.props.getWareHouseLabelBookings(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues);
         }
     }
 
@@ -2439,7 +2439,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues)),
+        getWareHouseLabelBookings: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) => dispatch(getWareHouseLabelBookings(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
         setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),

@@ -94,6 +94,58 @@ import {
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
+export const getWareHouseLabelBookings = (
+    startDate,
+    endDate,
+    clientPK=0,
+    warehouseId=0,
+    fpId=0,
+    pageItemCnt=100,
+    pageInd=0,
+    sortField='-id',
+    columnFilters={},
+    activeTabInd=0,
+    simpleSearchKeyword='',
+    downloadOption='label',
+    dmeStatus='',
+    multiFindField=null,
+    multiFindValues='',
+    projectName=null,
+    bookingIds=null,
+) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_warehouse_label_bookings/`,
+        params: {
+            startDate: startDate,
+            endDate: endDate,
+            clientPK: clientPK,
+            warehouseId: warehouseId,
+            fpId: fpId,
+            pageItemCnt: parseInt(pageItemCnt),
+            pageInd: parseInt(pageInd),
+            sortField: sortField,
+            columnFilters: columnFilters,
+            activeTabInd: activeTabInd,
+            simpleSearchKeyword: simpleSearchKeyword,
+            downloadOption: downloadOption,
+            dmeStatus: dmeStatus,
+            multiFindField: multiFindField,
+            multiFindValues: multiFindValues,
+            projectName: projectName,
+            bookingIds: bookingIds,
+        }
+    };
+    return dispatch => {
+        dispatch(resetRefeshBookingsFlag());
+        axios(options)
+            .then(({ data }) => dispatch(successGetBookings(data)))
+            .catch((error) => dispatch(failedGetBookings(error)));
+    };
+};
+
 export const getBookings = (
     startDate,
     endDate,
