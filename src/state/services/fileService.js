@@ -11,7 +11,6 @@ export const getFiles = (fileType) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/files/?fileType=${fileType}`,
     };
     return dispatch => {
