@@ -8,7 +8,6 @@ import {
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getFiles = (fileType) => {
-    const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         url: `${HTTP_PROTOCOL}://${API_HOST}/files/?fileType=${fileType}`,
