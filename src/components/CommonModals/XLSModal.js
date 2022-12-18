@@ -199,6 +199,7 @@ class XLSModal extends Component {
                             {clientname === 'dme' && <option value="bookings_delivered">Bookings Delivered report</option>}
                             {clientname === 'dme' && <option value="bookings_sent">Bookings Sent report</option>}
                             {clientname === 'dme' && <option value="booking_lines_sent">Booking Lines Sent Report</option>}
+                            {clientname === 'dme' && <option value="delivery">Delivery Report</option>}
                             <option value="all">All</option>
                         </select>
                     </label>
