@@ -71,6 +71,7 @@ import AddClientEmployee from '../pages/admin/AdminViews/ClientEmployees/AddClie
 import EditClientEmployee from '../pages/admin/AdminViews/ClientEmployees/EditClientEmployee';
 import QuickViewLogs from '../pages/admin/AdminViews/Logs/QuickView';
 import DownloadLogs from '../pages/admin/AdminViews/Logs/Download';
+import DMEDownloadLogs from '../pages/admin/AdminViews/DMELogs/Download';
 import QuoteReport from '../pages/admin/AdminViews/Reports/QuoteReport';
 
 import CustomerClientEmployees from '../pages/admin/CustomerViews/ClientEmployees/ClientEmployees';
@@ -161,6 +162,8 @@ export const AppRouter = () => (
 
                     <AdminPrivateRoute exact path='/admin/logs/quickview' component={QuickViewLogs} />
                     <AdminPrivateRoute exact path='/admin/logs/download' component={DownloadLogs} />
+
+                    <AdminPrivateRoute exact path='/admin/dme_logs/download' component={DMEDownloadLogs} />
 
                     <AdminPrivateRoute exact path='/admin/reports/quote' component={QuoteReport} />
 
