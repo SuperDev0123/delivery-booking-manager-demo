@@ -136,4 +136,15 @@
 	.log-datepicker {
 		height: 38px;
 	}
+	
+    .pagination-md {
+		.disabled {
+		  background-color: lightgray;
+		  cursor: not-allowed;
+		}
+  
+		.current {
+		  background-color: lightgreen;
+		}
+	  }
 }
