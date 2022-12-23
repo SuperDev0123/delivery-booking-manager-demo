@@ -31,6 +31,7 @@ class SidebarPush extends React.Component {
                 pricingOnlyCollapsed: true,
                 pricingRuleCollapsed: true,
                 logsCollapsed: true,
+                dmeLogsCollapsed: true,
                 augmentCollapsed: true,
                 reportCollapsed: true,
             },
@@ -113,7 +114,7 @@ class SidebarPush extends React.Component {
 
 
     render() {
-        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, clientProductsCollapsed, baseUrl, augmentCollapsed, logsCollapsed, reportCollapsed } = this.state;
+        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, clientProductsCollapsed, baseUrl, augmentCollapsed, logsCollapsed, dmeLogsCollapsed, reportCollapsed } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
@@ -384,6 +385,20 @@ class SidebarPush extends React.Component {
                                     </li>
                                     <li>
                                         <Link title="Download log files" to="/admin/logs/download" className={this.activeRoute(['logs/download']) ? 'active' : ''}>
+                                            <span className="submenu-title">Download</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            
+                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('dme_logs/download') || this.activeRoute('dme_logs/download') ? 'active' : ''}>
+                                <a onClick={() => this.setState({ dmeLogsCollapsed: !dmeLogsCollapsed })}>
+                                    <i className="fa fa-bars fa-fw"></i>
+                                    <span className="menu-title">DME Logs</span>
+                                </a>
+                                <ul className={classNames({ 'nav-sub': true, 'collapse': !dmeLogsCollapsed })}>
+                                    <li>
+                                        <Link title="Download DME log files" to="/admin/dme_logs/download" className={this.activeRoute(['dme_logs/download']) ? 'active' : ''}>
                                             <span className="submenu-title">Download</span>
                                         </Link>
                                     </li>
