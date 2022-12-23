@@ -153,7 +153,6 @@ class BookingPage extends Component {
             isShowCSNoteSlider: false,
             isShowUpdateBookingModal: false,
             bookingId: null,
-            apiBCLs: [],
             createdForInfos: [],
             currentNoteModalField: null,
             pricingInfos: [],
@@ -303,6 +302,7 @@ class BookingPage extends Component {
         puAddresses: PropTypes.array,
         deToAddresses: PropTypes.array,
         packageTypes: PropTypes.array,
+        apiBCLs: PropTypes.array,
     };
 
     componentDidMount() {
@@ -347,7 +347,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const prevBooking = this.state.booking;
         const currentRoute = this.props.location.pathname;
@@ -415,10 +415,6 @@ class BookingPage extends Component {
 
         if (statusDetails) {
             this.setState({statusDetails});
-        }
-
-        if (apiBCLs) {
-            this.setState({apiBCLs});
         }
 
         if (qtyTotal && qtyTotal > 0) {
@@ -6093,7 +6089,7 @@ class BookingPage extends Component {
                     updateBooking={(id, booking) => this.props.updateBooking(id, booking)}
                     isBooked={isBookedBooking}
                     calcCollected={(ids, type) => this.props.calcCollected(ids, type)}
-                    apiBCLs={this.state.apiBCLs}
+                    apiBCLs={this.props.apiBCLs}
                 />
 
                 <StatusLockModal
