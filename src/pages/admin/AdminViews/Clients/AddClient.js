@@ -13,16 +13,16 @@ class AddClient extends Component {
 
         this.state = {
             company_name: '',
-            phone: '',
+            phone: 0,
             client_filter_date_field: 'z_CreatedTimestamp',
             dme_account_num: '',
             current_freight_provider: '',
-            client_mark_up_percent: '',
-            client_min_markup_startingcostvalue: '',
-            client_min_markup_value: '',
-            augment_pu_available_time: '',
-            augment_pu_by_time: '',
-            client_customer_mark_up: '',
+            client_mark_up_percent: 0,
+            client_min_markup_startingcostvalue: 0,
+            client_min_markup_value: 0,
+            augment_pu_available_time: '00:00',
+            augment_pu_by_time: '23:59',
+            client_customer_mark_up: 0,
             gap_percent: 0,
             logo_url: '',
             loading: false,
@@ -136,9 +136,9 @@ class AddClient extends Component {
                                     <form onSubmit={(e) => this.onSubmit(e)} role="form">
                                         <div className="form-group">
                                             <div className="panel-default panel-heading p-1 mt-4 bg-lightgray">General Info</div>
-                                            <label htmlFor="company_name">Company Name</label>
+                                            <label htmlFor="company_name">Company Name <span className='c-red'>*</span></label>
                                             <input name="company_name" type="text" className="form-control" id="company_name" placeholder="Enter Company Name" value={this.state.company_name} onChange={(e) => this.onInputChange(e)} />
-                                            <label htmlFor="dme_account_num">Dme Account Num</label>
+                                            <label htmlFor="dme_account_num">Dme Account Num (UUID) <span className='c-red'>*</span></label>
                                             <input name="dme_account_num" type="text" className="form-control" id="dme_account_num" placeholder="Enter Account Num" value={this.state.dme_account_num} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="phone">Phone</label>
                                             <input name="phone" type="text" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
@@ -147,13 +147,13 @@ class AddClient extends Component {
                                         </div>
                                         <div className="form-group">
                                             <div className="panel-default panel-heading p-1 mt-5 bg-lightgray">Mark Up Info</div>
-                                            <label htmlFor="client_mark_up_percent">Percent MU for DME Profit</label>
+                                            <label htmlFor="client_mark_up_percent">Percent MU for DME Profit <span className='c-red'>*</span></label>
                                             <input name="client_mark_up_percent" type="text" className="form-control" placeholder="Enter Percent MU for DME Profit" value={this.state.client_mark_up_percent} onChange={(e) => this.onInputChange(e)} />
-                                            <label htmlFor="client_min_markup_startingcostvalue">Client Min MU Starting Cost</label>
+                                            <label htmlFor="client_min_markup_startingcostvalue">Client Min MU Starting Cost <span className='c-red'>*</span></label>
                                             <input name="client_min_markup_startingcostvalue" type="text" className="form-control" placeholder="Enter Client Min MU Starting Cost" value={this.state.client_min_markup_startingcostvalue} onChange={(e) => this.onInputChange(e)} />
-                                            <label htmlFor="client_min_markup_value">Client Min MU Value</label>
+                                            <label htmlFor="client_min_markup_value">Client Min MU Value <span className='c-red'>*</span></label>
                                             <input name="client_min_markup_value" type="text" className="form-control" placeholder="Enter Client Min MU Value" value={this.state.client_min_markup_value} onChange={(e) => this.onInputChange(e)} />
-                                            <label htmlFor="client_customer_mark_up">Client Customer MU</label>
+                                            <label htmlFor="client_customer_mark_up">Client Customer MU <span className='c-red'>*</span></label>
                                             <input name="client_customer_mark_up" type="text" className="form-control" placeholder="Enter Client Customer MU" value={this.state.client_customer_mark_up} onChange={(e) => this.onInputChange(e)} />
                                         </div>
                                         <div className="form-group">
@@ -170,7 +170,7 @@ class AddClient extends Component {
                                             <label htmlFor="logo_url">Logo URL</label>
                                             <input name="logo_url" type="text" className="form-control" placeholder="Enter Logo URL" value={this.state.logo_url} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="exampleFormControlSelect1">Example select</label>
-                                            <label htmlFor="client_filter_date_field">Client Filter Date Field</label>
+                                            <label htmlFor="client_filter_date_field">Client Filter Date Field <span className='c-red'>*</span></label>
                                             <select className="rounded-0 form-control py-0" name="client_filter_date_field" value={this.state.client_filter_date_field} onChange={(e) => this.onInputChange(e)}>
                                                 <option value="z_CreatedTimestamp">Created Timestamp</option>
                                                 <option value="puPickUpAvailFrom_Date">PU Pickup Available From Date</option>
