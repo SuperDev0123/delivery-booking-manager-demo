@@ -15,7 +15,6 @@ class AddClient extends Component {
             company_name: '',
             phone: 0,
             client_filter_date_field: 'z_CreatedTimestamp',
-            dme_account_num: '',
             current_freight_provider: '',
             client_mark_up_percent: 0,
             client_min_markup_startingcostvalue: 0,
@@ -71,7 +70,6 @@ class AddClient extends Component {
             company_name,
             phone,
             client_filter_date_field,
-            dme_account_num,
             current_freight_provider,
             client_mark_up_percent,
             client_min_markup_startingcostvalue,
@@ -86,7 +84,6 @@ class AddClient extends Component {
             company_name,
             phone,
             client_filter_date_field,
-            dme_account_num,
             current_freight_provider,
             client_mark_up_percent,
             client_min_markup_startingcostvalue,
@@ -138,8 +135,6 @@ class AddClient extends Component {
                                             <div className="panel-default panel-heading p-1 mt-4 bg-lightgray">General Info</div>
                                             <label htmlFor="company_name">Company Name <span className='c-red'>*</span></label>
                                             <input name="company_name" type="text" className="form-control" id="company_name" placeholder="Enter Company Name" value={this.state.company_name} onChange={(e) => this.onInputChange(e)} />
-                                            <label htmlFor="dme_account_num">Dme Account Num (UUID) <span className='c-red'>*</span></label>
-                                            <input name="dme_account_num" type="text" className="form-control" id="dme_account_num" placeholder="Enter Account Num" value={this.state.dme_account_num} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="phone">Phone</label>
                                             <input name="phone" type="text" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="current_freight_provider">Freight Provider</label>

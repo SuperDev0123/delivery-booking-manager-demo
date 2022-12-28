@@ -15,7 +15,6 @@ class EditClient extends Component {
             company_name: '',
             phone: '',
             client_filter_date_field: 'z_CreatedTimestamp',
-            dme_account_num: '',
             current_freight_provider: '',
             client_mark_up_percent: '',
             client_min_markup_startingcostvalue: '',
@@ -26,6 +25,8 @@ class EditClient extends Component {
             gap_percent: 0,
             logo_url: '',
             loading: false,
+            status_email: '',
+            status_phone: '',
             client: {}
         };
     }
@@ -70,7 +71,6 @@ class EditClient extends Component {
                 company_name,
                 phone,
                 client_filter_date_field,
-                dme_account_num,
                 current_freight_provider,
                 client_mark_up_percent,
                 client_min_markup_startingcostvalue,
@@ -79,14 +79,15 @@ class EditClient extends Component {
                 augment_pu_by_time,
                 client_customer_mark_up,
                 gap_percent,
-                logo_url 
+                logo_url,
+                status_email,
+                status_phone
             } = client;
             this.setState({ 
                 client,
                 company_name,
                 phone,
                 client_filter_date_field,
-                dme_account_num,
                 current_freight_provider,
                 client_mark_up_percent,
                 client_min_markup_startingcostvalue,
@@ -95,7 +96,9 @@ class EditClient extends Component {
                 augment_pu_by_time,
                 client_customer_mark_up,
                 gap_percent,
-                logo_url
+                logo_url,
+                status_email,
+                status_phone
             });
         }
     }
@@ -111,7 +114,6 @@ class EditClient extends Component {
             company_name,
             phone,
             client_filter_date_field,
-            dme_account_num,
             current_freight_provider,
             client_mark_up_percent,
             client_min_markup_startingcostvalue,
@@ -120,13 +122,14 @@ class EditClient extends Component {
             augment_pu_by_time,
             client_customer_mark_up,
             gap_percent,
-            logo_url 
-        } = this.state;        
+            logo_url,
+            status_email,
+            status_phone
+        } = this.state;
 
         client.company_name = company_name;
         client.phone = parseInt(phone);
         client.client_filter_date_field = client_filter_date_field;
-        client.dme_account_num = dme_account_num;
         client.current_freight_provider = current_freight_provider;
         client.client_mark_up_percent = parseFloat(client_mark_up_percent);
         client.client_min_markup_startingcostvalue = parseFloat(client_min_markup_startingcostvalue);
@@ -136,6 +139,8 @@ class EditClient extends Component {
         client.client_customer_mark_up = parseFloat(client_customer_mark_up);
         client.gap_percent = parseFloat(gap_percent);
         client.logo_url = logo_url;
+        client.status_email = status_email || '';
+        client.status_phone = status_phone || '';
 
         this.props.updateClient(client);
         this.setState({ loading: false });
@@ -179,8 +184,6 @@ class EditClient extends Component {
                                             <div className="panel-default panel-heading p-1 mt-4 bg-lightgray">General Info</div>
                                             <label htmlFor="company_name">Company Name</label>
                                             <input name="company_name" type="text" className="form-control" id="company_name" placeholder="Enter Company Name" value={this.state.company_name} onChange={(e) => this.onInputChange(e)} />
-                                            <label htmlFor="dme_account_num">Dme Account Num</label>
-                                            <input name="dme_account_num" type="text" className="form-control" id="dme_account_num" placeholder="Enter Account Num" value={this.state.dme_account_num} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="phone">Phone</label>
                                             <input name="phone" type="text" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="current_freight_provider">Freight Provider</label>
