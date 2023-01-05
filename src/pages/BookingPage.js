@@ -5604,7 +5604,8 @@ class BookingPage extends Component {
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
                                                             && booking && isBookedBooking
-                                                            && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
+                                                            && booking.vx_freight_provider
+                                                            && booking.vx_freight_provider.toLowerCase() == 'tnt'
                                                         ) ?
                                                             <div className="text-center mt-2 fixed-height half-size">
                                                                 <button

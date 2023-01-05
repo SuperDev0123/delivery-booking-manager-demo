@@ -203,6 +203,7 @@ class UploadPage extends Component {
                                     <option value='Seaway-Bunnings'>Seaway-Bunnings</option>
                                     <option value='Tempo'>Tempo</option>
                                     <option value='BioPak'>BioPak</option>
+                                    <option value='Plum Products Australia Ltd'>Plum Products Australia Ltd</option>
                                 </select>
                             }
                             <button id="submit-upload" type="submit">upload</button>
