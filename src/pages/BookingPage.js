@@ -668,17 +668,15 @@ class BookingPage extends Component {
         }
 
         if (booking && pricingInfos) {
-            if (this.state.pricingInfos.length != pricingInfos.length) {
+            let temp = pricingInfos;
+            if(clientname === 'dme') {
+                temp = temp.filter(price => price.freight_provider !== 'MRL Sampson');
+            }
+            if (this.state.pricingInfos.length != temp.length) {
                 this.props.getBooking(booking.id, 'id');
                 this.setState({loading: true, curViewMode: 0});
             }
-
-            if(clientname === 'dme') {
-                this.setState({loadingPricingInfos: false, pricingInfos: pricingInfos.filter(price => price.freight_provider !== 'MRL Sampson')});
-            }
-            else {
-                this.setState({pricingInfos, loadingPricingInfos: false});
-            }
+            this.setState({pricingInfos: temp, loadingPricingInfos: false});
 
         }
 
