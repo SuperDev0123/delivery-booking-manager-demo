@@ -347,7 +347,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {clientname, attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const prevBooking = this.state.booking;
         const currentRoute = this.props.location.pathname;
@@ -668,12 +668,16 @@ class BookingPage extends Component {
         }
 
         if (booking && pricingInfos) {
-            if (this.state.pricingInfos.length != pricingInfos.length) {
+            let temp = pricingInfos;
+            if (clientname !== 'dme') {
+                temp = temp.filter(price => price.freight_provider !== 'MRL Sampson');
+            }
+            if (this.state.pricingInfos.length != temp.length) {
                 this.props.getBooking(booking.id, 'id');
                 this.setState({loading: true, curViewMode: 0});
             }
+            this.setState({pricingInfos: temp, loadingPricingInfos: false});
 
-            this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
         if (booking && statusHistories) {
