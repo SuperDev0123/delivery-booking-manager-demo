@@ -347,7 +347,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {clientname, attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const prevBooking = this.state.booking;
         const currentRoute = this.props.location.pathname;
@@ -673,7 +673,13 @@ class BookingPage extends Component {
                 this.setState({loading: true, curViewMode: 0});
             }
 
-            this.setState({pricingInfos, loadingPricingInfos: false});
+            if(clientname === 'dme') {
+                this.setState({loadingPricingInfos: false, pricingInfos: pricingInfos.filter(price => price.freight_provider !== 'MRL Sampson')});
+            }
+            else {
+                this.setState({pricingInfos, loadingPricingInfos: false});
+            }
+
         }
 
         if (booking && statusHistories) {
