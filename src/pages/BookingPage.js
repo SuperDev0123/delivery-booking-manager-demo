@@ -669,7 +669,7 @@ class BookingPage extends Component {
 
         if (booking && pricingInfos) {
             let temp = pricingInfos;
-            if(clientname !== 'dme') {
+            if (clientname !== 'dme') {
                 temp = temp.filter(price => price.freight_provider !== 'MRL Sampson');
             }
             if (this.state.pricingInfos.length != temp.length) {
