@@ -497,9 +497,6 @@ class BokPricePage extends Component {
         let filteredPricings;
         if (bokWithPricings) filteredPricings = salesViewPricings || bokWithPricings['pricings'];
 
-        // Show MRL Sampson pricing only for DME employee
-        if (clientname !== 'dme') (filteredPricings || []).filter(pricing => pricing['fp_name'] !== 'MRL Sampson');
-
         if (bokWithPricings && sortedBy === 'lowest') {
             sortedPricings = sortBy(filteredPricings, ['sell']);
         } else if (bokWithPricings && sortedBy === 'fastest') {
@@ -583,6 +580,11 @@ class BokPricePage extends Component {
 
             pricings = sortedPricings
                 .filter(pricing => pricing.packed_status === _currentPackedStatus)
+                .filter(pricing => {
+                    if (clientname !== 'dme')
+                        return price['fp_name'] !== 'MRL Sampson';
+                    return true;
+                })
                 .map((price, index) => {
                     const clientSalesTotal = bokWithPricings.b_094_client_sales_total;
                     let clientSalesTotal5Percent = 0;
