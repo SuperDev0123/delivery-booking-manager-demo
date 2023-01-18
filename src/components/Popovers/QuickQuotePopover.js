@@ -610,7 +610,7 @@ class QuickQuotePopover extends React.Component {
                                 </div>
                                 <div className=" form-group px-1">
                                     <label htmlFor="e_weightPerEach">
-                                        <p>Weight</p>
+                                        <p>Weight(each)</p>
                                         {
                                             lines.map((line, index) => (
                                                 <div className="row p-1" key={'e_weightPerEach' + index}>
