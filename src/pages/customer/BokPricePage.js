@@ -89,6 +89,8 @@ class BokPricePage extends Component {
         lineOperationSuccess: PropTypes.bool,
         repack: PropTypes.func.isRequired,
         setNeedToUpdatePricings: PropTypes.func.isRequired,
+        username: PropTypes.string,
+        clientname: PropTypes.string,
     };
 
     componentDidMount() {
@@ -395,7 +397,7 @@ class BokPricePage extends Component {
 
     render() {
         const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode, isAdminView, isTimerRunning} = this.state;
-        const {bokWithPricings} = this.props;
+        const {bokWithPricings, clientname} = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
         let isPricingPage = true;
@@ -494,6 +496,9 @@ class BokPricePage extends Component {
 
         let filteredPricings;
         if (bokWithPricings) filteredPricings = salesViewPricings || bokWithPricings['pricings'];
+
+        // Show MRL Sampson pricing only for DME employee
+        if (clientname !== 'dme') filteredPricings.filter(pricing => pricing['fp_name'] !== 'MRL Sampson');
 
         if (bokWithPricings && sortedBy === 'lowest') {
             sortedPricings = sortBy(filteredPricings, ['sell']);
@@ -1038,6 +1043,7 @@ const mapStateToProps = (state) => {
         lineOperationSuccess: state.bok.lineOperationSuccess,
         packageTypes: state.extra.packageTypes,
         username: state.auth.username,
+        clientname: state.auth.clientname,
     };
 };
 

@@ -289,6 +289,11 @@ class QuickQuotePopover extends React.Component {
         // Build pricing table
         const originalPricings = quickPricings
             .filter((price) => price.packed_status === 'original')
+            .filter((price) => {
+                if (clientname !== 'dme')
+                    return price['fp_name'] !== 'MRL Sampson';
+                return true;
+            })
             .map((price, index) => {
                 return (
                     <tr key={index}>
@@ -319,6 +324,11 @@ class QuickQuotePopover extends React.Component {
 
         const autoPricings = quickPricings
             .filter(pricing => pricing.packed_status === 'auto')
+            .filter((price) => {
+                if (clientname !== 'dme')
+                    return price['fp_name'] !== 'MRL Sampson';
+                return true;
+            })
             .map((price, index) => {
                 return (
                     <tr key={index}>
@@ -345,6 +355,7 @@ class QuickQuotePopover extends React.Component {
                     </tr>
                 );
             });
+
         return (
             <Popover
                 className="quick-quote"

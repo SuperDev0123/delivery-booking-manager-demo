@@ -669,9 +669,12 @@ class BookingPage extends Component {
 
         if (booking && pricingInfos) {
             let temp = pricingInfos;
+            
+            // Show MRL Sampson pricing only for DME employee
             if (clientname !== 'dme') {
                 temp = temp.filter(price => price.freight_provider !== 'MRL Sampson');
             }
+
             if (this.state.pricingInfos.length != temp.length) {
                 this.props.getBooking(booking.id, 'id');
                 this.setState({loading: true, curViewMode: 0});
