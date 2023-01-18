@@ -498,7 +498,7 @@ class BokPricePage extends Component {
         if (bokWithPricings) filteredPricings = salesViewPricings || bokWithPricings['pricings'];
 
         // Show MRL Sampson pricing only for DME employee
-        if (clientname !== 'dme') filteredPricings.filter(pricing => pricing['fp_name'] !== 'MRL Sampson');
+        if (clientname !== 'dme') (filteredPricings || []).filter(pricing => pricing['fp_name'] !== 'MRL Sampson');
 
         if (bokWithPricings && sortedBy === 'lowest') {
             sortedPricings = sortBy(filteredPricings, ['sell']);
