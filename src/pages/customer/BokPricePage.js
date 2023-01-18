@@ -582,7 +582,7 @@ class BokPricePage extends Component {
                 .filter(pricing => pricing.packed_status === _currentPackedStatus)
                 .filter(pricing => {
                     if (clientname !== 'dme')
-                        return price['fp_name'] !== 'MRL Sampson';
+                        return pricing['fp_name'] !== 'MRL Sampson';
                     return true;
                 })
                 .map((price, index) => {
