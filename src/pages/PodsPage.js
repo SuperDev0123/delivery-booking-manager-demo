@@ -124,6 +124,7 @@ class PodsPage extends React.Component {
                             <li className="active"><a href="/pods">PODs</a></li>
                             {this.props.clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                             <li className=""><Link to="/reports">Reports</Link></li>
+                            <li className=""><Link to="/prebooking-errors">Booking Errors</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                             <li className="none"><a href="/bookinglinedetails">Booking Line Data</a></li>
                         </ul>

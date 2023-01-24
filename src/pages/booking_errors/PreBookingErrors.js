@@ -7,13 +7,10 @@ import ManifestReport from './_ManifestReport';
 // Services
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
 
-class ReportPage extends React.Component {
+class PreBookingErrorsPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            selectedReportType: 'manifest',
-        };
     }
 
     static propTypes = {
@@ -41,8 +38,8 @@ class ReportPage extends React.Component {
         const currentRoute = this.props.location.pathname;
 
         if (username) {
-            if(username === 'anchor_packaging_afs' || username === 'tempo_calm') {
-                this.props.history.replace('/warehouse-label');                
+            if (username === 'anchor_packaging_afs' || username === 'tempo_calm') {
+                this.props.history.replace('/warehouse-label');
             }
         }
         if (redirect && currentRoute != '/') {
@@ -52,13 +49,8 @@ class ReportPage extends React.Component {
         }
     }
 
-    onChangeReportType(e) {
-        this.setState({selectedReportType: e.target.value});
-    }
-
     render() {
         const { clientname } = this.props;
-        const { selectedReportType } = this.state;
 
         return (
             <div className="qbootstrap-nav report" >
@@ -70,8 +62,8 @@ class ReportPage extends React.Component {
                             <li className=""><a href="/bookingsets">Booking Sets</a></li>
                             <li className=""><a href="/pods">PODs</a></li>
                             {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
-                            <li className="active"><Link to="/reports">Reports</Link></li>
-                            <li className=""><Link to="/prebooking-errors">Booking Errors</Link></li>
+                            <li className=""><Link to="/reports">Reports</Link></li>
+                            <li className="active"><Link to="/prebooking-errors">Booking Errors</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                             <li className="none"><a href="/bookinglinedetails">Booking Line Data</a></li>
                         </ul>
@@ -91,13 +83,10 @@ class ReportPage extends React.Component {
                 </div>
                 <div className="tab-pane fade in active">
                     <div className="content">
-                        {selectedReportType === 'manifest' &&
-                            <ManifestReport
-                                history={this.props.history}
-                                selectedReportType={selectedReportType}
-                                onChangeReportType={this.onChangeReportType}
-                            />
-                        }
+                        <ManifestReport
+                            history={this.props.history}
+                            clientname={clientname}
+                        />
                     </div>
                 </div>
             </div>
@@ -120,4 +109,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ReportPage));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PreBookingErrorsPage));

@@ -24,6 +24,7 @@ import BookingSetsPage from '../pages/BookingSets/BookingSetsList';
 import UploadPage from '../pages/UploadPage';
 import PodsPage from '../pages/PodsPage';
 import ReportPage from '../pages/report/ReportPage';
+import PreBookingErrorsPage from '../pages/booking_errors/PreBookingErrors';
 import BokPage from '../pages/BokPage';
 import FilesPage from '../pages/FilesPage';
 import ZohoPage from '../pages/ZohoPage';
@@ -115,6 +116,7 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/zoho' component={ZohoPage} />
                 <PrivateRoute exact path='/zohodetails' component={ZohoDetailsPage} />
                 <PrivateRoute exact path='/reports' component={ReportPage} />
+                <PrivateRoute exact path='/prebooking-errors' component={PreBookingErrorsPage} />
                 <Main>
                     <Route exact path='/admin' component={ Login } />
                     <Route exact path='/admin/login' component={ Login} />

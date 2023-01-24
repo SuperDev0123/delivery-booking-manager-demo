@@ -2385,6 +2385,7 @@ class AllBookingsPage extends React.Component {
                                 <li className=""><Link to="/pods">PODs</Link></li>
                                 {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                                 <li className=""><Link to="/reports">Reports</Link></li>
+                                <li className=""><Link to="/prebooking-errors">Booking Errors</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                                 <li className="none"><a href="/bookinglinedetails">Booking Line Data</a></li>
                             </ul>
