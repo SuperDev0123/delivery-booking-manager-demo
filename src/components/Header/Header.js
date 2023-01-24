@@ -183,6 +183,7 @@ class Header extends Component {
                                                 <a className="dropdown-item" href="/allbookings">All Bookings</a>
                                                 {clientname === 'dme' && <div className='dropdown-divider'></div>}
                                                 {clientname === 'dme' && <a className='dropdown-item' href="/reports">Reports</a>}
+                                                <div className="dropdown-divider"></div>
                                                 <a className='dropdown-item' href="/prebooking-errors">Booking Errors</a>
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
