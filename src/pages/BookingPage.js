@@ -1188,7 +1188,7 @@ class BookingPage extends Component {
 
     onClickDeleteFile(fileOption) {
         const { booking } = this.state;
-        if(booking.z_label_url) {
+        if (booking.z_label_url) {
             this.setState({selectedFileOption: fileOption});
             this.toggleDeleteFileConfirmModal();
         }
