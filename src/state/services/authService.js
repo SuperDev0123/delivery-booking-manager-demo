@@ -32,6 +32,7 @@ export const getToken = (username, password) => {
 
 export const verifyToken = () => {
     const token = localStorage.getItem('token');
+    localStorage.setItem('isLoggedIn', 'false');
 
     return dispatch =>
         axios.post(`${HTTP_PROTOCOL}://${API_HOST}/api-token-verify/` , {

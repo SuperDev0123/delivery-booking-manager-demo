@@ -36,6 +36,7 @@ export function failedGetToken(error) {
 
 export function detectTokenExpiration(data) {
     if (data.hasOwnProperty('token')) {
+        localStorage.setItem('isLoggedIn', 'true');
         return {
             type: SET_TOKEN,
             errorMessage: ''
