@@ -3150,8 +3150,11 @@ class BookingPage extends Component {
         };
 
         let warehouseCodeOptions = warehouses
-            .filter(warehouse => (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme')
-            || warehouse.client_company_name === formInputs['b_client_name'])
+            .filter(warehouse =>
+                (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme') ||
+                warehouse.client_company_name === formInputs['b_client_name'] ||
+                warehouse.client_company_name === 'Pricing-Only'
+            )
             .map(warehouse => ({value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code}));
 
         const bookingCategroies = [
