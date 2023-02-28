@@ -39,7 +39,18 @@ class LabelPage extends Component {
     componentDidMount() {
         const identifier = this.props.match.params.id;
 
-        if (identifier && identifier.length > 32) {
+        if (identifier && identifier === 'scan-failed') {
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.get('reason') === 'address') {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: address contains non-utf8 character.'});
+            } else if (params.get('reason') === 'sscc') {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: scanned data is not fetchable or parsable.'});
+            } else {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: unknown. Please contact support center.'});
+            }
+            this.setState({identifier});
+        } else if (identifier && identifier.length > 32) {
             this.props.getLabels4Booking(identifier);
             this.setState({identifier});
         } else {
@@ -211,6 +222,7 @@ class LabelPage extends Component {
                                         color="info"
                                         disabled={!sscc_info.is_available && 'disabled'}
                                         onClick={() => this.onClickPreview(sscc_info['url'])}
+                                        title={sscc_info.is_available ? 'Click to preview' : 'Please rebuild the label'}
                                     >
                                         Preview
                                     </Button>
@@ -218,6 +230,7 @@ class LabelPage extends Component {
                                         color="primary"
                                         disabled={!sscc_info.is_available && 'disabled'}
                                         onClick={() => this.onClickPrint(sscc_info['pdf'])}
+                                        title={sscc_info.is_available ? 'Click to print' : 'Please rebuild the label'}
                                     >
                                         Print
                                     </Button>
@@ -225,6 +238,7 @@ class LabelPage extends Component {
                                         color="primary"
                                         disabled={!sscc_info.is_available && 'disabled'}
                                         onClick={() => this.onClickDownload(sscc_info['url'])}
+                                        title={sscc_info.is_available ? 'Click to download' : 'Please rebuild the label'}
                                     >
                                         Download(ZPL)
                                     </Button>
@@ -292,18 +306,27 @@ class LabelPage extends Component {
                             {bookingLabels.full_label_name &&
                                 <Button
                                     color="info"
-                                    disabled={bookingLabels.full_label_name ? false : true}
+                                    disabled={bookingLabels.pdf ? false : true}
                                     onClick={() => this.onClickPreview(bookingLabels.full_label_name)}
+                                    title={bookingLabels.pdf ? 'Click to preview' : 'Please rebuild the label'}
                                 >
                                     Preview
                                 </Button>
                             }
-                            <Button color="primary" onClick={() => this.onClickPrint()}>Print</Button>
+                            <Button
+                                color="primary"
+                                disabled={bookingLabels.pdf ? false : true}
+                                onClick={() => this.onClickPrint()}
+                                title={bookingLabels.pdf ? 'Click to print' : 'Please rebuild the label'}
+                            >
+                                Print
+                            </Button>
                             {bookingLabels.full_label_name &&
                                 <Button
                                     color="primary"
-                                    disabled={bookingLabels.full_label_name ? false : true}
+                                    disabled={bookingLabels.pdf ? false : true}
                                     onClick={() => this.onClickDownload(bookingLabels.full_label_name)}
+                                    title={bookingLabels.pdf ? 'Click to download' : 'Please rebuild the label'}
                                 >
                                     Download(ZPL)
                                 </Button>
