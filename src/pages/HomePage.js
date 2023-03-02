@@ -10,7 +10,7 @@ import img1 from '../public/images/1.png';
 import img2 from '../public/images/2.png';
 import img3 from '../public/images/3.png';
 
-import { verifyToken, getUser, cleanRedirectState } from '../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getStatusPageUrl } from '../state/services/bookingService';
 import { resetStatusPageUrl } from '../state/actions/bookingActions';
 
@@ -25,7 +25,6 @@ class HomePage extends Component {
     }
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
-        getUser: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
@@ -38,7 +37,7 @@ class HomePage extends Component {
         const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
-            this.props.verifyToken();
+            // this.props.verifyToken();
         } else {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
@@ -183,7 +182,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getUser: (token) => dispatch(getUser(token)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getStatusPageUrl: (findKeyword) => dispatch(getStatusPageUrl(findKeyword)),
         resetStatusPageUrl: () => dispatch(resetStatusPageUrl()),
