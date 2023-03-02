@@ -169,6 +169,7 @@ class BookingPage extends Component {
             deCommunicates: [],
             currentPackedStatus: '',
             eta: {days: 0, hours: 0},
+            isDeletingLabel: false,
         };
 
         this.djsConfig = {
@@ -1186,15 +1187,20 @@ class BookingPage extends Component {
     }
 
     onClickDeleteFile(fileOption) {
-        this.setState({selectedFileOption: fileOption});
-        this.toggleDeleteFileConfirmModal();
+        const { booking } = this.state;
+        if (booking.z_label_url) {
+            this.setState({selectedFileOption: fileOption});
+            this.toggleDeleteFileConfirmModal();
+        }
     }
 
     onClickConfirmBtn(type) {
         const token = localStorage.getItem('token');
-        const {booking, selectedFileOption, formInputs} = this.state;
+        const {booking, selectedFileOption, formInputs, isDeletingLabel} = this.state;
 
         if (type === 'delete-file') {
+            if(isDeletingLabel) return true;
+            this.setState({isDeletingLabel: true});
             const options = {
                 method: 'delete',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
@@ -1204,6 +1210,7 @@ class BookingPage extends Component {
 
             axios(options)
                 .then((response) => {
+                    this.setState({isDeletingLabel: false});
                     console.log('#301 - ', response.data);
                     if (selectedFileOption === 'label') {
                         booking.z_label_url = null;
@@ -1214,6 +1221,7 @@ class BookingPage extends Component {
                     this.toggleDeleteFileConfirmModal();
                 })
                 .catch(error => {
+                    this.setState({isDeletingLabel: false});
                     this.notify('Failed to delete a file: ' + error);
                     this.toggleDeleteFileConfirmModal();
                 });    
