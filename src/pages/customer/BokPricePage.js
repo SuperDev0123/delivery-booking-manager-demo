@@ -17,7 +17,7 @@ import PalletSlider from '../../components/Sliders/PalletSlider';
 import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import BokLineSlider from '../../components/Sliders/BokLineSlider';
 // Services
-import { getWeight, numberWithCommas } from '../../commons/helpers';
+import { getWeight } from '../../commons/helpers';
 import {
     getBokWithPricings,
     selectPricing,
@@ -972,61 +972,61 @@ class BokPricePage extends Component {
                         </div>
                     }
 
-                <ExtraCostSummarySlider
-                    isOpen={this.state.isShowExtraCostSummarySlider}
-                    toggleSlider={this.toggleExtraCostSummarySlider}
-                    selectedPrice={this.state.selectedPrice}
-                    bok_2s={bokWithPricings ? bokWithPricings['bok_2s'] : []}
-                />
+                    <ExtraCostSummarySlider
+                        isOpen={this.state.isShowExtraCostSummarySlider}
+                        toggleSlider={this.toggleExtraCostSummarySlider}
+                        selectedPrice={this.state.selectedPrice}
+                        bok_2s={bokWithPricings ? bokWithPricings['bok_2s'] : []}
+                    />
 
-                <PalletSlider
-                    isOpen={this.state.isShowPalletSlider}
-                    toggleSlider={this.togglePalletSlider}
-                    onCancelAutoRepack={this.onCancelAutoRepack}
-                    onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
-                />
+                    <PalletSlider
+                        isOpen={this.state.isShowPalletSlider}
+                        toggleSlider={this.togglePalletSlider}
+                        onCancelAutoRepack={this.onCancelAutoRepack}
+                        onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
+                    />
 
-                <BokLineSlider
-                    isOpen={this.state.isShowBokLineSlider}
-                    toggleSlider={this.toggleBokLineSlider}
-                    line={this.state.selectedLine}
-                    onSubmit={(newLineData, type) => this.onUpdateBokLine(newLineData, type)}
-                    packageTypes={this.props.packageTypes}
-                />
+                    <BokLineSlider
+                        isOpen={this.state.isShowBokLineSlider}
+                        toggleSlider={this.toggleBokLineSlider}
+                        line={this.state.selectedLine}
+                        onSubmit={(newLineData, type) => this.onUpdateBokLine(newLineData, type)}
+                        packageTypes={this.props.packageTypes}
+                    />
 
-                <ConfirmModal
-                    isOpen={this.state.isShowTriggerEmailModal}
-                    onOk={() => this.onClickConfirmBtn('trigger-email')}
-                    onCancel={this.toggleTriggerEmailModal}
-                    title={'Send Booking Now?'}
-                    text={'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
-                    okBtnName={'Yes'}
-                />
+                    <ConfirmModal
+                        isOpen={this.state.isShowTriggerEmailModal}
+                        onOk={() => this.onClickConfirmBtn('trigger-email')}
+                        onCancel={this.toggleTriggerEmailModal}
+                        title={'Send Booking Now?'}
+                        text={'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
+                        okBtnName={'Yes'}
+                    />
 
-                <ConfirmModal
-                    isOpen={this.state.isShowDeleteConfirmModal}
-                    onOk={() => this.onUpdateBokLine(null, 'delete')}
-                    onCancel={this.toggleDeleteConfirmModal}
-                    title={'Confirmation Modal'}
-                    text={'Do you really want to delete this line?'}
-                    okBtnName={'Delete'}
-                />
+                    <ConfirmModal
+                        isOpen={this.state.isShowDeleteConfirmModal}
+                        onOk={() => this.onUpdateBokLine(null, 'delete')}
+                        onCancel={this.toggleDeleteConfirmModal}
+                        title={'Confirmation Modal'}
+                        text={'Do you really want to delete this line?'}
+                        okBtnName={'Delete'}
+                    />
 
-                <ConfirmModal
-                    isOpen={this.state.isShowManualRepackModal}
-                    onOk={() => this.onClickConfirmBtn('manual-from-original')}
-                    onOk2={() => this.onClickConfirmBtn('manual-from-auto')}
-                    onOk3={() => this.onClickConfirmBtn('enter-from-scratch')}
-                    onCancel={() => this.toggleManualRepackModal()}
-                    title={'Manual Repack source selection'}
-                    text={'Copy data for manual re-repack from?'}
-                    okBtnName={'From Send As Is'}
-                    ok2BtnName={'From Auto Repack'}
-                    ok3BtnName={'Enter from Scratch'}
-                />
+                    <ConfirmModal
+                        isOpen={this.state.isShowManualRepackModal}
+                        onOk={() => this.onClickConfirmBtn('manual-from-original')}
+                        onOk2={() => this.onClickConfirmBtn('manual-from-auto')}
+                        onOk3={() => this.onClickConfirmBtn('enter-from-scratch')}
+                        onCancel={() => this.toggleManualRepackModal()}
+                        title={'Manual Repack source selection'}
+                        text={'Copy data for manual re-repack from?'}
+                        okBtnName={'From Send As Is'}
+                        ok2BtnName={'From Auto Repack'}
+                        ok3BtnName={'Enter from Scratch'}
+                    />
 
-                <ToastContainer />
-            </section>
+                    <ToastContainer />
+                </section>
             </LoadingOverlay >
         );
     }

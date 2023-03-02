@@ -123,12 +123,16 @@ function fillZero (str, max) {
 const milliseconds2Days = (milliseconds) => ~~(milliseconds / (1000*60*60*24));
 const milliseconds2Hours = (milliseconds) => ~~(milliseconds / (1000*60*60));
 
-function numberWithCommas(num) {
+function numberWithCommas(num, place) {
     if(isNull(num)) return '';
-    if(isNaN(num)) return num;
-    let temp = num.toString().split('.');
-    temp[0] = temp[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return temp.join('.');
+    try {
+        let temp = parseFloat(num);
+        if (place) temp = temp.toFixed(2);
+        return temp.toLocaleString('en-US');
+    }
+    catch(err) {
+        return num;
+    }
 }
 
 module.exports = {

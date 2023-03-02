@@ -432,17 +432,17 @@ class BookingPage extends Component {
                 result['pk_lines_id'] = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
                 result['e_type_of_packaging'] = bookingLine.e_type_of_packaging ? bookingLine.e_type_of_packaging : '';
                 result['e_item'] = bookingLine.e_item ? bookingLine.e_item : '';
-                result['e_qty'] = bookingLine.e_qty ? bookingLine.e_qty : 0;
+                result['e_qty'] = bookingLine.e_qty ? numberWithCommas(bookingLine.e_qty) : 0;
                 result['e_weightUOM'] = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : 'Kgs';
-                result['e_weightPerEach'] = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : 0;
-                result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight.toFixed(2) : 0;
+                result['e_weightPerEach'] = bookingLine.e_weightPerEach ? numberWithCommas(bookingLine.e_weightPerEach) : 0;
+                result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? numberWithCommas(bookingLine.e_Total_KG_weight, 2) : 0;
                 result['e_dimUOM'] = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : '';
-                result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : 0;
-                result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : 0;
-                result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : 0;
-                result['e_util_height'] = bookingLine.e_util_height ? bookingLine.e_util_height : 'N/A';
-                result['e_util_cbm'] = bookingLine.e_util_cbm ? bookingLine.e_util_cbm : 'N/A';
-                result['e_util_kg'] = bookingLine.e_util_kg ? bookingLine.e_util_kg : 'N/A';
+                result['e_dimLength'] = bookingLine.e_dimLength ? numberWithCommas(bookingLine.e_dimLength) : 0;
+                result['e_dimWidth'] = bookingLine.e_dimWidth ? numberWithCommas(bookingLine.e_dimWidth) : 0;
+                result['e_dimHeight'] = bookingLine.e_dimHeight ? numberWithCommas(bookingLine.e_dimHeight) : 0;
+                result['e_util_height'] = bookingLine.e_util_height ? numberWithCommas(bookingLine.e_util_height) : 'N/A';
+                result['e_util_cbm'] = bookingLine.e_util_cbm ? numberWithCommas(bookingLine.e_util_cbm) : 'N/A';
+                result['e_util_kg'] = bookingLine.e_util_kg ? numberWithCommas(bookingLine.e_util_kg) : 'N/A';
                 result['e_qty_awaiting_inventory'] = bookingLine.e_qty_awaiting_inventory ? bookingLine.e_qty_awaiting_inventory : 0;
                 result['e_qty_collected'] = bookingLine.e_qty_collected ? bookingLine.e_qty_collected : 0;
                 result['e_qty_scanned_depot'] = bookingLine.e_qty_scanned_depot ? bookingLine.e_qty_scanned_depot : 0;
@@ -457,11 +457,11 @@ class BookingPage extends Component {
                 result['picked_up_timestamp'] = bookingLine.picked_up_timestamp;
                 result['sscc'] = bookingLine.sscc;
                 result['packed_status'] = bookingLine.packed_status;
-                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter;
-                result['total_2_cubic_mass_factor_calc'] = bookingLine.total_2_cubic_mass_factor_calc;
+                result['e_1_Total_dimCubicMeter'] = numberWithCommas(bookingLine.e_1_Total_dimCubicMeter);
+                result['total_2_cubic_mass_factor_calc'] = numberWithCommas(bookingLine.total_2_cubic_mass_factor_calc);
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
-                result['e_1_Total_dimCubicMeter'] = result['e_1_Total_dimCubicMeter'].toFixed(3);
+                result['e_1_Total_dimCubicMeter'] = numberWithCommas(result['e_1_Total_dimCubicMeter']);
 
                 return result;
             });
