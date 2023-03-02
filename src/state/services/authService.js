@@ -37,7 +37,7 @@ export const verifyToken = () => {
         axios.post(`${HTTP_PROTOCOL}://${API_HOST}/api-token-verify/` , {
             token: token,
         })
-            .then(({ data }) => dispatch(detectTokenExpiration(data)) )
+            .then(({ data }) => dispatch(detectTokenExpiration(data)))
             .catch((error) => dispatch(failedVerifiyToken(error)) );
 };
 
