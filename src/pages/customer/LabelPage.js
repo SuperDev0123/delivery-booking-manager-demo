@@ -46,6 +46,10 @@ class LabelPage extends Component {
                 this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: address contains non-utf8 character.'});
             } else if (params.get('reason') === 'sscc') {
                 this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: scanned data is not fetchable or parsable.'});
+            } else if (params.get('reason') === 'no-fp-selected') {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: no freight provider is selected. Please check quotes manually.'});
+            } else if (params.get('reason') === 'failed-label-build') {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: failed to build label. Please check address.'});
             } else {
                 this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: unknown. Please contact support center.'});
             }
