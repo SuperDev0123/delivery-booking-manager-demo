@@ -35,6 +35,7 @@ class BookingSetList extends React.Component {
             isShowPricingConfirmModal: false,
             isShowDropConfirmModal: false,
             isShowBookConfirmModal: false,
+            isShowLabelConfirmModal: false,
             isShowFPPricingSlider: false,
             selectedBookingSet: null,
             bookings: [],
@@ -65,6 +66,7 @@ class BookingSetList extends React.Component {
         this.toggleDeleteConfirmModal = this.toggleDeleteConfirmModal.bind(this);
         this.togglePricingConfirmModal = this.togglePricingConfirmModal.bind(this);
         this.toggleBookConfirmModal = this.toggleBookConfirmModal.bind(this);
+        this.toggleLabelConfirmModal = this.toggleLabelConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleDropConfirmModal = this.toggleDropConfirmModal.bind(this);
         this.toggleVehicleSlider = this.toggleVehicleSlider.bind(this);
@@ -206,6 +208,10 @@ class BookingSetList extends React.Component {
         this.setState(prevState => ({isShowBookConfirmModal: !prevState.isShowBookConfirmModal}));
     }
 
+    toggleLabelConfirmModal() {
+        this.setState(prevState => ({isShowLabelConfirmModal: !prevState.isShowLabelConfirmModal}));
+    }
+
     toggleFPPricingSlider() {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
@@ -250,6 +256,19 @@ class BookingSetList extends React.Component {
         this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
         this.setState({loadingBookingSets: true});
         this.toggleBookConfirmModal();
+    }
+
+    onClickGetLabel(selectedBookingSet) {
+        this.setState({selectedBookingSet});
+        this.toggleLabelConfirmModal();        
+    }
+
+    onConfirmBuildLabel() {
+        const {selectedBookingSet} = this.state;
+        selectedBookingSet.status = 'Build Label again';
+        this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
+        this.setState({loadingBookingSets: true});
+        this.toggleLabelConfirmModal();
     }
 
     onClickRefreshBookingSets() {
@@ -352,7 +371,7 @@ class BookingSetList extends React.Component {
             this.props.history.push('/booking?bookingid=' + bookingId);
     }
 
-    onSelectPricing(pricingInfo) {
+    onSelectPricing(pricingInfo, isLocking) {
         const booking = this.state.selectedBooking;
         booking['vx_freight_provider'] = pricingInfo['freight_provider'];
         booking['vx_account_code'] = pricingInfo['account_code'];
@@ -361,6 +380,7 @@ class BookingSetList extends React.Component {
         booking['inv_cost_actual'] = pricingInfo['fee'];
         booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
+        booking['is_quote_locked'] = isLocking;
 
         const selectedFP = this.state.allFPs.find(fp => fp.fp_company_name === pricingInfo['freight_provider']);
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
@@ -437,9 +457,18 @@ class BookingSetList extends React.Component {
                         <Button
                             color="primary"
                             onClick={() => this.onClickBookBtn(bookingSet)}
-                            disabled={bookingSet.status.indexOf('Completed(Pricing)') === -1}
+                            disabled={bookingSet.status.indexOf('Completed') === -1}
                         >
                             BOOK
+                        </Button>
+                    </td>
+                    <td>
+                        <Button
+                            color="primary"
+                            onClick={() => this.onClickGetLabel(bookingSet)}
+                            disabled={bookingSet.status.indexOf('Completed') === -1}
+                        >
+                            Get Label
                         </Button>
                     </td>
                     <td>
@@ -589,6 +618,7 @@ class BookingSetList extends React.Component {
                                                 <th>Show Bookings</th>
                                                 <th>Pricing</th>
                                                 <th>BOOK</th>
+                                                <th>Get Label</th>
                                                 <th>Delete</th>
                                             </tr>
                                         </thead>
@@ -1001,9 +1031,18 @@ class BookingSetList extends React.Component {
                     isOpen={this.state.isShowBookConfirmModal}
                     onOk={() => this.onConfirmBook()}
                     onCancel={this.toggleBookConfirmModal}
-                    title={`BOOK all bookings of BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
+                    title={`BOOK all bookings in BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
                     text={'Are you sure you want to BOOK all bookings?'}
                     okBtnName={'BOOK'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowLabelConfirmModal}
+                    onOk={() => this.onConfirmBuildLabel()}
+                    onCancel={this.toggleLabelConfirmModal}
+                    title={`Build label of all bookings in BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
+                    text={'Are you sure you want to BUILD LABEL of all bookings?'}
+                    okBtnName={'Build Labels'}
                 />
 
                 <ConfirmModal
@@ -1019,12 +1058,13 @@ class BookingSetList extends React.Component {
                     <FPPricingSlider
                         isOpen={this.state.isShowFPPricingSlider}
                         toggleSlider={this.toggleFPPricingSlider}
-                        pricingInfos={this.state.pricingInfos}
-                        onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                        pricings={this.state.pricingInfos}
+                        onSelectPricing={(pricingInfo, isLocking) => this.onSelectPricing(pricingInfo, isLocking)}
                         isLoading={this.state.loadingPricingInfos}
                         clientname={clientname}
                         x_manual_booked_flag={this.state.selectedBooking.x_manual_booked_flag}
                         api_booking_quote_id={this.state.selectedBooking.api_booking_quote}
+                        is_quote_locked={this.state.selectedBooking.is_quote_locked}
                         isBooked={this.state.selectedBooking.b_dateBookedDate ? true : false}
                         clientSalesTotal={this.state.selectedBooking.client_sales_total}
                     />

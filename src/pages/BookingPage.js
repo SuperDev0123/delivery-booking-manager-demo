@@ -100,6 +100,7 @@ class BookingPage extends Component {
             loadingBookingLineDetail: false,
             loadingBookingSave: false,
             loadingBookingUpdate: false,
+            loadingBookingManual: false,
             loadingZohoTickets: false,
             loadingZohoDepartments: false,
             loadingZohoTicketSummaries: false,
@@ -132,7 +133,6 @@ class BookingPage extends Component {
             selectedLineIndex: -1,
             isBookingModified: false,
             curViewMode: 0, // 0: Show view, 1: Create view, 2: Update view
-            packageTypes: [],
             allBookingStatus: [],
             isShowLineTrackingSlider: false,
             activeTabInd: 0,
@@ -153,7 +153,6 @@ class BookingPage extends Component {
             isShowCSNoteSlider: false,
             isShowUpdateBookingModal: false,
             bookingId: null,
-            apiBCLs: [],
             createdForInfos: [],
             currentNoteModalField: null,
             pricingInfos: [],
@@ -170,6 +169,7 @@ class BookingPage extends Component {
             deCommunicates: [],
             currentPackedStatus: '',
             eta: {days: 0, hours: 0},
+            isDeletingLabel: false,
         };
 
         this.djsConfig = {
@@ -302,6 +302,8 @@ class BookingPage extends Component {
         cntAdditionalSurcharges: PropTypes.number,
         puAddresses: PropTypes.array,
         deToAddresses: PropTypes.array,
+        packageTypes: PropTypes.array,
+        apiBCLs: PropTypes.array,
     };
 
     componentDidMount() {
@@ -346,8 +348,9 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {clientname, attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
+        const prevBooking = this.state.booking;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -357,6 +360,9 @@ class BookingPage extends Component {
         }
 
         if (username) {
+            if(username === 'anchor_packaging_afs' || username === 'tempo_calm') {
+                this.props.history.replace('/warehouse-label');                
+            }
             this.setState({username});
         }
 
@@ -396,10 +402,6 @@ class BookingPage extends Component {
             this.props.getStatusActions();
         }
 
-        if (packageTypes) {
-            this.setState({packageTypes});
-        }
-
         if (statusHistories) {
             this.setState({statusHistories});
         }
@@ -414,10 +416,6 @@ class BookingPage extends Component {
 
         if (statusDetails) {
             this.setState({statusDetails});
-        }
-
-        if (apiBCLs) {
-            this.setState({apiBCLs});
         }
 
         if (qtyTotal && qtyTotal > 0) {
@@ -534,7 +532,7 @@ class BookingPage extends Component {
         if (!isEmpty(bookingErrorMessage)) {
             this.notify(bookingErrorMessage);
             this.props.clearErrorMessage();
-            this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
+            this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false, loadingBookingManual: false});
 
             if (this.state.booking
                 && !isBookedBooking
@@ -558,7 +556,7 @@ class BookingPage extends Component {
                         if (
                             this.state.booking.kf_client_id === '7EAA4B16-484B-3944-902E-BC936BFEF535' && // BioPak
                             this.state.booking.vx_freight_provider === 'Startrack' &&
-                            this.state.booking.b_client_warehouse_code === 'BIO - RIC'
+                            (this.state.booking.b_client_warehouse_code === 'BIO - RIC' || this.state.booking.b_client_warehouse_code === 'BIO - HAZ')
                         ) {
                             this.props.dmeLabel(booking.id);
                         } else {
@@ -671,12 +669,19 @@ class BookingPage extends Component {
         }
 
         if (booking && pricingInfos) {
-            if (this.state.pricingInfos.length != pricingInfos.length) {
+            let temp = pricingInfos;
+            
+            // Show MRL Sampson pricing only for DME employee
+            if (clientname !== 'dme') {
+                temp = temp.filter(price => price.freight_provider !== 'MRL Sampson');
+            }
+
+            if (this.state.pricingInfos.length != temp.length) {
                 this.props.getBooking(booking.id, 'id');
                 this.setState({loading: true, curViewMode: 0});
             }
+            this.setState({pricingInfos: temp, loadingPricingInfos: false});
 
-            this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
         if (booking && statusHistories) {
@@ -703,6 +708,11 @@ class BookingPage extends Component {
 
         if (clientprocess != this.state.clientprocess)  {
             this.setState({clientprocess});
+        }
+        if(booking && prevBooking.x_manual_booked_flag !== booking.x_manual_booked_flag) {
+            let {formInputs} = this.state;
+            formInputs = {...formInputs, x_manual_booked_flag: booking.x_manual_booked_flag};
+            this.setState({formInputs, booking, loadingBookingManual: false});
         }
     }
 
@@ -1177,15 +1187,20 @@ class BookingPage extends Component {
     }
 
     onClickDeleteFile(fileOption) {
-        this.setState({selectedFileOption: fileOption});
-        this.toggleDeleteFileConfirmModal();
+        const { booking } = this.state;
+        if (booking.z_label_url) {
+            this.setState({selectedFileOption: fileOption});
+            this.toggleDeleteFileConfirmModal();
+        }
     }
 
     onClickConfirmBtn(type) {
         const token = localStorage.getItem('token');
-        const {booking, selectedFileOption, formInputs} = this.state;
+        const {booking, selectedFileOption, formInputs, isDeletingLabel} = this.state;
 
         if (type === 'delete-file') {
+            if(isDeletingLabel) return true;
+            this.setState({isDeletingLabel: true});
             const options = {
                 method: 'delete',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
@@ -1195,6 +1210,7 @@ class BookingPage extends Component {
 
             axios(options)
                 .then((response) => {
+                    this.setState({isDeletingLabel: false});
                     console.log('#301 - ', response.data);
                     if (selectedFileOption === 'label') {
                         booking.z_label_url = null;
@@ -1205,6 +1221,7 @@ class BookingPage extends Component {
                     this.toggleDeleteFileConfirmModal();
                 })
                 .catch(error => {
+                    this.setState({isDeletingLabel: false});
                     this.notify('Failed to delete a file: ' + error);
                     this.toggleDeleteFileConfirmModal();
                 });    
@@ -1265,6 +1282,7 @@ class BookingPage extends Component {
         if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002' || // Plum
             booking.kf_client_id === '461162D2-90C7-BF4E-A905-000000000004' || // Jason L
             booking.kf_client_id === '49294ca3-2adb-4a6e-9c55-9b56c0361953' || // Anchor Packaging
+            booking.kf_client_id === 'd69f550a-9327-4ff9-bc8f-242dfca00f7e' || // Tempo Big W
             booking.kf_client_id === '9e72da0f-77c3-4355-a5ce-70611ffd0bc8' // Bathroom Sales Direct
         ) {
             // Check if ready for build label
@@ -1290,7 +1308,7 @@ class BookingPage extends Component {
                 if (
                     booking.kf_client_id === '7EAA4B16-484B-3944-902E-BC936BFEF535' && // BioPak
                     booking.vx_freight_provider === 'Startrack' &&
-                    booking.b_client_warehouse_code === 'BIO - RIC'
+                    (booking.b_client_warehouse_code === 'BIO - RIC' || booking.b_client_warehouse_code === 'BIO - HAZ')
                 ) {
                     this.props.dmeLabel(booking.id);
                 } else {
@@ -1879,12 +1897,13 @@ class BookingPage extends Component {
         const name = target.name;
         
         if (name === 'tickManualBook') {
-            const {booking} = this.state;
+            const {booking, formInputs} = this.state;
             const {clientname} = this.props;
-
+            formInputs['x_manual_booked_flag'] = value;
+            this.setState({formInputs});
             if (clientname === 'dme') {
                 this.props.tickManualBook(booking.id);
-                this.setState({loadingBookingUpdate: true, curViewMode: 2});
+                this.setState({loadingBookingManual: true, curViewMode: 2});
             } else {
                 this.notify('Only `DME` role users can use this feature');
             }
@@ -2675,7 +2694,7 @@ class BookingPage extends Component {
         }
     }
 
-    onSelectPricing(pricingInfo) {
+    onSelectPricing(pricingInfo, isLocking) {
         const {formInputs, booking} = this.state;
 
         formInputs['vx_freight_provider'] = pricingInfo['freight_provider'];
@@ -2699,6 +2718,8 @@ class BookingPage extends Component {
 
         booking['api_booking_quote'] = pricingInfo['id'];
         formInputs['api_booking_quote'] = booking['api_booking_quote'];
+        booking['is_quote_locked'] = isLocking;
+        formInputs['is_quote_locked'] = isLocking;
 
         const selectedFP = this.props.allFPs
             .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['freight_provider'].toLowerCase());
@@ -2729,7 +2750,7 @@ class BookingPage extends Component {
         this.props.getAllErrors(this.state.booking.pk_booking_id);
     }
 
-    // status: `original`, `auto`, `manual`
+    // status: `original`, `auto`, `manual`, `scanned`
     onChangePackedStatus(status) {
         const {booking, products} = this.state;
 
@@ -3137,8 +3158,11 @@ class BookingPage extends Component {
         };
 
         let warehouseCodeOptions = warehouses
-            .filter(warehouse => (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme')
-            || warehouse.client_company_name === formInputs['b_client_name'])
+            .filter(warehouse =>
+                (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme') ||
+                warehouse.client_company_name === formInputs['b_client_name'] ||
+                warehouse.client_company_name === 'Pricing-Only'
+            )
             .map(warehouse => ({value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code}));
 
         const bookingCategroies = [
@@ -3332,7 +3356,7 @@ class BookingPage extends Component {
                 </div>
 
                 <LoadingOverlay
-                    active={this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate}
+                    active={this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate || this.state.loadingBookingManual}
                     spinner
                     text='Loading...'
                 >
@@ -5598,7 +5622,8 @@ class BookingPage extends Component {
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
                                                             && booking && isBookedBooking
-                                                            && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
+                                                            && booking.vx_freight_provider
+                                                            && booking.vx_freight_provider.toLowerCase() == 'tnt'
                                                         ) ?
                                                             <div className="text-center mt-2 fixed-height half-size">
                                                                 <button
@@ -5641,6 +5666,7 @@ class BookingPage extends Component {
                                                             name="tickManualBook"
                                                             type="checkbox"
                                                             value={formInputs['x_manual_booked_flag'] ? formInputs['x_manual_booked_flag'] : ''}
+                                                            checked={formInputs['x_manual_booked_flag'] ? true : false}
                                                             onChange={(e) => this.handleInputChange(e)}
                                                             disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                         />
@@ -6046,8 +6072,9 @@ class BookingPage extends Component {
                     createBookingLineDetail={(bookingLine) => this.props.createBookingLineDetail(bookingLine)}
                     updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
                     moveLineDetails={(lineId, lineDetailIds) => this.props.moveLineDetails(lineId, lineDetailIds)}
-                    packageTypes={this.state.packageTypes}
+                    packageTypes={this.props.packageTypes}
                     currentPackedStatus={_currentPackedStatus}
+                    onChangePackedStatus={(status) => this.onChangePackedStatus(status)}
                     toggleUpdateBookingModal={this.toggleUpdateBookingModal}
                 />
 
@@ -6081,7 +6108,7 @@ class BookingPage extends Component {
                     updateBooking={(id, booking) => this.props.updateBooking(id, booking)}
                     isBooked={isBookedBooking}
                     calcCollected={(ids, type) => this.props.calcCollected(ids, type)}
-                    apiBCLs={this.state.apiBCLs}
+                    apiBCLs={this.props.apiBCLs}
                 />
 
                 <StatusLockModal
@@ -6131,11 +6158,12 @@ class BookingPage extends Component {
                 <FPPricingSlider
                     isOpen={this.state.isShowFPPricingSlider}
                     toggleSlider={this.toggleFPPricingSlider}
-                    pricingInfos={this.state.pricingInfos}
-                    onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                    pricings={this.state.pricingInfos}
+                    onSelectPricing={(pricingInfo, isLocking) => this.onSelectPricing(pricingInfo, isLocking)}
                     isLoading={this.state.loadingPricingInfos}
                     x_manual_booked_flag={this.state.booking.x_manual_booked_flag}
                     api_booking_quote_id={this.state.booking.api_booking_quote}
+                    is_quote_locked={this.state.booking.is_quote_locked}
                     isBooked={isBookedBooking}
                     clientname={clientname}
                     onLoadPricingErrors={this.onLoadPricingErrors}

@@ -37,6 +37,7 @@ import {
     SUCCESS_UPDATE_BOOKING,
     GET_LABEL_FAILED,
     SUCCESS_DUPLICATE_BOOKING,
+    FAILED_DUPLICATE_BOOKING,
     BOOK_CANCEL_SUCCESS,
     BOOK_CANCEL_FAILED,
     FAILED_CREATE_BOOKING,
@@ -242,9 +243,9 @@ export const BookingReducer = (state = defaultState, {
             };
         case RESET_SUMMARY_OF_BOOKINGS:
             if (payload === 'manifest')
-                return {...state, manifestSummary: null};
+                return { ...state, manifestSummary: null };
             else
-                return {...state, bookingsSummary: null};
+                return { ...state, bookingsSummary: null };
         case SET_BOOKINGS:
             return {
                 ...state,
@@ -297,6 +298,11 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 booking: booking,
                 needUpdateBooking: true,
+            };
+        case FAILED_DUPLICATE_BOOKING:
+            return {
+                ...state,
+                errorMessage: errorMessage,
             };
         case SUCCESS_REPACK:
             return {
@@ -531,6 +537,14 @@ export const BookingReducer = (state = defaultState, {
                 errorMessage: errorMessage,
             };
         case SUCCESS_FP_PRICING:
+            return {
+                ...state,
+                pricingInfos: payload,
+                pricingInfosFlag: true,
+                needUpdateBooking: true,
+                errorMessage: errorMessage,
+                isAutoSelected: isAutoSelected,
+            };
         case SUCCESS_GET_PRICING_INFOS:
             return {
                 ...state,
@@ -589,9 +603,9 @@ export const BookingReducer = (state = defaultState, {
             };
         case SUCCESS_GET_SUMMARY_OF_BOOKINGS:
             if (payload.from === 'manifest')
-                return {...state, manifestSummary: payload.data};
+                return { ...state, manifestSummary: payload.data };
             else
-                return {...state, bookingsSummary: payload.data};
+                return { ...state, bookingsSummary: payload.data };
         case SUCCESS_GET_STATUS_PAGE_URL:
             return {
                 ...state,

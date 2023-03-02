@@ -23,7 +23,7 @@ class FPPricingSlider extends React.Component {
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
         toggleSlider: PropTypes.func.isRequired,
-        pricingInfos: PropTypes.array.isRequired,
+        pricings: PropTypes.array.isRequired,
         onSelectPricing: PropTypes.func.isRequired,
         clientname: PropTypes.string.isRequired,
         isLoading: PropTypes.bool.isRequired,
@@ -33,6 +33,7 @@ class FPPricingSlider extends React.Component {
         x_manual_booked_flag: PropTypes.bool,
         api_booking_quote_id: PropTypes.number,
         clientSalesTotal: PropTypes.number,
+        is_quote_locked: PropTypes.bool,
     };
 
     notify = (text) => toast(text);
@@ -46,34 +47,46 @@ class FPPricingSlider extends React.Component {
     }
 
     onSelectLowest() {
-        const {pricingInfos, x_manual_booked_flag} = this.props;
+        const {pricings, x_manual_booked_flag} = this.props;
 
         if (x_manual_booked_flag) {
             this.notify('Cannot select a FC, this booking is manually booked');
         } else {
-            const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
-            this.props.onSelectPricing(sortedPricingInfos[0]);
+            const sortedpricings = sortBy(pricings, ['mu_percentage_fuel_levy']);
+            this.props.onSelectPricing(sortedpricings[0], this.props.is_quote_locked);
         }
     }
 
     onSelectFastest() {
-        const {pricingInfos, x_manual_booked_flag} = this.props;
+        const {pricings, x_manual_booked_flag} = this.props;
 
         if (x_manual_booked_flag) {
             this.notify('Cannot select a FC, this booking is manually booked');
         } else {
-            const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
-            this.props.onSelectPricing(sortedPricingInfos[0]);
+            const sortedpricings = sortBy(pricings, [function(o) { return o.eta_de_by; }]);
+            this.props.onSelectPricing(sortedpricings[0], this.props.is_quote_locked);
         }
     }
 
-    onClickSelect(pricingInfo) {
+    onClickSelect(pricing, isLocking) {
         const {x_manual_booked_flag, clientname} = this.props;
 
         if (x_manual_booked_flag && clientname !== 'dme') {
             this.notify('Cannot select a FC, this booking is manually booked');
         } else {
-            this.props.onSelectPricing(pricingInfo);
+            this.props.onSelectPricing(pricing, isLocking);
+        }
+    }
+
+    onLockPricing(pricing, api_booking_quote_id, is_quote_locked) {
+        if (!is_quote_locked) {
+            this.onClickSelect(pricing, true);
+        } else {
+            if (pricing.id === api_booking_quote_id) {
+                this.onClickSelect(pricing, !is_quote_locked);
+            } else {
+                this.onClickSelect(pricing, is_quote_locked);
+            }
         }
     }
 
@@ -86,29 +99,29 @@ class FPPricingSlider extends React.Component {
         }
     }
 
-    onClickSurcharge(pricingInfo) {
-        this.setState({currentTab: 2, selectedSurcharge: pricingInfo.surcharges});
+    onClickSurcharge(pricing) {
+        this.setState({currentTab: 2, selectedSurcharge: pricing.surcharges});
     }
 
     render() {
-        const {isOpen, clientname, isBooked, api_booking_quote_id, clientSalesTotal} = this.props;
-        const {pricingInfos, errors} = this.props;
+        const {isOpen, clientname, isBooked, api_booking_quote_id, clientSalesTotal, is_quote_locked} = this.props;
+        const {pricings, errors} = this.props;
         const { currentTab, selectedSurcharge} = this.state;
         let surchargeList = null;
-        pricingInfos.sort((a, b) =>  a.client_mu_1_minimum_values - b.client_mu_1_minimum_values);
+        pricings.sort((a, b) =>  a.client_mu_1_minimum_values - b.client_mu_1_minimum_values);
         let pricingTables = [];
 
         for (let packed_status of ['original', 'auto', 'manual', 'scanned']) {
-            const pricingList = pricingInfos
-                .filter(pricingInfo => pricingInfo.packed_status === packed_status)
-                .map((pricingInfo, index) => {
+            const pricingList = pricings
+                .filter(pricing => pricing.packed_status === packed_status)
+                .map((pricing, index) => {
                     let clientSalesTotal5Percent = 0;
 
                     if (clientSalesTotal)
                         clientSalesTotal5Percent = clientSalesTotal * 0.05;
 
-                    let clientCustomerMarkup = (pricingInfo.client_customer_mark_up * 100).toFixed(2);
-                    let clientCustomerPrice = (pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2);
+                    let clientCustomerMarkup = (pricing.client_customer_mark_up * 100).toFixed(2);
+                    let clientCustomerPrice = (pricing.client_mu_1_minimum_values  * (1 + pricing.client_customer_mark_up)).toFixed(2);
 
                     if (clientCustomerPrice < clientSalesTotal5Percent) {
                         clientCustomerMarkup = 0;
@@ -116,39 +129,47 @@ class FPPricingSlider extends React.Component {
                     }
 
                     return (
-                        <tr key={index} className={api_booking_quote_id === pricingInfo.id ? 'selected' : '' }>
+                        <tr key={index} className={api_booking_quote_id === pricing.id ? 'selected' : '' }>
                             <td>{index + 1}</td>
-                            <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
-                            <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_name} (${pricingInfo.vehicle_name})` : pricingInfo.service_name}</td>
-                            <td>{pricingInfo.etd}</td>
-                            {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
-                            {clientname === 'dme' && <td className="text-right">${pricingInfo.surcharge_total.toFixed(2)}</td>}
-                            {clientname === 'dme' && <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>}
-                            {clientname === 'dme' && <td className="text-right">${pricingInfo.fuel_levy_base.toFixed(2)}</td>}
-                            {clientname === 'dme' &&<td className="text-right">${(pricingInfo.fee + pricingInfo.fuel_levy_base + pricingInfo.surcharge_total).toFixed(2)}</td>}
-                            {clientname === 'dme' && <td className="text-right">{(pricingInfo.client_mark_up_percent * 100).toFixed(2)}%</td>}
-                            <td className="text-right">${pricingInfo.cost_dollar.toFixed(2)}</td>
-                            <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>
-                            <td className="text-right">${pricingInfo.fuel_levy_base_cl.toFixed(2)}</td>
+                            <td>{pricing.freight_provider}({pricing.account_code})</td>
+                            <td>{pricing.vehicle_name ? `${pricing.service_desc} (${pricing.vehicle_name})` : pricing.service_desc}</td>
+                            <td>{pricing.etd}</td>
+                            {clientname === 'dme' && <td className="text-right">${pricing.fee.toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">${pricing.surcharge_total.toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">{(pricing.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>}
+                            {clientname === 'dme' && <td className="text-right">${pricing.fuel_levy_base.toFixed(2)}</td>}
+                            {clientname === 'dme' &&<td className="text-right">${(pricing.fee + pricing.fuel_levy_base + pricing.surcharge_total).toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">{(pricing.client_mark_up_percent * 100).toFixed(2)}%</td>}
+                            <td className="text-right">${pricing.cost_dollar.toFixed(2)}</td>
+                            <td className="text-right">{(pricing.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>
+                            <td className="text-right">${pricing.fuel_levy_base_cl.toFixed(2)}</td>
                             <td className="text-right nowrap">
-                                {pricingInfo.surcharge_total_cl ? ('$' + pricingInfo.surcharge_total_cl.toFixed(2)) : null}
+                                {pricing.surcharge_total_cl ? ('$' + pricing.surcharge_total_cl.toFixed(2)) : null}
                                 &nbsp;&nbsp;&nbsp;
-                                {pricingInfo.surcharge_total_cl ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i> : null}
+                                {pricing.surcharge_total_cl ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricing)}></i> : null}
                             </td>
-                            <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
+                            <td className="text-right">${pricing.client_mu_1_minimum_values.toFixed(2)}</td>
                             <td className="text-right">{clientCustomerMarkup}%</td>
                             <td className="text-right">${clientCustomerPrice}</td>
-                            <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
-                                {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
+                            <td className={pricing.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
+                                {pricing && pricing.eta_de_by ? moment(pricing.eta_de_by).format('DD/MM/YYYY') : ''}
                             </td>
                             <td className="select">
                                 <Button
                                     color="primary"
-                                    disabled={(api_booking_quote_id === pricingInfo.id || (isBooked && clientname !== 'dme'))}
-                                    onClick={() => this.onClickSelect(pricingInfo)}
+                                    disabled={(api_booking_quote_id === pricing.id || (isBooked && clientname !== 'dme'))}
+                                    onClick={() => this.onClickSelect(pricing)}
                                 >
                                     Select
                                 </Button>
+                            </td>
+                            <td>
+                                <input
+                                    type='checkbox'
+                                    color={api_booking_quote_id === pricing.id ? 'success' : 'primary'}
+                                    checked={api_booking_quote_id === pricing.id && is_quote_locked}
+                                    onClick={() => this.onLockPricing(pricing, api_booking_quote_id, is_quote_locked)}
+                                />
                             </td>
                         </tr>
                     );
@@ -176,6 +197,7 @@ class FPPricingSlider extends React.Component {
                             <th className="nowrap" scope="col" nowrap="true"><p>Cust Sell $</p></th>
                             <th className="nowrap" scope="col" nowrap="true"><p>ETA</p></th>
                             <th className="nowrap" scope="col" nowrap="true"><p>Action</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Lock</p></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -263,7 +285,7 @@ class FPPricingSlider extends React.Component {
                                 <Button
                                     className="lowest"
                                     color="primary"
-                                    disabled={(pricingInfos.length === 0 || isBooked)}
+                                    disabled={(pricings.length === 0 || isBooked)}
                                     onClick={() => this.onSelectLowest('lowest')}
                                 >
                                     Select lowest price
@@ -275,7 +297,7 @@ class FPPricingSlider extends React.Component {
                                 <Button
                                     className="fastest"
                                     color="primary"
-                                    disabled={(pricingInfos.length === 0 || isBooked)}
+                                    disabled={(pricings.length === 0 || isBooked)}
                                     onClick={() => this.onSelectFastest('fastest')}
                                 >
                                     Select fastest price

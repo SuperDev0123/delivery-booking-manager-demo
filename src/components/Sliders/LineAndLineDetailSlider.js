@@ -54,8 +54,11 @@ class LineAndLineDetailSlider extends React.Component {
         createBookingLineDetail: PropTypes.func.isRequired,
         updateBookingLineDetail: PropTypes.func.isRequired,
         toggleUpdateBookingModal: PropTypes.func.isRequired,
-        packageTypes: PropTypes.array.isRequired,
+        onChangePackedStatus: PropTypes.func.isRequired,
         moveLineDetails: PropTypes.func.isRequired,
+
+        // Data
+        packageTypes: PropTypes.array.isRequired,        
         currentPackedStatus: PropTypes.string,
     };
 
@@ -278,7 +281,7 @@ class LineAndLineDetailSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, lines, lineDetails, loadingBookingLine, loadingBookingLineDetail, packageTypes } = this.props;
+        const { isOpen, lines, lineDetails, loadingBookingLine, loadingBookingLineDetail, packageTypes, currentPackedStatus } = this.props;
         const { selectedLineIndex, editMode, lineOrLineDetail, lineFormInputs, lineDetailFormInputs, isShowAllLineDetails, selectedLineDetails } = this.state;
 
         const lineList = lines.map((line, index) => {
@@ -389,6 +392,21 @@ class LineAndLineDetailSlider extends React.Component {
                     {(editMode === 0) ?
                         <div className="table-view">
                             <div>
+                                <Button
+                                    color={currentPackedStatus === 'original' ? 'danger' : 'primary'}
+                                    disabled={currentPackedStatus === 'original' ? 'disabled' : ''}
+                                    onClick={() => this.props.onChangePackedStatus('original')}
+                                >
+                                    Send As Is
+                                </Button>
+                                <Button
+                                    color={currentPackedStatus === 'scanned' ? 'danger' : 'primary'}
+                                    onClick={() => this.props.onChangePackedStatus('scanned')}
+                                    disabled={currentPackedStatus === 'scanned' ? 'disabled' : ''}
+                                >
+                                    Actual Packed / Packing Scans
+                                </Button>
+                                |
                                 <Button color="primary" onClick={() => this.onClickShowAllLineDetails()}>All LineDetails</Button>
                             </div>
                             <hr />

@@ -37,9 +37,14 @@ class ReportPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, username } = newProps;
         const currentRoute = this.props.location.pathname;
 
+        if (username) {
+            if(username === 'anchor_packaging_afs' || username === 'tempo_calm') {
+                this.props.history.replace('/warehouse-label');                
+            }
+        }
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
@@ -85,16 +90,11 @@ class ReportPage extends React.Component {
                 </div>
                 <div className="tab-pane fade in active">
                     <div className="content">
-                        <label>
-                            Report Type:
-                            <select value={selectedReportType} onChange={(e) => this.onChangeReportType(e)}>
-                                <option value="manifest">Manifest</option>
-                            </select>
-                        </label>
-                        <hr />
                         {selectedReportType === 'manifest' &&
                             <ManifestReport
                                 history={this.props.history}
+                                selectedReportType={selectedReportType}
+                                onChangeReportType={this.onChangeReportType}
                             />
                         }
                     </div>
@@ -108,6 +108,7 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         clientname: state.auth.clientname,
+        username: state.auth.username,
     };
 };
 

@@ -18,7 +18,7 @@ const defaultState = {
     needUpdateBookingLineDetails: false,
 };
 
-export const BookingLineDetailReducer = (state = defaultState, { type, errorMessage, bookingLineDetails }) => {
+export const BookingLineDetailReducer = (state = defaultState, { type, errorMessage, bookingLineDetails, payload }) => {
     switch (type) {
         case RESET_FLAG_LINEDETAILS:
             return {
@@ -39,6 +39,10 @@ export const BookingLineDetailReducer = (state = defaultState, { type, errorMess
                 errorMessage: errorMessage
             };
         case SUCCESS_CREATE_BOOKING_LINE_DETAIL:
+            return {
+                ...state,
+                bookingLineDetails: [...state.bookingLineDetails, payload],
+            };
         case SUCCESS_MOVE_LINE_DETAILS:
             return {
                 ...state,
@@ -49,21 +53,33 @@ export const BookingLineDetailReducer = (state = defaultState, { type, errorMess
                 ...state,   
                 errorMessage: errorMessage
             };
-        case SUCCESS_UPDATE_BOOKING_LINE_DETAIL:
+        case SUCCESS_UPDATE_BOOKING_LINE_DETAIL: {
+            const index = state.bookingLineDetails.findIndex(lineDetail => lineDetail.pk_id_lines_data === payload.pk_id_lines_data);
+            const _bookingLineDetails = [...state.bookingLineDetails];
+            _bookingLineDetails[index] = payload;
+
             return {
                 ...state,
                 needUpdateBookingLineDetails: true,
+                bookingLineDetails: _bookingLineDetails,
             };
+        }
         case FAILED_UPDATE_BOOKING_LINE_DETAIL:
             return {
                 ...state,
                 errorMessage: errorMessage
             };
-        case SUCCESS_DELETE_BOOKING_LINE_DETAIL:
+        case SUCCESS_DELETE_BOOKING_LINE_DETAIL: {
+            const index = state.bookingLineDetails.findIndex(lineDetail => lineDetail.pk_id_lines_data === payload.pk_id_lines_data);
+            const _bookingLineDetails = [...state.bookingLineDetails];
+            _bookingLineDetails.splice(index, 1);
+
             return {
                 ...state,
                 needUpdateBookingLineDetails: true,
+                bookingLineDetails: _bookingLineDetails,
             };
+        }
         case FAILED_DELETE_BOOKING_LINE_DETAIL:
             return {
                 ...state,

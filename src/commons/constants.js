@@ -2,7 +2,7 @@ export const LIST = 0;
 export const EDIT = 1;
 export const IMPORT = 2;
 
-export const timeDiff = -10; // Time difference between UTC and AU(Sydney)
+export const timeDiff = -11; // Time difference between UTC and AU(Sydney)
 
 export const timeSelectOptions = [
     {value: '06:00', label: '06:00'},

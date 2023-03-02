@@ -25,9 +25,7 @@ class FilesPage extends Component {
     }
     static propTypes = {
         getFiles: PropTypes.func.isRequired, 
-        cleanRedirectState: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         loadingFiles: PropTypes.bool.isRequired,
     };
@@ -37,12 +35,7 @@ class FilesPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {redirect, files, loadingFiles} = newProps;
-
-        if (redirect) {
-            this.props.cleanRedirectState();
-            this.props.history.push('/');
-        }
+        const {files, loadingFiles} = newProps;
 
         if (files) {
             this.setState({files});
@@ -202,7 +195,6 @@ const mapStateToProps = (state) => {
     return {
         username: state.auth.username,
         errorMessage: state.auth.errorMessage,
-        redirect: state.auth.redirect,
         files: state.files.files,
         loadingFiles: state.files.loadingFiles,
     };

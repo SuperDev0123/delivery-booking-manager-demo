@@ -248,6 +248,9 @@ class LineTrackingSlider extends React.Component {
                 dataField: 'client_item_reference',
                 text: 'Client Item Ref',
             }, {
+                dataField: 'api_status',
+                text: 'Status',
+            }, {
                 dataField: 'fp_event_date',
                 text: 'Event Date',
             }, {

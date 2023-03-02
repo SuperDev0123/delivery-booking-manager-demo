@@ -289,11 +289,16 @@ class QuickQuotePopover extends React.Component {
         // Build pricing table
         const originalPricings = quickPricings
             .filter((price) => price.packed_status === 'original')
+            .filter((price) => {
+                if (clientname !== 'dme')
+                    return price['fp_name'] !== 'MRL Sampson';
+                return true;
+            })
             .map((price, index) => {
                 return (
                     <tr key={index}>
                         <td>{price['fp_name']}</td>
-                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
+                        <td>{price['vehicle_name'] ? `${price['service_desc']} (${price['vehicle_name']})` : price['service_desc']}</td>
                         <td>
                             ${price['cost_dollar'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;
@@ -319,11 +324,16 @@ class QuickQuotePopover extends React.Component {
 
         const autoPricings = quickPricings
             .filter(pricing => pricing.packed_status === 'auto')
+            .filter((price) => {
+                if (clientname !== 'dme')
+                    return price['fp_name'] !== 'MRL Sampson';
+                return true;
+            })
             .map((price, index) => {
                 return (
                     <tr key={index}>
                         <td>{price['fp_name']}</td>
-                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
+                        <td>{price['vehicle_name'] ? `${price['service_desc']} (${price['vehicle_name']})` : price['service_desc']}</td>
                         <td>
                             ${price['cost_dollar'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;
@@ -345,6 +355,7 @@ class QuickQuotePopover extends React.Component {
                     </tr>
                 );
             });
+
         return (
             <Popover
                 className="quick-quote"
@@ -599,7 +610,7 @@ class QuickQuotePopover extends React.Component {
                                 </div>
                                 <div className=" form-group px-1">
                                     <label htmlFor="e_weightPerEach">
-                                        <p>Weight</p>
+                                        <p>Weight(each)</p>
                                         {
                                             lines.map((line, index) => (
                                                 <div className="row p-1" key={'e_weightPerEach' + index}>

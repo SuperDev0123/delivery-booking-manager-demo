@@ -14,7 +14,10 @@ class BokLineSlider extends React.Component {
         super(props);
 
         this.state = {
-            formInputs: {},
+            formInputs: {
+                'e_weightUOM': 'kg',
+                'e_dimUOM': 'cm',
+            },
         };
 
         this.submitHandler = this.submitHandler.bind(this);
@@ -213,9 +216,9 @@ class BokLineSlider extends React.Component {
                                 value = {formInputs['e_dimUOM']}
                                 required
                             >
-                                <option value="M">METER</option>
-                                <option value="CM">CM</option>
-                                <option value="MM">MM</option>
+                                <option value="m">METER</option>
+                                <option value="cm">CM</option>
+                                <option value="mm">MM</option>
                             </select>
                         </label>
                         <label>

@@ -28,6 +28,7 @@ import BokPage from '../pages/BokPage';
 import FilesPage from '../pages/FilesPage';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
+import WarehouseLabelPage from '../pages/customer/WarehouseLabelPage';
 
 // Admin pages
 import Main from '../pages/admin/Main';
@@ -70,6 +71,7 @@ import AddClientEmployee from '../pages/admin/AdminViews/ClientEmployees/AddClie
 import EditClientEmployee from '../pages/admin/AdminViews/ClientEmployees/EditClientEmployee';
 import QuickViewLogs from '../pages/admin/AdminViews/Logs/QuickView';
 import DownloadLogs from '../pages/admin/AdminViews/Logs/Download';
+import DMEDownloadLogs from '../pages/admin/AdminViews/DMELogs/Download';
 import QuoteReport from '../pages/admin/AdminViews/Reports/QuoteReport';
 
 import CustomerClientEmployees from '../pages/admin/CustomerViews/ClientEmployees/ClientEmployees';
@@ -90,7 +92,7 @@ export const AppRouter = () => (
             <Header />
             <Switch>
                 <Route exact path='/' component={HomePage} />
-                <Route exact path='/home' component={HomePage} />
+                <PrivateRoute exact path='/home' component={HomePage} />
                 <Route exact path='/files' component={FilesPage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />
@@ -101,6 +103,7 @@ export const AppRouter = () => (
                 <Route exact path='/order/:id' component={BokPricePage} />
                 <Route exact path='/status/:id' component={BokStatusPage} />
                 <Route exact path='/label/:id' component={LabelPage} />
+                <PrivateRoute exact path='/warehouse-label' component={WarehouseLabelPage} />
                 
                 <PrivateRoute exact path='/booking' component={BookingPage} />
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />
@@ -159,6 +162,8 @@ export const AppRouter = () => (
 
                     <AdminPrivateRoute exact path='/admin/logs/quickview' component={QuickViewLogs} />
                     <AdminPrivateRoute exact path='/admin/logs/download' component={DownloadLogs} />
+
+                    <AdminPrivateRoute exact path='/admin/dme_logs/download' component={DMEDownloadLogs} />
 
                     <AdminPrivateRoute exact path='/admin/reports/quote' component={QuoteReport} />
 

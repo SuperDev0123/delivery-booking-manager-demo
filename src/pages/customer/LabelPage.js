@@ -40,7 +40,18 @@ class LabelPage extends Component {
     componentDidMount() {
         const identifier = this.props.match.params.id;
 
-        if (identifier && identifier.length > 32) {
+        if (identifier && identifier === 'scan-failed') {
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.get('reason') === 'address') {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: address contains non-utf8 character.'});
+            } else if (params.get('reason') === 'sscc') {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: scanned data is not fetchable or parsable.'});
+            } else {
+                this.setState({errorMessage: 'There is an issue while scanning data to build label. Reason: unknown. Please contact support center.'});
+            }
+            this.setState({identifier});
+        } else if (identifier && identifier.length > 32) {
             this.props.getLabels4Booking(identifier);
             this.setState({identifier});
         } else {
@@ -153,7 +164,9 @@ class LabelPage extends Component {
             });
     }
 
-    onSelectPricing(pricingInfo) {
+    onSelectPricing(pricingInfo, isLocking) {
+        this.notify('Locking is not supported on this page.');
+        console.log('Locking is not supported on this page.', isLocking);
         const {bookingLabels} = this.props;
 
         this.bulkBookingUpdate([bookingLabels['id']], 'vx_freight_provider', pricingInfo.freight_provider)
@@ -210,6 +223,7 @@ class LabelPage extends Component {
                                         color="info"
                                         disabled={!sscc_info.is_available && 'disabled'}
                                         onClick={() => this.onClickPreview(sscc_info['url'])}
+                                        title={sscc_info.is_available ? 'Click to preview' : 'Please rebuild the label'}
                                     >
                                         Preview
                                     </Button>
@@ -217,6 +231,7 @@ class LabelPage extends Component {
                                         color="primary"
                                         disabled={!sscc_info.is_available && 'disabled'}
                                         onClick={() => this.onClickPrint(sscc_info['pdf'])}
+                                        title={sscc_info.is_available ? 'Click to print' : 'Please rebuild the label'}
                                     >
                                         Print
                                     </Button>
@@ -224,6 +239,7 @@ class LabelPage extends Component {
                                         color="primary"
                                         disabled={!sscc_info.is_available && 'disabled'}
                                         onClick={() => this.onClickDownload(sscc_info['url'])}
+                                        title={sscc_info.is_available ? 'Click to download' : 'Please rebuild the label'}
                                     >
                                         Download(ZPL)
                                     </Button>
@@ -291,18 +307,27 @@ class LabelPage extends Component {
                             {bookingLabels.full_label_name &&
                                 <Button
                                     color="info"
-                                    disabled={bookingLabels.full_label_name ? false : true}
+                                    disabled={bookingLabels.pdf ? false : true}
                                     onClick={() => this.onClickPreview(bookingLabels.full_label_name)}
+                                    title={bookingLabels.pdf ? 'Click to preview' : 'Please rebuild the label'}
                                 >
                                     Preview
                                 </Button>
                             }
-                            <Button color="primary" onClick={() => this.onClickPrint()}>Print</Button>
+                            <Button
+                                color="primary"
+                                disabled={bookingLabels.pdf ? false : true}
+                                onClick={() => this.onClickPrint()}
+                                title={bookingLabels.pdf ? 'Click to print' : 'Please rebuild the label'}
+                            >
+                                Print
+                            </Button>
                             {bookingLabels.full_label_name &&
                                 <Button
                                     color="primary"
-                                    disabled={bookingLabels.full_label_name ? false : true}
+                                    disabled={bookingLabels.pdf ? false : true}
                                     onClick={() => this.onClickDownload(bookingLabels.full_label_name)}
+                                    title={bookingLabels.pdf ? 'Click to download' : 'Please rebuild the label'}
                                 >
                                     Download(ZPL)
                                 </Button>
@@ -333,11 +358,12 @@ class LabelPage extends Component {
                         <FPPricingSlider
                             isOpen={this.state.isShowFPPricingSlider}
                             toggleSlider={this.toggleFPPricingSlider}
-                            pricingInfos={_pricingInfos}
-                            onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                            pricings={_pricingInfos}
+                            onSelectPricing={(pricingInfo, isLocking) => this.onSelectPricing(pricingInfo, isLocking)}
                             isLoading={this.state.loadingPricingInfos}
                             x_manual_booked_flag={bookingLabels.x_manual_booked_flag}
                             api_booking_quote_id={bookingLabels.api_booking_quote}
+                            is_quote_locked={bookingLabels.is_quote_locked}
                             onLoadPricingErrors={this.onLoadPricingErrors}
                             errors={this.state.errors}
                             isBooked={bookingLabels.b_dateBookedDate ? true : false}

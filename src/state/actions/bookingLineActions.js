@@ -31,7 +31,7 @@ export function failedGetBookingLines(error) {
 export function successCreateBookingLine(bookingLine) {
     return {
         type: SUCCESS_CREATE_BOOKING_LINE,
-        bookingLine,
+        payload: bookingLine,
     };
 }
 
@@ -45,7 +45,7 @@ export function failedCreateBookingLine(error) {
 export function successUpdateBookingLine(bookingLine) {
     return {
         type: SUCCESS_UPDATE_BOOKING_LINE,
-        bookingLine,
+        payload: bookingLine,
     };
 }
 
@@ -59,7 +59,7 @@ export function failedUpdateBookingLine(error) {
 export function successDeleteBookingLine(bookingLine) {
     return {
         type: SUCCESS_DELETE_BOOKING_LINE,
-        bookingLine,
+        payload: bookingLine,
     };
 }
 

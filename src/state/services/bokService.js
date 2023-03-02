@@ -30,6 +30,7 @@ import {
     failedDeleteBokLine,
     successRepack,
     failedRepack,
+    setNeedToUpdatePricingsFlag,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -79,11 +80,11 @@ export const getBokWithPricings = (identifier) => {
     };
 };
 
-export const onSelectPricing = (costId, identifier, client_overrided_quote=null) => {
+export const selectPricing = (costId, identifier, isLocking) => {
     const options = {
         method: 'post',
         url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/select_pricing/`,
-        data: {'costId': costId, 'identifier': identifier, client_overrided_quote},
+        data: {'costId': costId, 'identifier': identifier, isLocking},
     };
     return dispatch =>
         axios(options)
@@ -208,4 +209,8 @@ export const repack = (pk_auto_id, repackStatus, palletId) => {
             .then(() => dispatch(successRepack()))
             .catch((error) => dispatch(failedRepack(error)));
     };
+};
+
+export const setNeedToUpdatePricings = () => {
+    return dispatch => dispatch(setNeedToUpdatePricingsFlag());
 };

@@ -41,7 +41,7 @@ export function detectTokenExpiration(data) {
             errorMessage: ''
         };
     } else {
-        console.log('Token expired');
+        console.log('Token is expired');
         localStorage.setItem('isLoggedIn', 'false');
         localStorage.setItem('token', '');
 

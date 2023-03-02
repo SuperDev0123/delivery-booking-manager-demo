@@ -9,6 +9,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
+import axios from 'axios';
 // Custom components
 import BokFreightOptionAccordion from '../../components/Accordion/BokFreightOptionAccordion';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
@@ -17,8 +18,20 @@ import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import BokLineSlider from '../../components/Sliders/BokLineSlider';
 // Services
 import { getWeight, numberWithCommas } from '../../commons/helpers';
-import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, sendEmail, onAddBokLine, onUpdateBokLine, onDeleteBokLine, repack } from '../../state/services/bokService';
+import {
+    getBokWithPricings,
+    selectPricing,
+    bookFreight,
+    cancelFreight,
+    sendEmail,
+    onAddBokLine,
+    onUpdateBokLine,
+    onDeleteBokLine,
+    repack,
+    setNeedToUpdatePricings
+} from '../../state/services/bokService';
 import { getPackageTypes } from '../../state/services/extraService';
+import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -43,7 +56,9 @@ class BokPricePage extends Component {
             isShowDeleteConfirmModal: false,
             isShowBokLineSlider: false,
             currentPackedStatus: '',
-            viewMode: 'adminView', // adminView | salesView
+            viewMode: 'salesView', // adminView | salesView
+            isAdminView: false, // adminView | salesView
+            isTimerRunning: false,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -55,7 +70,7 @@ class BokPricePage extends Component {
 
     static propTypes = {
         getBokWithPricings: PropTypes.func.isRequired,
-        onSelectPricing: PropTypes.func.isRequired,
+        selectPricing: PropTypes.func.isRequired,
         onBookFreight: PropTypes.func.isRequired,
         onCancelFreight: PropTypes.func.isRequired,
         onAddBokLine: PropTypes.func.isRequired,
@@ -73,6 +88,9 @@ class BokPricePage extends Component {
         repackSuccess: PropTypes.bool,
         lineOperationSuccess: PropTypes.bool,
         repack: PropTypes.func.isRequired,
+        setNeedToUpdatePricings: PropTypes.func.isRequired,
+        username: PropTypes.string,
+        clientname: PropTypes.string,
     };
 
     componentDidMount() {
@@ -81,38 +99,38 @@ class BokPricePage extends Component {
         if (identifier && identifier.length > 32) {
             const that = this;
             this.props.getBokWithPricings(identifier);
-            
+
             setTimeout(() => {
                 that.props.getPackageTypes();
             }, 2000);
 
-            this.setState({isLoadingBok: true});
+            this.setState({ isLoadingBok: true });
         } else {
-            this.setState({errorMessage: 'Wrong id.'});
+            this.setState({ errorMessage: 'Wrong id.' });
         }
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, lineOperationSuccess} = newProps;
+        const { errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, lineOperationSuccess, username, bokWithPricings } = newProps;
 
         if (errorMessage) {
-            this.setState({errorMessage});
+            this.setState({ errorMessage });
         }
 
         if (needToUpdatePricings) {
             const identifier = this.props.match.params.id;
             this.props.getBokWithPricings(identifier);
-            this.setState({isLoadingBok: true});
+            this.setState({ isLoadingBok: true });
         }
 
         if (bookedSuccess) {
             this.notify('Freight is booked successfully');
-            this.setState({isBooked: true});
+            this.setState({ isBooked: true });
         }
 
         if (canceledSuccess) {
             this.notify('Freight is canceled successfully');
-            this.setState({isCanceled: true});
+            this.setState({ isCanceled: true });
             this.notify('Browser tab will be closed in 3 seconds');
 
             setTimeout(() => {
@@ -121,30 +139,52 @@ class BokPricePage extends Component {
         }
 
         if (this.state.isLoadingBok && !this.props.loadSuccess && newProps.loadSuccess) {
-            this.setState({isLoadingBok: false});
+            this.setState({ isLoadingBok: false });
+        }
+
+        if (this.state.isLoadingBok && errorMessage) {
+            this.setState({ isLoadingBok: false });
         }
 
         if (this.state.isLoadingPricing && !this.props.selectPricingSuccess && newProps.selectPricingSuccess) {
-            this.setState({isLoadingPricing: false});
+            this.setState({ isLoadingPricing: false });
         }
 
         if (this.state.isLoadingOper && (!this.props.bookedSuccess && newProps.bookedSuccess)) {
-            this.setState({isLoadingOper: false});
+            this.setState({ isLoadingOper: false });
         }
 
         if (this.state.isLoadingOper && (!this.props.canceledSuccess && newProps.canceledSuccess)) {
-            this.setState({isLoadingOper: false});
+            this.setState({ isLoadingOper: false });
         }
 
         if (this.state.isUpdatingItemProduct && !this.props.lineOperationSuccess && lineOperationSuccess) {
-            this.setState({isUpdatingItemProduct: false, isLoadingBok: true});
+            this.setState({ isUpdatingItemProduct: false, isLoadingBok: true });
             this.props.getBokWithPricings(this.props.match.params.id);
         }
 
         if (this.state.isRepacking && !this.props.repackSuccess && newProps.repackSuccess) {
-            this.setState({isRepacking: false, isLoadingBok: true});
+            this.setState({ isRepacking: false, isLoadingBok: true });
             this.props.getBokWithPricings(this.props.match.params.id);
         }
+
+        if (username) {
+            if (username != 'jasonL_sales') {
+                this.setState({ isAdminView: true, viewMode: 'adminView' });
+            }
+        }
+
+        if (!this.state.isTimerRunning && bokWithPricings) {
+            if (bokWithPricings.b_client_name === 'Jason L') {
+                const intervalId = setInterval(this.timer, 10000);
+                this.setState({ isTimerRunning: true, intervalId });
+            }
+        }
+    }
+
+    UNSAFE_componentWillUnmount() {
+        // use intervalId from the state to clear the interval
+        clearInterval(this.state.intervalId);
     }
 
     notify = (text) => toast(text);
@@ -158,80 +198,113 @@ class BokPricePage extends Component {
         }
     };
 
+    timer = () => {
+        const { bokWithPricings } = this.props;
+
+        const options = {
+            method: 'get',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/bok/quote-count/?identifier=' + bokWithPricings.pk_auto_id,
+        };
+
+        axios(options).then((response) => {
+            if (response.data.code === 'does_exist') {
+                if (response.data.result.quote_count !== bokWithPricings.pricings.length) {
+                    this.props.setNeedToUpdatePricings();
+                }
+
+                if (response.data.result.quote_status === 'finished') {
+                    clearInterval(this.state.intervalId);
+                    this.setState({ isTimerRunning: false, intervalId: null });
+                }
+            }
+        });
+    }
+
     onClickColumn = (arg) => {
-        this.setState({sortedBy: arg});
+        this.setState({ sortedBy: arg });
     }
 
     onClickCancelBtn() {
-        this.setState({isLoadingOper: true});
+        this.setState({ isLoadingOper: true });
         this.props.onCancelFreight(this.props.match.params.id);
     }
 
     onClickBookBtn() {
-        this.setState({isLoadingOper: true});
+        this.setState({ isLoadingOper: true });
         this.props.onBookFreight(this.props.match.params.id);
     }
 
-    onSelectPricing(cost_id) {
-        const {b_090_client_overrided_quote} = this.state;
-        this.setState({isLoadingPricing: true});
-        this.props.onSelectPricing(cost_id, this.props.match.params.id, parseFloat(b_090_client_overrided_quote).toFixed(2));
+    onSelectPricing(cost_id, islocking = false) {
+        this.setState({ isLoadingPricing: true });
+        this.props.selectPricing(cost_id, this.props.match.params.id, islocking);
+    }
+
+    onLockPricing(costId, selectedCostId, lockStatus) {
+        if (!lockStatus) {
+            this.onSelectPricing(costId, true);
+        } else {
+            if (costId === selectedCostId) {
+                this.onSelectPricing(costId, !lockStatus);
+            } else {
+                this.onSelectPricing(costId, lockStatus);
+            }
+        }
     }
 
     toggleExtraCostSummarySlider() {
-        this.setState(prevState => ({isShowExtraCostSummarySlider: !prevState.isShowExtraCostSummarySlider}));
+        this.setState(prevState => ({ isShowExtraCostSummarySlider: !prevState.isShowExtraCostSummarySlider }));
     }
 
     togglePalletSlider() {
-        this.setState(prevState => ({isShowPalletSlider: !prevState.isShowPalletSlider}));
+        this.setState(prevState => ({ isShowPalletSlider: !prevState.isShowPalletSlider }));
     }
 
     toggleTriggerEmailModal() {
-        this.setState(prevState => ({isShowTriggerEmailModal: !prevState.isShowTriggerEmailModal}));
+        this.setState(prevState => ({ isShowTriggerEmailModal: !prevState.isShowTriggerEmailModal }));
     }
 
     toggleDeleteConfirmModal() {
-        this.setState(prevState => ({isShowDeleteConfirmModal: !prevState.isShowDeleteConfirmModal}));
+        this.setState(prevState => ({ isShowDeleteConfirmModal: !prevState.isShowDeleteConfirmModal }));
     }
 
     onClickShowLineData(bok_2) {
-        this.setState({isShowLineData: true, selectedBok_2Id: bok_2.pk_booking_lines_id});
+        this.setState({ isShowLineData: true, selectedBok_2Id: bok_2.pk_booking_lines_id });
     }
 
     toggleBokLineSlider() {
-        this.setState(prevState => ({isShowBokLineSlider: !prevState.isShowBokLineSlider}));
+        this.setState(prevState => ({ isShowBokLineSlider: !prevState.isShowBokLineSlider }));
     }
 
     toggleManualRepackModal() {
-        this.setState(prevState => ({isShowManualRepackModal: !prevState.isShowManualRepackModal}));
+        this.setState(prevState => ({ isShowManualRepackModal: !prevState.isShowManualRepackModal }));
     }
 
     onClickRepack(status) {
-        const {bokWithPricings} = this.props;
+        const { bokWithPricings } = this.props;
 
         if (status) {
-            this.setState({isShowPalletSlider: true});
+            this.setState({ isShowPalletSlider: true });
         } else {
-            this.setState({isRepacking: true, isShowLineData: false, currentPackedStatus: 'auto'});
+            this.setState({ isRepacking: true, isShowLineData: false, currentPackedStatus: 'auto' });
             this.props.repack(bokWithPricings.pk_auto_id, 'auto', null);
         }
     }
 
     onSelectPallet(palletId) {
-        const {bokWithPricings} = this.props;
+        const { bokWithPricings } = this.props;
 
-        this.setState({isRepacking: true, isShowLineData: false, currentPackedStatus: 'auto'});
+        this.setState({ isRepacking: true, isShowLineData: false, currentPackedStatus: 'auto' });
         this.props.repack(bokWithPricings.pk_auto_id, 'auto', palletId);
         this.togglePalletSlider();
     }
 
     onClickSurcharge(price) {
-        this.setState({selectedPrice: price});
+        this.setState({ selectedPrice: price });
         this.toggleExtraCostSummarySlider();
     }
 
     onClickConfirmBtn(type) {
-        const {bokWithPricings} = this.props;
+        const { bokWithPricings } = this.props;
 
         if (type === 'trigger-email') {
             // Send "picking slip printed" email manually
@@ -240,36 +313,36 @@ class BokPricePage extends Component {
             this.toggleTriggerEmailModal();
         } else if (type === 'manual-from-original') {
             this.props.repack(bokWithPricings.pk_auto_id, type, null);
-            this.setState({isRepacking: true, currentPackedStatus: 'manual'});
+            this.setState({ isRepacking: true, currentPackedStatus: 'manual' });
             this.toggleManualRepackModal();
         } else if (type === 'manual-from-auto') {
             this.props.repack(bokWithPricings.pk_auto_id, type, null);
-            this.setState({isRepacking: true, currentPackedStatus: 'manual'});
+            this.setState({ isRepacking: true, currentPackedStatus: 'manual' });
             this.toggleManualRepackModal();
         } else if (type === 'enter-from-scratch') {
-            this.setState({currentPackedStatus: 'manual'});
+            this.setState({ currentPackedStatus: 'manual' });
             this.toggleManualRepackModal();
         }
     }
 
     onclickAddLine() {
-        this.setState({selectedLine: null});
+        this.setState({ selectedLine: null });
         this.toggleBokLineSlider();
     }
 
     onClickEditLine(line) {
-        this.setState({selectedLine: line});
+        this.setState({ selectedLine: line });
         this.toggleBokLineSlider();
     }
 
     onClickDeleteLine(line) {
-        this.setState({selectedLine: line});
+        this.setState({ selectedLine: line });
         this.toggleDeleteConfirmModal();
     }
 
     onUpdateBokLine(newLine, type) {
-        const {bokWithPricings} = this.props;
-        const {selectedLine, currentPackedStatus} = this.state;
+        const { bokWithPricings } = this.props;
+        const { selectedLine, currentPackedStatus } = this.state;
 
         if (type === 'add') {
             newLine['fk_header_id'] = bokWithPricings['pk_header_id'];
@@ -284,21 +357,21 @@ class BokPricePage extends Component {
             this.toggleDeleteConfirmModal();
         }
 
-        this.setState({isUpdatingItemProduct: true});
+        this.setState({ isUpdatingItemProduct: true });
     }
 
     // status: `original`, `auto`, `manual`
     onChangePackedStatus(status) {
-        const {bokWithPricings} = this.props;
+        const { bokWithPricings } = this.props;
 
         // Reset
         if (status === 'reset') {
             this.props.repack(bokWithPricings.pk_auto_id, '-' + this.state.currentPackedStatus, null);
-            this.setState({isRepacking: true, currentPackedStatus: 'original'});
+            this.setState({ isRepacking: true, currentPackedStatus: 'original' });
             return;
         } else if (status === 'quote') {
             this.props.repack(bokWithPricings.pk_auto_id, `${status}-${this.state.currentPackedStatus}`, null);
-            this.setState({isRepacking: true});
+            this.setState({ isRepacking: true });
             return;
         }
 
@@ -309,22 +382,22 @@ class BokPricePage extends Component {
             if (status === 'auto') {
                 this.togglePalletSlider();
             } else if (status === 'original') {
-                this.setState({currentPackedStatus});
+                this.setState({ currentPackedStatus });
             } else {
                 this.toggleManualRepackModal();
             }
         } else {
-            this.setState({currentPackedStatus});
+            this.setState({ currentPackedStatus });
         }
     }
 
     onClickViewMode(viewMode) {
-        this.setState({viewMode: viewMode});
+        this.setState({ viewMode: viewMode });
     }
 
     render() {
-        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode} = this.state;
-        const {bokWithPricings} = this.props;
+        const { sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus, viewMode, isAdminView, isTimerRunning } = this.state;
+        const { bokWithPricings, clientname } = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
         let isPricingPage = true;
@@ -345,7 +418,7 @@ class BokPricePage extends Component {
             if (!currentPackedStatus && bok_2s_auto.length > 0) _currentPackedStatus = 'auto';
         }
 
-        if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
+        if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3)) {
             canBeChanged = false;
         }
 
@@ -405,7 +478,7 @@ class BokPricePage extends Component {
 
 
             let _pricings = [];
-            if (inHouseFleetPrice || dmeLinehaulPrice) {                
+            if (inHouseFleetPrice || dmeLinehaulPrice) {
                 if (customerCollectPrice) _pricings.push(customerCollectPrice);
                 if (inHouseFleetPrice) _pricings.push(inHouseFleetPrice);
                 if (dmeLinehaulPrice) _pricings.push(dmeLinehaulPrice);
@@ -507,6 +580,11 @@ class BokPricePage extends Component {
 
             pricings = sortedPricings
                 .filter(pricing => pricing.packed_status === _currentPackedStatus)
+                .filter(pricing => {
+                    if (clientname !== 'dme')
+                        return pricing['fp_name'] !== 'MRL Sampson';
+                    return true;
+                })
                 .map((price, index) => {
                     const clientSalesTotal = bokWithPricings.b_094_client_sales_total;
                     let clientSalesTotal5Percent = 0;
@@ -532,7 +610,7 @@ class BokPricePage extends Component {
                                 {price['fp_name']}
                             </td>
                             <td>
-                                {price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}
+                                {price['vehicle_name'] ? `${price['service_desc']} (${price['vehicle_name']})` : price['service_desc']}
                             </td>
                             <td className={viewMode === 'salesView' ? 'none' : null}>
                                 ${price['cost_dollar'].toFixed(2)}
@@ -542,7 +620,7 @@ class BokPricePage extends Component {
                             <td className={viewMode === 'salesView' ? 'none' : null}>
                                 {(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%
                             </td>
-                            <td  className={viewMode === 'salesView' ? 'none' : null}>
+                            <td className={viewMode === 'salesView' ? 'none' : null}>
                                 ${price['fuel_levy_base_cl'].toFixed(2)}
                             </td>
                             <td className={viewMode === 'salesView' ? 'none' : null}>
@@ -561,7 +639,7 @@ class BokPricePage extends Component {
                                 ${clientCustomerPrice.toFixed(2)}&nbsp;&nbsp;&nbsp;
                                 <i className="fa fa-copy" onClick={() => this.copyToClipBoard(clientCustomerPrice)}></i>
                             </td>
-                            <td  className={viewMode === 'salesView' ? 'none' : null}>
+                            <td className={viewMode === 'salesView' ? 'none' : null}>
                                 {moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})
                             </td>
                             {isPricingPage && !isSalesQuote &&
@@ -569,10 +647,21 @@ class BokPricePage extends Component {
                                     <Button
                                         color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
                                         disabled={canBeChanged ? null : 'disabled'}
-                                        onClick={() => this.onSelectPricing(price.cost_id)}
+                                        onClick={() => this.onSelectPricing(price.cost_id, bok_1.b_092_is_quote_locked)}
                                     >
                                         {bok_1.quote_id === price.cost_id ? <i className="fa fa-check"></i> : null} {bok_1.quote_id === price.cost_id ? 'Selected' : 'Select'}
                                     </Button>
+                                </td>
+                            }
+                            {isPricingPage && !isSalesQuote &&
+                                <td>
+                                    <input
+                                        type='checkbox'
+                                        color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
+                                        checked={bok_1.quote_id === price.cost_id && bok_1.b_092_is_quote_locked}
+                                        disabled={canBeChanged ? null : 'disabled'}
+                                        onClick={() => this.onLockPricing(price.cost_id, bok_1.quote_id, bok_1.b_092_is_quote_locked)}
+                                    />
                                 </td>
                             }
                         </tr>
@@ -601,283 +690,293 @@ class BokPricePage extends Component {
         }
 
         return (
-            <section className="bok-price">
-                {this.state.errorMessage || !bok_1 ?
-                    <h1>{this.state.errorMessage}</h1>
-                    :
-                    <div>
-                        <h3><i className="fa fa-circle"></i> Main Info:</h3>
-                        <div className="main-info">
-                            <div className="">
-                                <strong>Client Name: </strong><span>{bok_1['b_client_name']}</span><br />
-                                <strong>Client Order Number: </strong><span>{bok_1['b_client_order_num']}</span><br />
-                                <strong>Client Sales Invoice Number: </strong><span>{bok_1['b_client_sales_inv_num']}</span><br />
-                                <strong>Despatch Date: </strong><span>{bok_1['b_021_b_pu_avail_from_date']}</span><br />
-                                <strong>Shipping Type: </strong><span>{bok_1['b_092_booking_type']}</span>
+            <LoadingOverlay
+                active={this.state.isLoadingBok}
+                styles={{ height: 'calc(100% - 114px)' }}
+                className="loading-pane"
+                spinner
+                text='Loading...'
+            >
+                <section className="bok-price">
+                    {this.state.errorMessage || !bok_1 ?
+                        <h1>{this.state.errorMessage}</h1>
+                        :
+                        <div>
+                            <h3><i className="fa fa-circle"></i> Main Info:</h3>
+                            <div className="main-info">
+                                <div className="">
+                                    <strong>Client Name: </strong><span>{bok_1['b_client_name']}</span><br />
+                                    <strong>Client Order Number: </strong><span>{bok_1['b_client_order_num']}</span><br />
+                                    <strong>Client Sales Invoice Number: </strong><span>{bok_1['b_client_sales_inv_num']}</span><br />
+                                    <strong>Despatch Date: </strong><span>{bok_1['b_021_b_pu_avail_from_date']}</span><br />
+                                </div>
+                                <div className="pu-info disp-inline-block">
+                                    <label>Pickup From</label><br />
+                                    <div className="title disp-inline-block">
+                                        <strong>Entity Name: </strong><br />
+                                        <strong>Street 1: </strong><br />
+                                        <strong>Street 2: </strong><br />
+                                        <strong>Suburb: </strong><br />
+                                        <strong>State: </strong><br />
+                                        <strong>PostalCode: </strong><br />
+                                        <strong>Country: </strong><br />
+                                        <strong>Contact Name: </strong><br />
+                                        <strong>Email: </strong><br />
+                                        <strong>Phone: </strong><br />
+                                    </div>
+                                    <div className="data disp-inline-block">
+                                        <span>{bok_1['b_028_b_pu_company']}</span><br />
+                                        <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
+                                        {bok_1 && bok_1['b_030_b_pu_address_street_2'] && (<span>{bok_1['b_030_b_pu_address_street_2']}</span>)}<br />
+                                        <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
+                                        <span>{bok_1['b_031_b_pu_address_state']}</span><br />
+                                        <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br />
+                                        <span>{bok_1['b_034_b_pu_address_country']}</span><br />
+                                        <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
+                                        <span>{bok_1['b_037_b_pu_email']}</span><br />
+                                        <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
+                                    </div>
+                                </div>
+                                <div className="de-info disp-inline-block">
+                                    <label>Deliver To</label><br />
+                                    <div className="title disp-inline-block">
+                                        <strong>Entity Name: </strong><br />
+                                        <strong>Street 1: </strong><br />
+                                        <strong>Street 2: </strong><br />
+                                        <strong>Suburb: </strong><br />
+                                        <strong>State: </strong><br />
+                                        <strong>PostalCode: </strong><br />
+                                        <strong>Country: </strong><br />
+                                        <strong>Contact Name: </strong><br />
+                                        <strong>Email: </strong><br />
+                                        <strong>Phone: </strong><br />
+                                    </div>
+                                    <div className="data disp-inline-block">
+                                        <span>{bok_1['b_054_b_del_company']}</span><br />
+                                        <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
+                                        {bok_1 && bok_1['b_056_b_del_address_street_2'] && (<span>{bok_1['b_056_b_del_address_street_2']}</span>)}<br />
+                                        <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
+                                        <span>{bok_1['b_057_b_del_address_state']}</span><br />
+                                        <span>{bok_1['b_059_b_del_address_postalcode']}</span><br />
+                                        <span>{bok_1['b_060_b_del_address_country']}</span><br />
+                                        <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
+                                        <span>{bok_1['b_063_b_del_email']}</span><br />
+                                        <span>{bok_1['b_064_b_del_phone_main']}</span><br />
+                                    </div>
+                                </div>
+                                <ul>{errorList}</ul>
                             </div>
-                            <div className="pu-info disp-inline-block">
-                                <label>Pickup From</label><br />
-                                <div className="title disp-inline-block">
-                                    <strong>Entity Name: </strong><br />
-                                    <strong>Street 1: </strong><br />
-                                    <strong>Street 2: </strong><br />
-                                    <strong>Suburb: </strong><br />
-                                    <strong>State: </strong><br />
-                                    <strong>PostalCode: </strong><br />
-                                    <strong>Country: </strong><br />
-                                    <strong>Contact Name: </strong><br />
-                                    <strong>Email: </strong><br />
-                                    <strong>Phone: </strong><br />
+                            <LoadingOverlay
+                                active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isRepacking || this.state.isUpdatingItemProduct}
+                                spinner
+                                text='Loading...'
+                            >
+                                <BokFreightOptionAccordion
+                                    bok_1={bok_1}
+                                />
+                                <h3><i className="fa fa-circle"></i> Lines:</h3>
+                                <div className='action-btns'>
+                                    <Button
+                                        color={_currentPackedStatus === 'original' ? 'success' : 'secondary'}
+                                        onClick={() => this.onChangePackedStatus('original')}
+                                    >
+                                        Send As Is
+                                    </Button>
+                                    <Button
+                                        color={_currentPackedStatus === 'auto' ? 'success' : 'secondary'}
+                                        onClick={() => this.onChangePackedStatus('auto')}
+                                    >
+                                        Auto Repack
+                                    </Button>
+                                    <Button
+                                        color={_currentPackedStatus === 'manual' ? 'success' : 'secondary'}
+                                        onClick={() => this.onChangePackedStatus('manual')}
+                                    >
+                                        Manual Repack
+                                    </Button>
+                                    <Button
+                                        className='mar-left-30 reset'
+                                        color='danger'
+                                        onClick={() => this.onChangePackedStatus('reset')}
+                                        disabled={(_currentPackedStatus === 'auto' || _currentPackedStatus === 'manual') ? '' : 'disabled'}
+                                        title="Reset all lines and LineDetails."
+                                    >
+                                        Reset
+                                    </Button>
+                                    <p className='lowest-price-summary disp-inline-block mar-left-30'><strong>Your Lowest Cost Option is - </strong>{lowest_price_summary}</p>
+                                    {
+                                        (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
+                                            <p className='lowest-price-summary disp-inline-block mar-left-30'>
+                                                <strong>Sales Order Total $:</strong> ${bokWithPricings.b_094_client_sales_total.toLocaleString('en-US')}
+                                            </p>
+                                    }
+                                    <Button
+                                        className='float-r'
+                                        color='primary'
+                                        onClick={() => this.onChangePackedStatus('quote')}
+                                        disabled={bok_2s.length > 0 ? null : 'disabled'}
+                                        title="Get quotes again"
+                                    >
+                                        Complete & Calc Quote
+                                    </Button>
                                 </div>
-                                <div className="data disp-inline-block">
-                                    <span>{bok_1['b_028_b_pu_company']}</span><br />
-                                    <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
-                                    {bok_1 && bok_1['b_030_b_pu_address_street_2'] && (<span>{bok_1['b_030_b_pu_address_street_2']}</span>)}<br />
-                                    <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
-                                    <span>{bok_1['b_031_b_pu_address_state']}</span><br />
-                                    <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br />
-                                    <span>{bok_1['b_034_b_pu_address_country']}</span><br />
-                                    <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
-                                    <span>{bok_1['b_037_b_pu_email']}</span><br />
-                                    <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
+                                {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
+                                {hasUnknownItems &&
+                                    <p className='c-red ignored-items'>
+                                        Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
+                                    </p>
+                                }
+                                {totalLinesCnt ?
+                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                        <thead>
+                                            <tr>
+                                                <th>Total Quantity</th>
+                                                <th>Total Weight (Kg)</th>
+                                                <th>Total Cubic Meter (M3)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{totalLinesCnt}</td>
+                                                <td>{totalLinesKg}</td>
+                                                <td>{totalCubicMeter.toFixed(2)}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    :
+                                    null
+                                }
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <thead>
+                                        <tr>
+                                            <th className="valign-top">Type Of Packaging</th>
+                                            <th className="valign-top">Seq #</th>
+                                            <th className="valign-top">Item No</th>
+                                            <th className="valign-top">Item Descripton</th>
+                                            <th className="valign-top">Qty</th>
+                                            <th className="valign-top">Dim UOM</th>
+                                            <th className="valign-top">Length</th>
+                                            <th className="valign-top">Width</th>
+                                            <th className="valign-top">Height</th>
+                                            <th className="valign-top">{_currentPackedStatus === 'auto' ? 'Pallet CBM' : 'CBM'}</th>
+                                            <th className="valign-top">Total Weight</th>
+                                            {_currentPackedStatus === 'auto' ? <th className="valign-top">Total Packed CBM</th> : null}
+                                            {_currentPackedStatus === 'auto' ? <th className="valign-top">Show Line Details</th> : null}
+                                            <th className="valign-top">
+                                                Actions <Button color="success" className='float-r' onClick={() => this.onclickAddLine()}>New Line</Button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bok_2s}
+                                    </tbody>
+                                </table>
+                                {isShowLineData && <h3><i className="fa fa-circle"></i> Line Data:</h3>}
+                                {isShowLineData &&
+                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                        <thead>
+                                            <tr>
+                                                <th>Type Of Packaging</th>
+                                                <th>Quantity</th>
+                                                <th>Item No</th>
+                                                <th>Item Description</th>
+                                                <th>Dim UOM</th>
+                                                <th>Length</th>
+                                                <th>Width</th>
+                                                <th>Height</th>
+                                                <th>Total Weight</th>
+                                                <th>CBM</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {bok_3s}
+                                        </tbody>
+                                    </table>
+                                }
+                                <h3>
+                                    <i className="fa fa-circle"></i> Freight Rates:{'   '}
+                                    <Button
+                                        className='disp-inline-block'
+                                        color={viewMode === 'salesView' ? 'primary' : 'secondary'}
+                                        onClick={() => this.onClickViewMode('salesView')}
+                                    >
+                                        Sales View
+                                    </Button>{'   '}
+                                    {isAdminView && <Button
+                                        className='disp-inline-block'
+                                        color={viewMode === 'adminView' ? 'primary' : 'secondary'}
+                                        onClick={() => this.onClickViewMode('adminView')}
+                                    >
+                                        Admin View
+                                    </Button>}
+                                </h3>
+                                {(bok_1 && bok_1['b_client_name'] === 'Jason L' && isTimerRunning) &&
+                                    <h4 className='c-red'>Deliver-ME is still searching for cheaper prices options. Any additional prices will be displayed below when received.</h4>
+                                }
+                                {pricings.length > 0 ?
+                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                        <thead>
+                                            <tr>
+                                                <th>Freight Provider</th>
+                                                <th>Service (Vehicle)</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Cost $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy %</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Extra $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null}>Total $</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null} title="Client Customer Markup ">CC Markup %</th>
+                                                {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
+                                                <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
+                                                <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                {isPricingPage && !isSalesQuote && <th>Action (Select)</th>}
+                                                {isPricingPage && !isSalesQuote && <th>Action (Lock)</th>}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {pricings}
+                                        </tbody>
+                                    </table>
+                                    :
+                                    <p>No results</p>
+                                }
+                                <div className="decision">
+                                    {(!isSalesQuote && bok_1 && bok_1['b_client_name'] !== 'Jason L') &&
+                                        <Button
+                                            disabled={canBeChanged ? null : 'disabled'}
+                                            color="primary"
+                                            onClick={() => this.onClickBookBtn()}
+                                        >
+                                            {this.props.bookedSuccess || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ? 'Booked' : 'Book'}
+                                        </Button>
+                                    }
+                                    {(bok_1 && bok_1['b_client_name'] === 'Jason L') &&
+                                        <Button
+                                            disabled={canBeChanged ? null : 'disabled'}
+                                            color="success"
+                                            title={!canBeChanged ? 'This booking has already been sent to Deliver-ME. Changes need to be made in the Deliver-ME portal'
+                                                : 'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
+                                            onClick={() => this.toggleTriggerEmailModal()}
+                                        >
+                                            Send Booking Now <i className="fa fa-envelope"></i>
+                                        </Button>
+                                    }
+                                    <Button
+                                        disabled={canBeChanged ? null : 'disabled'}
+                                        color="danger"
+                                        onClick={() => this.onClickCancelBtn()}
+                                    >
+                                        {this.props.canceledSuccess ? 'Quote Canceled' : 'Cancel Quote'}
+                                    </Button>
                                 </div>
-                            </div>
-                            <div className="de-info disp-inline-block">
-                                <label>Deliver To</label><br />
-                                <div className="title disp-inline-block">
-                                    <strong>Entity Name: </strong><br />
-                                    <strong>Street 1: </strong><br />
-                                    <strong>Street 2: </strong><br />
-                                    <strong>Suburb: </strong><br />
-                                    <strong>State: </strong><br />
-                                    <strong>PostalCode: </strong><br />
-                                    <strong>Country: </strong><br />
-                                    <strong>Contact Name: </strong><br />
-                                    <strong>Email: </strong><br />
-                                    <strong>Phone: </strong><br />
-                                </div>
-                                <div className="data disp-inline-block">
-                                    <span>{bok_1['b_054_b_del_company']}</span><br />
-                                    <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
-                                    {bok_1 && bok_1['b_056_b_del_address_street_2'] && (<span>{bok_1['b_056_b_del_address_street_2']}</span>)}<br />
-                                    <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
-                                    <span>{bok_1['b_057_b_del_address_state']}</span><br />
-                                    <span>{bok_1['b_059_b_del_address_postalcode']}</span><br />
-                                    <span>{bok_1['b_060_b_del_address_country']}</span><br />
-                                    <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
-                                    <span>{bok_1['b_063_b_del_email']}</span><br />
-                                    <span>{bok_1['b_064_b_del_phone_main']}</span><br />
-                                </div>
-                            </div>
-                            <ul>{errorList}</ul>
+                            </LoadingOverlay>
                         </div>
-                        <LoadingOverlay
-                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isRepacking || this.state.isUpdatingItemProduct}
-                            spinner
-                            text='Loading...'
-                        >
-                            <BokFreightOptionAccordion
-                                bok_1={bok_1}
-                            />
-                            <h3><i className="fa fa-circle"></i> Lines:</h3>
-                            <div className='action-btns'>
-                                <Button
-                                    color={_currentPackedStatus === 'original' ? 'success' : 'secondary'}
-                                    onClick={() => this.onChangePackedStatus('original')}
-                                >
-                                    Send As Is
-                                </Button>
-                                <Button
-                                    color={_currentPackedStatus === 'auto' ? 'success' : 'secondary'}
-                                    onClick={() => this.onChangePackedStatus('auto')}
-                                >
-                                    Auto Repack
-                                </Button>
-                                <Button
-                                    color={_currentPackedStatus === 'manual' ? 'success' : 'secondary'}
-                                    onClick={() => this.onChangePackedStatus('manual')}
-                                >
-                                    Manual Repack
-                                </Button>
-                                <Button
-                                    className='mar-left-30 reset'
-                                    color='danger'
-                                    onClick={() => this.onChangePackedStatus('reset')}
-                                    disabled={(_currentPackedStatus === 'auto' || _currentPackedStatus === 'manual') ? '' : 'disabled'}
-                                    title="Reset all lines and LineDetails."
-                                >
-                                    Reset
-                                </Button>
-                                <p className='lowest-price-summary disp-inline-block mar-left-30'><strong>Your Lowest Cost Option is - </strong>{lowest_price_summary}</p>
-                                {
-                                    (bokWithPricings && bokWithPricings.b_094_client_sales_total) && 
-                                        <p className='lowest-price-summary disp-inline-block mar-left-30'>
-                                            <strong>Sales Order Total $:</strong> ${numberWithCommas( bokWithPricings.b_094_client_sales_total)}
-                                        </p>
-                                }
-                                <Button
-                                    className='float-r'
-                                    color='primary'
-                                    onClick={() => this.onChangePackedStatus('quote')}
-                                    disabled={bok_2s.length > 0 ? null : 'disabled'}
-                                    title="Get quotes again"
-                                >
-                                    Complete & Calc Quote
-                                </Button>
-                            </div>
-                            {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
-                            {hasUnknownItems &&
-                                <p className='c-red ignored-items'>
-                                    Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
-                                </p>
-                            }
-                            {totalLinesCnt ?
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <thead>
-                                        <tr>
-                                            <th>Total Quantity</th>
-                                            <th>Total Weight (Kg)</th>
-                                            <th>Total Cubic Meter (M3)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>{totalLinesCnt}</td>
-                                            <td>{totalLinesKg}</td>
-                                            <td>{totalCubicMeter.toFixed(2)}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                :
-                                null
-                            }
-                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                <thead>
-                                    <tr>
-                                        <th className="valign-top">Type Of Packaging</th>
-                                        <th className="valign-top">Seq #</th>
-                                        <th className="valign-top">Item No</th>
-                                        <th className="valign-top">Item Descripton</th>
-                                        <th className="valign-top">Qty</th>
-                                        <th className="valign-top">Dim UOM</th>
-                                        <th className="valign-top">Length</th>
-                                        <th className="valign-top">Width</th>
-                                        <th className="valign-top">Height</th>
-                                        <th className="valign-top">{_currentPackedStatus === 'auto' ? 'Pallet CBM' : 'CBM'}</th>
-                                        <th className="valign-top">Total Weight</th>
-                                        {_currentPackedStatus === 'auto' ? <th className="valign-top">Total Packed CBM</th> : null}
-                                        {_currentPackedStatus === 'auto' ? <th className="valign-top">Show Line Details</th> : null}
-                                        <th className="valign-top">
-                                            Actions <Button color="success" className='float-r' onClick={() => this.onclickAddLine()}>New Line</Button>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {bok_2s}
-                                </tbody>
-                            </table>
-                            {isShowLineData && <h3><i className="fa fa-circle"></i> Line Data:</h3>}
-                            {isShowLineData &&
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <thead>
-                                        <tr>
-                                            <th>Type Of Packaging</th>
-                                            <th>Quantity</th>
-                                            <th>Item No</th>
-                                            <th>Item Description</th>
-                                            <th>Dim UOM</th>
-                                            <th>Length</th>
-                                            <th>Width</th>
-                                            <th>Height</th>
-                                            <th>Total Weight</th>
-                                            <th>CBM</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {bok_3s}
-                                    </tbody>
-                                </table>
-                            }
-                            <h3>
-                                <i className="fa fa-circle"></i> Freight Rates:{'   '}
-                                <Button
-                                    className='disp-inline-block'
-                                    color={viewMode === 'salesView' ? 'primary' : 'secondary'}
-                                    onClick={() => this.onClickViewMode('salesView')}
-                                >
-                                    Sales View
-                                </Button>{'   '}
-                                <Button
-                                    className='disp-inline-block'
-                                    color={viewMode === 'adminView' ? 'primary' : 'secondary'}
-                                    onClick={() => this.onClickViewMode('adminView')}
-                                >
-                                    Admin View
-                                </Button>
-                            </h3>
-                            {pricings.length > 0 ?
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <thead>
-                                        <tr>
-                                            <th>Freight Provider</th>
-                                            <th>Service (Vehicle)</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Cost $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy %</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Fuel Levy $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Extra $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null}>Total $</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null} title="Client Customer Markup ">CC Markup %</th>
-                                            {(bokWithPricings && bokWithPricings.b_094_client_sales_total) ? <th>% of Sales Order Total</th> : ''}
-                                            <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
-                                            <th className={viewMode === 'salesView' ? 'none' : null} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                            {isPricingPage && !isSalesQuote && <th>Action</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {pricings}
-                                    </tbody>
-                                </table>
-                                :
-                                <p>No results</p>
-                            }
-                            <div className="decision">
-                                {(!isSalesQuote && bok_1 && bok_1['b_client_name'] !== 'Jason L') &&
-                                    <Button
-                                        disabled={canBeChanged ? null : 'disabled'}
-                                        color="primary"
-                                        onClick={() => this.onClickBookBtn()}
-                                    >
-                                        {this.props.bookedSuccess || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ? 'Booked' : 'Book'}
-                                    </Button>
-                                }
-                                {(bok_1 && bok_1['b_client_name'] === 'Jason L') &&
-                                    <Button
-                                        disabled={canBeChanged ? null : 'disabled'}
-                                        color="success"
-                                        title={!canBeChanged ? 'This booking has already been sent to Deliver-ME. Changes need to be made in the Deliver-ME portal'
-                                            : 'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
-                                        onClick={() => this.toggleTriggerEmailModal()}
-                                    >
-                                        Send Booking Now <i className="fa fa-envelope"></i>
-                                    </Button>
-                                }
-                                <Button
-                                    disabled={canBeChanged ? null : 'disabled'}
-                                    color="danger"
-                                    onClick={() => this.onClickCancelBtn()}
-                                >
-                                    {this.props.canceledSuccess ? 'Quote Canceled' : 'Cancel Quote'}
-                                </Button>
-                            </div>
-                        </LoadingOverlay>
-                    </div>
-                }
+                    }
 
                 <ExtraCostSummarySlider
                     isOpen={this.state.isShowExtraCostSummarySlider}
                     toggleSlider={this.toggleExtraCostSummarySlider}
-                    selectedPrice = {this.state.selectedPrice}
-                    bok_2s = {bokWithPricings ? bokWithPricings['bok_2s'] : []}
+                    selectedPrice={this.state.selectedPrice}
+                    bok_2s={bokWithPricings ? bokWithPricings['bok_2s'] : []}
                 />
 
                 <PalletSlider
@@ -928,6 +1027,7 @@ class BokPricePage extends Component {
 
                 <ToastContainer />
             </section>
+            </LoadingOverlay >
         );
     }
 }
@@ -944,13 +1044,15 @@ const mapStateToProps = (state) => {
         repackSuccess: state.bok.repackSuccess,
         lineOperationSuccess: state.bok.lineOperationSuccess,
         packageTypes: state.extra.packageTypes,
+        username: state.auth.username,
+        clientname: state.auth.clientname,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         getBokWithPricings: (identifier) => dispatch(getBokWithPricings(identifier)),
-        onSelectPricing: (costId, identifier, client_overrided_quote) => dispatch(onSelectPricing(costId, identifier, client_overrided_quote)),
+        selectPricing: (costId, identifier, client_overrided_quote) => dispatch(selectPricing(costId, identifier, client_overrided_quote)),
         onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
         sendEmail: (identifier) => dispatch(sendEmail(identifier)),
@@ -959,6 +1061,7 @@ const mapDispatchToProps = (dispatch) => {
         onDeleteBokLine: (lineId) => dispatch(onDeleteBokLine(lineId)),
         getPackageTypes: () => dispatch(getPackageTypes()),
         repack: (bookingId, repackStatus, palletId) => dispatch(repack(bookingId, repackStatus, palletId)),
+        setNeedToUpdatePricings: () => dispatch(setNeedToUpdatePricings()),
     };
 };
 
