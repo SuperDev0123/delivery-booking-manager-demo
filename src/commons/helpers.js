@@ -68,7 +68,7 @@ function isInt(value) {
     return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
 }
 
-function getDimRatio(dimUOM){
+function getDimRatio(dimUOM) {
     const _dimUOM = dimUOM.toUpperCase();
 
     if (_dimUOM === 'CM' || _dimUOM === 'CENTIMETER')
@@ -81,7 +81,7 @@ function getDimRatio(dimUOM){
         return 1;
 }
 
-function getWeightRatio(weightUOM){
+function getWeightRatio(weightUOM) {
     const _weightUOM = weightUOM.toUpperCase();
 
     if (_weightUOM === 'T' || _weightUOM === 'TON')
@@ -114,23 +114,37 @@ function getM3ToKgFactor(freight_provider, length, width, height, weight, dimUOM
 }
 
 // Filling 0
-function fillZero (str, max) {
+function fillZero(str, max) {
     str = str.toString();
     return str.length < max ? fillZero('0' + str, max) : str;
 }
 
 // https://stackoverflow.com/questions/34077449/fastest-way-to-cast-a-float-to-an-int-in-javascript
-const milliseconds2Days = (milliseconds) => ~~(milliseconds / (1000*60*60*24));
-const milliseconds2Hours = (milliseconds) => ~~(milliseconds / (1000*60*60));
+const milliseconds2Days = (milliseconds) => ~~(milliseconds / (1000 * 60 * 60 * 24));
+const milliseconds2Hours = (milliseconds) => ~~(milliseconds / (1000 * 60 * 60));
 
 function numberWithCommas(num, place) {
-    if(isNull(num)) return '';
-    try {
-        let temp = parseFloat(num);
-        if (place) temp = temp.toFixed(2);
-        return temp.toLocaleString('en-US');
+    if (isNull(num)) return '';
+    if (typeof num === 'object') {
+        if (num.length) {
+            return num.map(e => numberWithCommas(e, place));
+        }
+        else {
+            Object.keys(num).map(key => num[key] = numberWithCommas(num[key], place));
+            return num;
+        }
     }
-    catch(err) {
+    try {
+        let temp = parseFloat(num.toString());
+        if(temp) {
+            if (place) temp = parseFloat(temp.toFixed(place));
+            return temp.toLocaleString('en-US');
+        }
+        else {
+            return num;
+        }
+    }
+    catch (err) {
         return num;
     }
 }

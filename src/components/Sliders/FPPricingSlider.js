@@ -8,6 +8,7 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingOverlay from 'react-loading-overlay';
+import { numberWithCommas } from '../../commons/helpers';
 
 class FPPricingSlider extends React.Component {
     constructor(props) {
@@ -134,23 +135,23 @@ class FPPricingSlider extends React.Component {
                             <td>{pricing.freight_provider}({pricing.account_code})</td>
                             <td>{pricing.vehicle_name ? `${pricing.service_desc} (${pricing.vehicle_name})` : pricing.service_desc}</td>
                             <td>{pricing.etd}</td>
-                            {clientname === 'dme' && <td className="text-right">${pricing.fee.toFixed(2)}</td>}
-                            {clientname === 'dme' && <td className="text-right">${pricing.surcharge_total.toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">${numberWithCommas(pricing.fee, 2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">${numberWithCommas(pricing.surcharge_total,2)}</td>}
                             {clientname === 'dme' && <td className="text-right">{(pricing.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>}
-                            {clientname === 'dme' && <td className="text-right">${pricing.fuel_levy_base.toFixed(2)}</td>}
-                            {clientname === 'dme' &&<td className="text-right">${(pricing.fee + pricing.fuel_levy_base + pricing.surcharge_total).toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">${numberWithCommas(pricing.fuel_levy_base, 2)}</td>}
+                            {clientname === 'dme' &&<td className="text-right">${numberWithCommas(pricing.fee + pricing.fuel_levy_base + pricing.surcharge_total, 2)}</td>}
                             {clientname === 'dme' && <td className="text-right">{(pricing.client_mark_up_percent * 100).toFixed(2)}%</td>}
-                            <td className="text-right">${pricing.cost_dollar.toFixed(2)}</td>
+                            <td className="text-right">${numberWithCommas(pricing.cost_dollar, 2)}</td>
                             <td className="text-right">{(pricing.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>
-                            <td className="text-right">${pricing.fuel_levy_base_cl.toFixed(2)}</td>
+                            <td className="text-right">${numberWithCommas(pricing.fuel_levy_base_cl, 2)}</td>
                             <td className="text-right nowrap">
-                                {pricing.surcharge_total_cl ? ('$' + pricing.surcharge_total_cl.toFixed(2)) : null}
+                                {pricing.surcharge_total_cl ? ('$' + numberWithCommas(pricing.surcharge_total_cl, 2)) : null}
                                 &nbsp;&nbsp;&nbsp;
                                 {pricing.surcharge_total_cl ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricing)}></i> : null}
                             </td>
-                            <td className="text-right">${pricing.client_mu_1_minimum_values.toFixed(2)}</td>
-                            <td className="text-right">{clientCustomerMarkup}%</td>
-                            <td className="text-right">${clientCustomerPrice}</td>
+                            <td className="text-right">${numberWithCommas(pricing.client_mu_1_minimum_values, 2)}</td>
+                            <td className="text-right">{numberWithCommas(clientCustomerMarkup, 2)}%</td>
+                            <td className="text-right">${numberWithCommas(clientCustomerPrice, 2)}</td>
                             <td className={pricing.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
                                 {pricing && pricing.eta_de_by ? moment(pricing.eta_de_by).format('DD/MM/YYYY') : ''}
                             </td>
