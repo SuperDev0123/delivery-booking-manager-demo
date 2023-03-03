@@ -235,8 +235,8 @@ class FPPricingSlider extends React.Component {
                         <p className="surcharge" key={index}>
                             <strong>Name:</strong> {surcharge['name']}<br />
                             <strong>Description:</strong> {surcharge['description']}<br />
-                            <strong>Amount:</strong> {surcharge['amount']}<br />
-                            <strong>Qty:</strong> {surcharge['qty'] || 1}<br />
+                            <strong>Amount:</strong> {numberWithCommas(surcharge['amount'], 2)}<br />
+                            <strong>Qty:</strong> {numberWithCommas(surcharge['qty'] || 1)}<br />
                             <strong>Manually added?:</strong> {surcharge['is_manually_entered'] ? 'Yes' : 'No'}<br />
                             <hr />
                         </p>
