@@ -676,11 +676,11 @@ class BookingPage extends Component {
                 temp = temp.filter(price => price.freight_provider !== 'MRL Sampson');
             }
 
-            if (this.state.pricingInfos.length != temp.length) {
-                this.props.getBooking(booking.id, 'id');
-                this.setState({loading: true, curViewMode: 0});
-            }
-            this.setState({pricingInfos: temp, loadingPricingInfos: false});
+            // if (this.state.pricingInfos.length != temp.length) {
+            //     this.props.getBooking(booking.id, 'id');
+            //     this.setState({ loading: true, curViewMode: 0 });
+            // }
+            this.setState({ pricingInfos: temp, loadingPricingInfos: false });
 
         }
 
@@ -3358,7 +3358,8 @@ class BookingPage extends Component {
                 <LoadingOverlay
                     active={this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate || this.state.loadingBookingManual}
                     spinner
-                    text='Loading...'
+                    // text='Loading...'
+                    text={`${this.state.loading ? 'true' : 'false'}  ${this.state.loadingBookingSave ? 'true' : 'false'}  ${this.state.loadingBookingUpdate ? 'true' : 'false'}  ${this.state.loadingBookingManual ? 'true' : 'false'}`}
                 >
                     <section className="booking">
                         <div className="container">
