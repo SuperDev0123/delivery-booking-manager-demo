@@ -675,11 +675,10 @@ class BookingPage extends Component {
             if (clientname !== 'dme') {
                 temp = temp.filter(price => price.freight_provider !== 'MRL Sampson');
             }
-
-            // if (this.state.pricingInfos.length != temp.length) {
-            //     this.props.getBooking(booking.id, 'id');
-            //     this.setState({ loading: true, curViewMode: 0 });
-            // }
+            if (pricingInfos.length != temp.length) {
+                this.props.getBooking(booking.id, 'id');
+                this.setState({ loading: true, curViewMode: 0 });
+            }
             this.setState({ pricingInfos: temp, loadingPricingInfos: false });
 
         }
