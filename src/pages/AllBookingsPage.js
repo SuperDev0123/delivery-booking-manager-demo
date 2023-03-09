@@ -2604,6 +2604,7 @@ class AllBookingsPage extends React.Component {
                                             <div className="col-sm-6 tbl-stats">
                                                 <select value={downloadOption} onChange={(e) => this.onDownloadOptionChange(e)} className="download-select">
                                                     <option value="label">Label</option>
+                                                    <option value="merged_label">Merged Label</option>
                                                     <option value="new_label">New Label</option>
                                                     <option value="pod">POD</option>
                                                     <option value="new_pod">New POD</option>
