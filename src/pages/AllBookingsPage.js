@@ -1552,17 +1552,18 @@ class AllBookingsPage extends React.Component {
 
     onClickMANI() {
         const {selectedBookingIds} = this.state;
-        const {clientname} = this.props;
 
         if (selectedBookingIds.length === 0) {
             this.notify('Please select bookings to create Order!');
         } else {
             this.props.getBookingLinesCnt(selectedBookingIds);
+            const bookings = this.getBookingsFromIds(selectedBookingIds);
+            const vx_freight_provider = bookings[0].vx_freight_provider ? bookings[0].vx_freight_provider.toLowerCase() : null;
 
-            if (clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') {
-                this.toggleManifestSlider();
-            } else {
+            if (vx_freight_provider === 'auspost' || vx_freight_provider === 'startrack') {
                 this.toggleOrderModal();
+            } else {
+                this.toggleManifestSlider();
             }
         }
     }
